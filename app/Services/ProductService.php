@@ -14,13 +14,19 @@ class ProductService
 
     public function storeProduct($request)
     {
-        $result=Product::query()->create($request->validated());
+        $imagePath = app(FileService::class)->upload($request, 'image');
+        $data = $request->validated();
+        $data['image'] = $imagePath;
+        $result = Product::query()->create($data);
         return $result;
     }
     public function updateProduct($request,$product)
     {
+        $imagePath = app(FileService::class)->upload($request, 'image');
+        $data = $request->validated();
+        $data['image'] = $imagePath;
         $result= $product->query()->where('id', $product->id)
-        ->update($request->validated());
+        ->update($data);
         return $result;
     }
     public function showProduct()
