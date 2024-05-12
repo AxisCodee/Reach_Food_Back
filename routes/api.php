@@ -39,8 +39,8 @@ Route::prefix('order')->group(function () {
 Route::prefix('product')->group(function () {
     Route::controller(ProductController::class)->group(function () {
         Route::apiResource('products',ProductController::class)->only('store', 'show');
-        Route::apiResource('products/{id}',ProductController::class)->only('update', 'destroy');
-    });
+        Route::post('products/{product}', [ProductController::class, 'update']);
+        Route::delete('products/{product}', [ProductController::class, 'destroy']);    });
 });
 
 Route::prefix('feedback')->group(function () {
