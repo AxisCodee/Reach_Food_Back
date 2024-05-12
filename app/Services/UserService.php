@@ -20,9 +20,10 @@ class UserService
         $this->fileService = $fileService;
     }
 
-    public function createUserDetails(Request $request)
+    public function createUserDetails(Request $request, $user_id)
     {
         return UserDetail::query()->create([
+            'user_id' => $user_id,
             'image' => $this->fileService->upload($request, 'image'),
             //'address_id' => $request->address_id,
             'location' => $request->location,

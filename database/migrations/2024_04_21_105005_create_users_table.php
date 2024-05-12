@@ -16,7 +16,6 @@ return new class extends Migration {
             $table->string('user_name')->unique();
             $table->string('password');
             $table->enum('role', ['admin', 'customer', 'salesman', 'sales manager'])->default('customer');
-            $table->foreignId('userDetails_id')->constrained('user_details')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('branch_id')->nullable()->constrained('branches')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('salesManager_id')->nullable()->constrained('users')->cascadeOnUpdate();
             $table->rememberToken();

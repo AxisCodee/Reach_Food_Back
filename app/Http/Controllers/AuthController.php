@@ -13,20 +13,22 @@ use Illuminate\Support\Facades\Hash;
 class AuthController extends Controller
 {
     protected $userService;
-    public function __construct(UserService $userService){
+
+    public function __construct(UserService $userService)
+    {
         $this->userService = $userService;
     }
+
     public function register(CreateUserRequest $request)
     {
         return DB::transaction(function () use ($request) {
-            $userDetail = $this->userService->createUserDetails($request);
             $user = User::create([
-                'name' => $request['name'],
-                'user_name' => $request['user_name'],
+                'name' => $request->name,
+                'user_name' => $request->user_name,
                 'password' => Hash::make($request['password']),
-                'detail_id' => $userDetail->id,
-                'role' => $request['role'],
+                'role' => $request->role,
             ]);
+            $this->userService->createUserDetails($request, $user->id);
             $token = $user->createToken('auth_token')->plainTextToken;
             return ResponseHelper::success([
                 'user' => $user,
@@ -48,25 +50,30 @@ class AuthController extends Controller
         }
         $token = $user->createToken('auth_token')->plainTextToken;
         return ResponseHelper::success([
-            'user' => $user->userDetails,
+            'user' => $user->with('userDetails')->first(),
             'access_token' => $token,
             'token_type' => 'Bearer',
         ]);
     }
 
-    public function logout(Request $request)//TODO
+    public function logout()
     {
-        auth()->logout();
-        return ResponseHelper::success('Logged out successfully.');
+        if (auth('sanctum')->user()) {
+            auth('sanctum')->user()->tokens()->delete();
+            return ResponseHelper::success('Logged out successfully.');
+        }
+        return ResponseHelper::error('You are not authorized.', 401);
     }
 
-    public function refresh(Request $request)//TODO
+    public function refresh()//TODO
     {
-        auth()->user()->tokens()->delete();
-        $token = auth()->user()->createToken('auth_token')->plainTextToken;
-        return ResponseHelper::success([
-            'user' => auth()->user(),
-            'token' => $token,
-        ]);
+        return DB::transaction(function () {
+            auth('sanctum')->user()->tokens()->delete();
+            $token = auth('sanctum')->user()->createToken('auth_token')->plainTextToken;
+            return ResponseHelper::success([
+                'user' => auth('sanctum')->user(),
+                'token' => $token,
+            ]);
+        });
     }
 }
