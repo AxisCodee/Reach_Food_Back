@@ -29,6 +29,12 @@ class ProductService
         return $result;
     }
 
+    public function indexProduct($product)
+    {
+        $result=Product::query()->where('id',$product->id)->get()->toArray();
+        return $result;
+    }
+
     public function deleteProduct($product)
     {
         $result=$product->where('id', $product->id)->delete();

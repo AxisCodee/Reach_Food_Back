@@ -40,7 +40,9 @@ Route::prefix('product')->group(function () {
     Route::controller(ProductController::class)->group(function () {
         Route::apiResource('products',ProductController::class)->only('store', 'show');
         Route::post('products/{product}', [ProductController::class, 'update']);
-        Route::delete('products/{product}', [ProductController::class, 'destroy']);    });
+        Route::delete('products/{product}', [ProductController::class, 'destroy']);
+        Route::get('products/{product}', [ProductController::class, 'index']);
+    });
 });
 
 Route::prefix('feedback')->group(function () {
