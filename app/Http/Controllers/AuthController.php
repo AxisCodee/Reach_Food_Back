@@ -5,21 +5,21 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\CreateUserRequest;
 use App\Models\User;
-use App\Models\UserDetail;
+use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
 class AuthController extends Controller
 {
+    protected $userService;
+    public function __construct(UserService $userService){
+        $this->userService = $userService;
+    }
     public function register(CreateUserRequest $request)
     {
         return DB::transaction(function () use ($request) {
-            $userDetail = UserDetail::create([
-                'image' => $request['image']->store('uploads/user_images', 'public'),
-                'address' => $request['address'],
-                'phone_number' => $request['phone_number'],
-            ]);
+            $userDetail = $this->userService->createUserDetails($request);
             $user = User::create([
                 'name' => $request['name'],
                 'user_name' => $request['user_name'],
@@ -34,8 +34,6 @@ class AuthController extends Controller
                 'token_type' => 'Bearer',
             ]);
         });
-
-
     }
 
     public function login(Request $request)

@@ -27,11 +27,12 @@ class CreateUserRequest extends FormRequest
             'name' => 'required|string|max:255',
             'user_name' => 'required|string|max:255|unique:users',
             'password' => 'required|string',
-            'role' => 'required|string|in:admin,customer,salesman,sales manager',
+            'role' => 'in:admin,customer,salesman,sales manager',
+            // user details
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'area_id' => 'required|exists:areas,id',
-            'address' => 'required|string|max:255',
-            'phone_number' => 'required|string|max:255',
+            //'address_id' => 'required|exists:address,id',
+            'location' => 'required|string|max:255',
+            'phone_number' => 'required|numeric',
         ];
     }
 

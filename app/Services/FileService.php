@@ -9,19 +9,23 @@ use Illuminate\Support\Facades\File;
  */
 class FileService
 {
-    public function upload($file, $type): string
+    public function upload($request, $type): ?string
     {
-        $filename = time() . '.' . $file->getClientOriginalExtension();
-        $path = null;
-        if ($type == 'image') {
-            $file->move(public_path('uploads/images'), $filename);
-            $path = 'uploads/images/' . $filename;
+        if ($request->hasFile($type)) {
+            $file = $request->file($type);
+            $filename = time() . '.' . $file->getClientOriginalExtension();
+            $path = null;
+            if ($type == 'image') {
+                $file->move(public_path('uploads/images'), $filename);
+                $path = 'uploads/images/' . $filename;
+            }
+            if ($type == 'file') {
+                $file->move(public_path('uploads/files'), $filename);
+                $path = 'uploads/files/' . $filename;
+            }
+            return $path;
         }
-        if ($type == 'file') {
-            $file->move(public_path('uploads/files'), $filename);
-            $path = 'uploads/files/' . $filename;
-        }
-        return $path;
+        return null;
     }
 
     public function delete($filename): void

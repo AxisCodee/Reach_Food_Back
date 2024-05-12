@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('branches', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('address_id')->constrained('addresses')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('address')->nullable();
         });
     }
 
