@@ -24,7 +24,9 @@ class User extends Authenticatable
         'user_name',
         'password',
         'role',
-        'detail_id'
+        'userDetails_id',
+        'branch_id',
+        'salesManager_id'
     ];
 
     /**
@@ -65,5 +67,8 @@ class User extends Authenticatable
         return $this->hasMany(Trip::class);
     }
 
-
+    public function feedbacks(): HasMany
+    {
+        return $this->hasMany(Feedback::class);
+    }
 }

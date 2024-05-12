@@ -13,22 +13,28 @@ class Trip extends Model
 
     protected $fillable = [
         'salesman_id',
-        'area_id',
-        'day_time',
+        'address_id',
+        'day_id',
+        'start_time'
     ];
 
-    public function user(): BelongsTo
+    public function salesman(): BelongsTo
     {
         return $this->belongsTo(User::class);
     }
 
-    public function area(): BelongsTo
+    public function address(): BelongsTo
     {
-        return $this->belongsTo(Area::class);
+        return $this->belongsTo(Address::class);
     }
 
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function day(): BelongsTo
+    {
+        return $this->belongsTo(Day::class);
     }
 }

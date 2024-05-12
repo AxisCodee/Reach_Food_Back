@@ -12,10 +12,16 @@ class Product extends Model
 
     protected $fillable = [
         'name',
+        'category',
         'description',
-        'center_price',
-        'store_price',
-        'image'
+        'stock_quantity',
+        'weight',
+        'weight_unit',
+        'wholesale_price',
+        'retail_price',
+        'image',
+        'color',
+        'size'
     ];
 
     public function orders(): BelongsToMany

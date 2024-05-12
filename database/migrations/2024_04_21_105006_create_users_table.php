@@ -14,10 +14,11 @@ return new class extends Migration {
             $table->id();
             $table->string('name');
             $table->string('user_name')->unique();
-            $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
             $table->enum('role', ['admin', 'customer', 'salesman', 'sales manager'])->default('customer');
-            $table->foreignId('detail_id')->constrained('user_details')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('userDetails_id')->constrained('user_details')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('branch_id')->nullable()->constrained('branches')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('salesManager_id')->nullable()->constrained('user')->cascadeOnDelete()->cascadeOnUpdate();
             $table->rememberToken();
             $table->timestamps();
         });

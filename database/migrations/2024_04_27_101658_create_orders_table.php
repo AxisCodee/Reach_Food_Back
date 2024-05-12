@@ -14,9 +14,9 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('customer_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('trip_id')->constrained('trips')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->enum('status', ['pending', 'accepted', 'delivered','cancelled'])->default('pending');
-            $table->date('date')->nullable();
-            $table->date('delivery_date')->nullable();
+            $table->enum('status', ['pending', 'accepted', 'cancelled', 'delivered'])->default('pending');
+            $table->dateTime('order_date')->nullable();
+            $table->dateTime('delivery_date')->nullable();
             $table->bigInteger('total_price')->nullable();
             $table->timestamps();
         });
