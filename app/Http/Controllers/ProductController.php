@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\StoreProductRequest;
 use App\Models\Product;
+use App\Services\FileService;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
 
@@ -19,8 +20,10 @@ class ProductController extends Controller
 
 
     public function store(StoreProductRequest $request)
-    {
-        $result=$this->productService->storeProduct($request);
+
+    {         $result=$this->productService->storeProduct($request);
+
+         // $imagePath = app(FileService::class)->upload($request, 'image');
         return ResponseHelper::success($result,null,'products created successfully',200);
     }
 
