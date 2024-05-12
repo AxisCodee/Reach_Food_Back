@@ -13,11 +13,11 @@ return new class extends Migration {
         Schema::create('products', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('category')->nullable();
+            $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete();
             $table->text('description')->nullable();
             $table->integer('stock_quantity')->nullable();
-            $table->decimal('weight', 8, 2); // For the weight value
-            $table->string('weight_unit'); // For the weight unit (kg, lb, etc.)
+            $table->decimal('amount', 8, 2); // For the weight value
+            $table->string('amount_unit'); // For the weight unit (kg, lb, etc.)
             $table->bigInteger('wholesale_price')->default(0);
             $table->bigInteger('retail_price')->default(0);
             $table->text('image')->nullable();
