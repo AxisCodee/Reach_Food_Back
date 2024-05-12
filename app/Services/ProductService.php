@@ -14,13 +14,13 @@ class ProductService
 
     public function storeProduct($request)
     {
-        $result=Product::query()->create([$request->validated()]);
+        $result=Product::query()->create($request->validated());
         return $result;
     }
-    public function updateProduct($request,Product $product)
+    public function updateProduct($request,$product)
     {
-        $result= $product->where('id', $product->id)
-        ->query()->update([$request->validated()]);
+        $result= $product->query()->where('id', $product->id)
+        ->update($request->validated());
         return $result;
     }
     public function showProduct()
@@ -29,7 +29,13 @@ class ProductService
         return $result;
     }
 
-    public function deleteProduct(Product $product)
+    public function indexProduct($product)
+    {
+        $result=Product::query()->where('id',$product->id)->get()->toArray();
+        return $result;
+    }
+
+    public function deleteProduct($product)
     {
         $result=$product->where('id', $product->id)->delete();
         return $result;

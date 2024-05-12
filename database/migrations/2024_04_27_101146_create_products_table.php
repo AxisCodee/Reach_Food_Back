@@ -16,7 +16,7 @@ return new class extends Migration {
             $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete();
             $table->text('description')->nullable();
             $table->integer('stock_quantity')->nullable();
-            $table->decimal('amount', 8, 2); // For the weight value
+            $table->decimal('amount', 8, 2)->nullable(); // For the weight value
             $table->string('amount_unit'); // For the weight unit (kg, lb, etc.)
             $table->bigInteger('wholesale_price')->default(0);
             $table->bigInteger('retail_price')->default(0);

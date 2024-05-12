@@ -10,19 +10,20 @@ class Product extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'category',
-        'description',
-        'stock_quantity',
-        'weight',
-        'weight_unit',
-        'wholesale_price',
-        'retail_price',
-        'image',
-        'color',
-        'size'
-    ];
+    protected $guarded=[];
+    // protected $fillable = [
+    //     'name',
+    //     'category',
+    //     'description',
+    //     'stock_quantity',
+    //     'weight',
+    //     'weight_unit',
+    //     'wholesale_price',
+    //     'retail_price',
+    //     'image',
+    //     'color',
+    //     'size'
+    // ];
 
     public function orders(): BelongsToMany
     {
