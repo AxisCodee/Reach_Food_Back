@@ -12,10 +12,25 @@ use Illuminate\Support\Facades\Auth;
  */
 class FeedbackService
 {
-    public function store($request){
-    $data = $request->validated();
-    $data['user_id'] = Auth::user()->id;
-    $result = Feedback::query()->create($data);
-    return $result;
+    public function store($request)
+    {
+        $result = Feedback::query()->create([
+            'user_id' => Auth::user()->id,
+            'content' => $request->content
+        ]);
+        return $result;
+    }
+
+    public function show()
+    {
+        $result = Feedback::query()->with('user')->get()->toArray();
+        return $result;
+    }
+
+    public function destroy($feedBack)
+    {
+
+        $result = Feedback::findOrFail($feedBack)->delete();
+        return $result;
     }
 }

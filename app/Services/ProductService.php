@@ -25,7 +25,7 @@ class ProductService
         $imagePath = app(FileService::class)->upload($request, 'image');
         $data = $request->validated();
         $data['image'] = $imagePath;
-        $result= $product->query()->where('id', $product->id)
+        $result= Product::findOrFail($product)
         ->update($data);
         return $result;
     }
@@ -43,7 +43,7 @@ class ProductService
 
     public function deleteProduct($product)
     {
-        $result=$product->where('id', $product->id)->delete();
+        $result=Product::findOrFail($product)->delete();
         return $result;
     }
 

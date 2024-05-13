@@ -25,7 +25,7 @@ class ProductController extends Controller
         return ResponseHelper::success($result, null, 'products created successfully', 200);
     }
 
-    public function update(StoreProductRequest $request, Product $product)
+    public function update(StoreProductRequest $request,$product)
     {
         $result = $this->productService->updateProduct($request, $product);
         return ResponseHelper::success($result, null, 'products update successfully', 200);
@@ -43,7 +43,7 @@ class ProductController extends Controller
         return ResponseHelper::success($result, null, 'products returned successfully', 200);
     }
 
-    public function destroy(Product $product)
+    public function destroy($product)
     {
         $result = $this->productService->deleteProduct($product);
         return ResponseHelper::success($result, null, 'products deleted successfully', 200);

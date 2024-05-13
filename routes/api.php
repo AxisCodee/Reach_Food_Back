@@ -22,6 +22,8 @@ Route::prefix('auth')->group(function () {
         Route::get('refresh', 'refresh');
     });
 });
+
+
 Route::prefix('user')->group(function () {
     Route::controller(UserDetailController::class)->group(function () {
         Route::post('store', 'store');
@@ -37,15 +39,18 @@ Route::prefix('order')->group(function () {
 Route::prefix('product')->group(function () {
     Route::controller(ProductController::class)->group(function () {
         Route::apiResource('products', ProductController::class)->only('store', 'show');
-        Route::apiResource('products/{id}', ProductController::class)->only('update', 'destroy');
+        Route::post('products/{id}', [ProductController::class, 'update']);
+        Route::delete('products/{id}', [ProductController::class, 'destroy']);
+
+
+
     });
 });
 
 Route::prefix('feedback')->group(function () {
     Route::controller(FeedbackController::class)->group(function () {
-        Route::apiResource('feedback',FeedbackController::class)->only('store', 'show');
-
-
+        Route::delete('feedback/{id}', [FeedbackController::class, 'destroy']);
+        Route::apiResource('feedback',FeedbackController::class)->only('store', 'show')->middleware('auth:sanctum');
     });
 });
 

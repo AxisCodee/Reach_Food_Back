@@ -16,10 +16,19 @@ class FeedbackController extends Controller
         $this->feedbackService = $feedbackService;
     }
 
-    public function store(FeedbackRequest $request){
-         $result=$this->feedbackService->store($request);
-         return  ResponseHelper::success($result,null,'feedback stored successfully',200);
+    public function store(FeedbackRequest $request)
+    {
+        $result = $this->feedbackService->store($request);
+        return  ResponseHelper::success($result, null, 'feedback stored successfully', 200);
     }
-
-
+    public function show()
+    {
+        $result = $this->feedbackService->show();
+        return  ResponseHelper::success($result, null, 'feedback returned successfully', 200);
+    }
+    public function destroy($feedback)
+    {
+        $result = $this->feedbackService->destroy($feedback);
+        return  ResponseHelper::success($result, null, 'feedback returned successfully', 200);
+    }
 }

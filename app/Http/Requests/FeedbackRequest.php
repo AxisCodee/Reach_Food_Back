@@ -22,7 +22,6 @@ class FeedbackRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'user_id'=>'exists:users,id',
             'content'=>'string|required'
         ];
     }
