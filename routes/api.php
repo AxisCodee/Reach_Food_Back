@@ -45,6 +45,9 @@ Route::prefix('product')->group(function () {
 
 Route::prefix('feedback')->group(function () {
     Route::controller(FeedbackController::class)->group(function () {
+        Route::apiResource('feedback',FeedbackController::class)->only('store', 'show');
+
+
     });
 });
 
