@@ -37,7 +37,7 @@ class ProductService
 
     public function indexProduct($product)
     {
-        $result=Product::query()->where('id',$product->id)->get()->toArray();
+        $result =Product::findOrFail($product);
         return $result;
     }
 

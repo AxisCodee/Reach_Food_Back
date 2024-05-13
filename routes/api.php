@@ -41,6 +41,7 @@ Route::prefix('product')->group(function () {
         Route::apiResource('products', ProductController::class)->only('store', 'show');
         Route::post('products/{id}', [ProductController::class, 'update']);
         Route::delete('products/{id}', [ProductController::class, 'destroy']);
+        Route::get('index/{id}', [ProductController::class, 'index']);
 
 
 
