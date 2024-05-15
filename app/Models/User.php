@@ -38,7 +38,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-
+    protected $appends=['permissions'];
     /**
      * Get the attributes that should be cast.
      *
@@ -51,6 +51,22 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+
+    public function getPermissionsAttribute()
+{
+    $userPermissions = UserPermission::where('user_id', $this->id)
+                        ->get()
+                        ->keyBy('permission_id');
+
+    $permissions = Permission::get();
+if ($permissions || $userPermissions ){
+    return $permissions->mapWithKeys(function ($permission) use ($userPermissions) {
+        $userPermission = $userPermissions->get($permission->id);
+        $status = $userPermission ? $userPermission->status : null;
+        return [$permission->name => $status];
+    });}
+    else return null;
+}
 
     public function userDetails(): HasOne
     {
@@ -71,4 +87,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(Feedback::class);
     }
+
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'user_permissions', 'user_id', 'permission_id');
+    }
+
+
+
 }

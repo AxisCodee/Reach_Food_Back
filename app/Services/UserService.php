@@ -31,4 +31,11 @@ class UserService
         ]);
     }
 
+    public function Show()
+    {
+        $result=User::get();
+        return $result;
+
+    }
+
 }

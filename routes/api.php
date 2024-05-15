@@ -27,6 +27,9 @@ Route::prefix('auth')->group(function () {
 Route::prefix('user')->group(function () {
     Route::controller(UserDetailController::class)->group(function () {
         Route::post('store', 'store');
+        Route::get('show', 'show');
+
+
     });
 });
 
