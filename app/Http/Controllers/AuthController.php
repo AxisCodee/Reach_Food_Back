@@ -50,7 +50,8 @@ class AuthController extends Controller
         }
         $token = $user->createToken('auth_token')->plainTextToken;
         return ResponseHelper::success([
-            'user' => $user->with('userDetails')->first(),
+            'user' => $user->with(['userDetails', 'userDetails.address', 'userDetails.address.city',
+                'userDetails.address.city.country'])->find($user->id),
             'access_token' => $token,
             'token_type' => 'Bearer',
         ]);

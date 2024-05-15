@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AreaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FeedbackController;
@@ -59,3 +60,6 @@ Route::prefix('trip')->group(function () {
     Route::controller(TripController::class)->group(function () {
     });
 });
+
+
+Route::post('importFromJson',[AddressController::class,'importFromJson']);

@@ -10,7 +10,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Address extends Model
 {
     use HasFactory;
-
+public $timestamps = false;
     protected $fillable = [
         'city_id',
         'area'
