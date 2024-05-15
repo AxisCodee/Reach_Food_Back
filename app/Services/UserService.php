@@ -33,9 +33,17 @@ class UserService
 
     public function Show()
     {
-        $result=User::get();
+        $result = User::get();
         return $result;
 
+    }
+
+    public function getUsersByType($request)
+    {
+        $result = User::query()->where('role', $request->role)
+            //->where('subBranch_id',$request->subBranch_id)
+            ->get()->toArray();
+        return $result;
     }
 
 }

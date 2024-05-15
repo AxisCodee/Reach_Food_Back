@@ -10,14 +10,18 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class City extends Model
 {
     use HasFactory;
+
+    public $timestamps = false;
     protected $fillable = [
         'country_id',
         'name'
     ];
+
     public function country(): BelongsTo
     {
         return $this->belongsTo(Country::class);
     }
+
     public function addresses(): HasMany
     {
         return $this->hasMany(Address::class);
