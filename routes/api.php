@@ -10,9 +10,9 @@ use App\Http\Controllers\UserController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
-//Route::get('/user', function (Request $request) {
-//    return $request->user();
-//})->middleware('auth:sanctum');
+Route::get('/user', function (Request $request) {
+    return $request->user();
+})->middleware('auth:sanctum');
 
 Route::prefix('auth')->group(function () {
     Route::controller(AuthController::class)->group(function () {
@@ -24,17 +24,19 @@ Route::prefix('auth')->group(function () {
 });
 
 
-Route::prefix('user')->group(function () {
-    Route::get('index', [UserController::class, 'index']);
+Route::prefix('users')->group(function () {
+    Route::apiResource('users', UserController::class)
+        ->only('index');
 });
 
 
-Route::prefix('order')->group(function () {
+
+Route::prefix('orders')->group(function () {
     Route::controller(OrderController::class)->group(function () {
     });
 });
 
-Route::prefix('product')->group(function () {
+Route::prefix('products')->group(function () {
     Route::apiResource('products', ProductController::class)->only('store', 'show');
     Route::post('products/{id}', [ProductController::class, 'update']);
     Route::delete('products/{id}', [ProductController::class, 'destroy']);
@@ -42,14 +44,14 @@ Route::prefix('product')->group(function () {
 
 });
 
-Route::prefix('feedback')->group(function () {
+Route::prefix('feedbacks')->group(function () {
     Route::controller(FeedbackController::class)->group(function () {
         Route::delete('feedback/{id}', [FeedbackController::class, 'destroy']);
         Route::apiResource('feedback', FeedbackController::class)->only('store', 'show')->middleware('auth:sanctum');
     });
 });
 
-Route::prefix('trip')->group(function () {
+Route::prefix('trips')->group(function () {
     Route::controller(TripController::class)->group(function () {
     });
 });
