@@ -25,7 +25,7 @@ Route::prefix('auth')->group(function () {
 
 
 Route::prefix('user')->group(function () {
-    Route::resource('users', UserController::class);
+    Route::get('index', [UserController::class, 'index']);
 });
 
 
