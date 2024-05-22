@@ -26,9 +26,8 @@ Route::prefix('auth')->group(function () {
 
 Route::prefix('user')->group(function () {
     Route::apiResource('users', UserController::class)
-        ->only('index', 'store');
+        ->only('index');
 });
-
 
 
 Route::prefix('order')->group(function () {
@@ -37,14 +36,11 @@ Route::prefix('order')->group(function () {
 });
 
 Route::prefix('product')->group(function () {
-    Route::controller(ProductController::class)->group(function () {
-        Route::apiResource('products', ProductController::class)->only('store', 'show');
-        Route::post('products/{id}', [ProductController::class, 'update']);
-        Route::delete('products/{id}', [ProductController::class, 'destroy']);
-        Route::get('index/{id}', [ProductController::class, 'index']);
+    Route::apiResource('products', ProductController::class)->only('store', 'show');
+    Route::post('products/{id}', [ProductController::class, 'update']);
+    Route::delete('products/{id}', [ProductController::class, 'destroy']);
+    Route::get('index/{id}', [ProductController::class, 'index']);
 
-
-    });
 });
 
 Route::prefix('feedback')->group(function () {
