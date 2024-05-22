@@ -25,12 +25,10 @@ Route::prefix('auth')->group(function () {
 
 
 Route::prefix('user')->group(function () {
-    Route::controller(UserController::class)->group(function () {
-        Route::apiResource('users', UserController::class)
-            ->only('index', 'store');
-
-    });
+    Route::apiResource('users', UserController::class)
+        ->only('index', 'store');
 });
+
 
 
 Route::prefix('order')->group(function () {
