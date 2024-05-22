@@ -20,7 +20,7 @@ class UserController extends Controller
 //        return ResponseHelper::success($result, null, 'products returned successfully', 200);
 //    }
 
-    public function show(Request $request)
+    public function index(Request $request)
     {
         $users = $this->userService->getUsersByType($request);
         return ResponseHelper::success($users);

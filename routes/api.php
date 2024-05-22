@@ -1,14 +1,12 @@
 <?php
 
 use App\Http\Controllers\AddressController;
-use App\Http\Controllers\AreaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\UserController;
-use App\Http\Controllers\UserDetailController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -28,8 +26,8 @@ Route::prefix('auth')->group(function () {
 
 Route::prefix('user')->group(function () {
     Route::controller(UserController::class)->group(function () {
-        Route::get('show', 'show');
-
+        Route::apiResource('users', UserController::class)
+            ->only('index', 'store');
 
     });
 });
@@ -48,14 +46,13 @@ Route::prefix('product')->group(function () {
         Route::get('index/{id}', [ProductController::class, 'index']);
 
 
-
     });
 });
 
 Route::prefix('feedback')->group(function () {
     Route::controller(FeedbackController::class)->group(function () {
         Route::delete('feedback/{id}', [FeedbackController::class, 'destroy']);
-        Route::apiResource('feedback',FeedbackController::class)->only('store', 'show')->middleware('auth:sanctum');
+        Route::apiResource('feedback', FeedbackController::class)->only('store', 'show')->middleware('auth:sanctum');
     });
 });
 
@@ -65,4 +62,4 @@ Route::prefix('trip')->group(function () {
 });
 
 
-Route::post('importFromJson',[AddressController::class,'importFromJson']);
+Route::post('importFromJson', [AddressController::class, 'importFromJson']);
