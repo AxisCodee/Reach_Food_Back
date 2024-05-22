@@ -24,19 +24,19 @@ Route::prefix('auth')->group(function () {
 });
 
 
-Route::prefix('users')->group(function () {
+Route::prefix('user')->group(function () {
     Route::apiResource('users', UserController::class)
         ->only('index');
 });
 
 
 
-Route::prefix('orders')->group(function () {
+Route::prefix('order')->group(function () {
     Route::controller(OrderController::class)->group(function () {
     });
 });
 
-Route::prefix('products')->group(function () {
+Route::prefix('product')->group(function () {
     Route::apiResource('products', ProductController::class)->only('store', 'show');
     Route::post('products/{id}', [ProductController::class, 'update']);
     Route::delete('products/{id}', [ProductController::class, 'destroy']);
@@ -44,14 +44,14 @@ Route::prefix('products')->group(function () {
 
 });
 
-Route::prefix('feedbacks')->group(function () {
+Route::prefix('feedback')->group(function () {
     Route::controller(FeedbackController::class)->group(function () {
         Route::delete('feedback/{id}', [FeedbackController::class, 'destroy']);
         Route::apiResource('feedback', FeedbackController::class)->only('store', 'show')->middleware('auth:sanctum');
     });
 });
 
-Route::prefix('trips')->group(function () {
+Route::prefix('trip')->group(function () {
     Route::controller(TripController::class)->group(function () {
     });
 });
