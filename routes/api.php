@@ -24,9 +24,8 @@ Route::prefix('auth')->group(function () {
 });
 
 
-Route::prefix('user')->group(function () {
-    Route::apiResource('users', UserController::class)
-        ->only('index');
+Route::prefix('users')->group(function () {
+    Route::resource('users', UserController::class);
 });
 
 
