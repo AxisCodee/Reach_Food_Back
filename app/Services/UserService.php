@@ -25,7 +25,7 @@ class UserService
         return UserDetail::query()->create([
             'user_id' => $user_id,
             'image' => $this->fileService->upload($request, 'image'),
-            //'address_id' => $request->address_id,
+            'address_id' => $request->address_id,
             'location' => $request->location,
             'phone_number' => $request->phone_number
         ]);
