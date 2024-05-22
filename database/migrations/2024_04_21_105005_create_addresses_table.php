@@ -14,6 +14,7 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('city_id')->constrained('cities')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('area')->nullable();
+            $table->timestamps();
         });
     }
 

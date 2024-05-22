@@ -4,22 +4,20 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Branch extends Model
 {
     use HasFactory;
-    public $timestamps = false;
-    protected $fillable = [
-        'name',
-        'address_id'
-    ];
 
-    public function address()
+    protected $guarded=[];
+    public function address(): BelongsTo
     {
-        return $this->belongsTo(Address::class);
+        return $this->belongsTo(City::class);
     }
 
-    public function users()
+    public function users(): HasMany
     {
         return $this->hasMany(User::class);
     }

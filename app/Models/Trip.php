@@ -10,13 +10,8 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 class Trip extends Model
 {
     use HasFactory;
-    public $timestamps = false;
-    protected $fillable = [
-        'salesman_id',
-        'address_id',
-        'day_id',
-        'start_time'
-    ];
+
+    protected $guarded = [];
 
     public function salesman(): BelongsTo
     {

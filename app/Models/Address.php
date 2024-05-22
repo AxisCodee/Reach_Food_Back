@@ -11,11 +11,7 @@ class Address extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
-    protected $fillable = [
-        'city_id',
-        'area'
-    ];
+    protected $guarded=[];
 
     public function city(): BelongsTo
     {

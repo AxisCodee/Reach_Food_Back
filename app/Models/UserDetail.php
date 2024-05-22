@@ -10,13 +10,7 @@ class UserDetail extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'image',
-        'user_id',
-        'address_id',
-        'location',
-        'phone_number'
-    ];
+    protected $guarded = [];
 
     public function address(): BelongsTo
     {

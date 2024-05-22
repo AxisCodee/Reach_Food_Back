@@ -11,11 +11,7 @@ class City extends Model
 {
     use HasFactory;
 
-    public $timestamps = false;
-    protected $fillable = [
-        'country_id',
-        'name'
-    ];
+    protected $guarded=[];
 
     public function country(): BelongsTo
     {

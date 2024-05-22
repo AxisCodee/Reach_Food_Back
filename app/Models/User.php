@@ -4,6 +4,7 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
@@ -38,7 +39,8 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-    protected $appends=['permissions'];
+    protected $appends = ['permissions'];
+
     /**
      * Get the attributes that should be cast.
      *
@@ -53,20 +55,20 @@ class User extends Authenticatable
     }
 
     public function getPermissionsAttribute()
-{
-    $userPermissions = UserPermission::where('user_id', $this->id)
-                        ->get()
-                        ->keyBy('permission_id');
+    {
+        $userPermissions = UserPermission::where('user_id', $this->id)
+            ->get()
+            ->keyBy('permission_id');
 
-    $permissions = Permission::get();
-if ($permissions || $userPermissions ){
-    return $permissions->mapWithKeys(function ($permission) use ($userPermissions) {
-        $userPermission = $userPermissions->get($permission->id);
-        $status = $userPermission ? $userPermission->status : null;
-        return [$permission->name => $status];
-    });}
-    else return null;
-}
+        $permissions = Permission::get();
+        if ($permissions || $userPermissions) {
+            return $permissions->mapWithKeys(function ($permission) use ($userPermissions) {
+                $userPermission = $userPermissions->get($permission->id);
+                $status = $userPermission ? $userPermission->status : null;
+                return [$permission->name => $status];
+            });
+        } else return null;
+    }
 
     public function userDetails(): HasOne
     {
@@ -88,11 +90,15 @@ if ($permissions || $userPermissions ){
         return $this->hasMany(Feedback::class);
     }
 
-    public function permissions()
+    public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(Permission::class, 'user_permissions', 'user_id', 'permission_id');
     }
 
+    public function categories(): BelongsToMany
+    {
+        return $this->belongsToMany(Category::class);
+    }
 
 
 }

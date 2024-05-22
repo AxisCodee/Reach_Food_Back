@@ -13,8 +13,8 @@ return new class extends Migration {
         Schema::create('user_details', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->text('image')->nullable();
             $table->foreignId('address_id')->nullable()->constrained('addresses')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->text('image')->nullable();
             $table->string('location')->nullable();
             $table->integer('phone_number')->nullable();
             $table->timestamps();
