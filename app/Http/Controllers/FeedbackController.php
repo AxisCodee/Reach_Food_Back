@@ -21,9 +21,9 @@ class FeedbackController extends Controller
         $result = $this->feedbackService->store($request);
         return  ResponseHelper::success($result, null, 'feedback stored successfully', 200);
     }
-    public function show()
+    public function index()
     {
-        $result = $this->feedbackService->show();
+        $result = $this->feedbackService->index();
         return  ResponseHelper::success($result, null, 'feedback returned successfully', 200);
     }
     public function destroy($feedback)

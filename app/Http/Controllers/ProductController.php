@@ -31,15 +31,15 @@ class ProductController extends Controller
         return ResponseHelper::success($result, null, 'products update successfully', 200);
     }
 
-    public function show()
+    public function index()
     {
-        $result = $this->productService->showProduct();
+        $result = $this->productService->indexProduct();
         return ResponseHelper::success($result, null, 'products returned successfully', 200);
     }
 
-    public function index($product)
+    public function show($product)
     {
-        $result = $this->productService->indexProduct($product);
+        $result = $this->productService->showProduct($product);
         return ResponseHelper::success($result, null, 'products returned successfully', 200);
     }
 

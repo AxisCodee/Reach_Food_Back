@@ -21,7 +21,7 @@ class FeedbackService
         return $result;
     }
 
-    public function show()
+    public function index()
     {
         $result = Feedback::query()->with('user')->get()->toArray();
         return $result;

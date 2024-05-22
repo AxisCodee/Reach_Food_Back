@@ -29,13 +29,13 @@ class ProductService
         ->update($data);
         return $result;
     }
-    public function showProduct()
+    public function indexProduct()
     {
         $result=Product::query()->get()->toArray();
         return $result;
     }
 
-    public function indexProduct($product)
+    public function showProduct($product)
     {
         $result =Product::findOrFail($product);
         return $result;
