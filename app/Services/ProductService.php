@@ -30,8 +30,10 @@ class ProductService
         return $result;
     }
     public function indexProduct()
+
     {
-        $result=Product::query()->get()->toArray();
+        $category_id = request()->input('category_id');
+        $result=Product::query()->where('category_id',$category_id)->paginate(10);
         return $result;
     }
 

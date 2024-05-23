@@ -15,6 +15,8 @@ return new class extends Migration {
             $table->string('name');
             $table->foreignId('address_id')->nullable()->constrained('addresses')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
+            $table->index('address_id');
+
         });
     }
 

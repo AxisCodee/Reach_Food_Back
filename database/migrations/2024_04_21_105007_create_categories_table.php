@@ -26,7 +26,7 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('products', function (Blueprint $table) {
+        Schema::table('categories', function (Blueprint $table) {
             $table->dropIndex('branch_id');
         });
         Schema::dropIfExists('categories');

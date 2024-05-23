@@ -25,6 +25,8 @@ return new class extends Migration {
             $table->double('size')->nullable();
             $table->integer('status')->nullable();
             $table->timestamps();
+            $table->index('category_id');
+
         });
     }
 
@@ -33,6 +35,9 @@ return new class extends Migration {
      */
     public function down(): void
     {
+          Schema::table('products', function (Blueprint $table) {
+        $table->dropIndex('category_id');
+    });
         Schema::dropIfExists('products');
     }
 };

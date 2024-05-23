@@ -88,9 +88,6 @@ class AuthController extends Controller
     }
 
 
-        return ResponseHelper::success(['user' => $user,'token' => $user->createToken('auth_token')->plainTextToken]);
-
-
 }
 
 }
