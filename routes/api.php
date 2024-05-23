@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
@@ -20,9 +21,11 @@ Route::prefix('auth')->group(function () {
         Route::post('login', 'login');
         Route::get('logout', 'logout');
         Route::get('refresh', 'refresh');
+
     });
 });
 
+Route::get('me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 
 Route::prefix('user')->group(function () {
     Route::apiResource('users', UserController::class)
@@ -42,6 +45,14 @@ Route::prefix('product')->group(function () {
     Route::delete('products/{id}', [ProductController::class, 'destroy']);
     Route::get('show/{id}', [ProductController::class, 'show']);
 
+});
+
+//categories
+Route::apiResource('category', CategoryController::class)->only('store', 'index');
+Route::prefix('category')->group(function () {
+    Route::post('/{id}', [CategoryController::class, 'update']);
+    Route::delete('/{id}', [CategoryController::class, 'destroy']);
+    Route::get('/{id}', [CategoryController::class, 'show']);
 });
 
 Route::prefix('feedback')->group(function () {

@@ -21,8 +21,11 @@ class CategoryService
 
     public function index()
     {
-        $result = Category::query()->get()->toArray();
+        $branch_id = request()->input('branch_id');
+        $result = Category::query()->where('branch_id',$branch_id)
+        ->paginate(10);
         return $result;
+
     }
 
     public function destroy($category)
@@ -30,9 +33,20 @@ class CategoryService
         $result = Category::findOrFail($category)->delete();
         return $result;
     }
-    public function update($category)
+    public function update($request,$category)
     {
-        $result = Category::findOrFail($category)->update();
+       ;
+        $result = Category::findOrFail($category)->update($request->validated());
+        return $result;
+    }
+    public function show($category)
+    {
+        $result = Category::findOrFail($category);
+        return $result;
+    }
+    public function delete($category)
+    {
+        $result = Category::findOrFail($category)->delete();
         return $result;
     }
 }
