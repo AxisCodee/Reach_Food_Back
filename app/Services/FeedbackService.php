@@ -23,7 +23,7 @@ class FeedbackService
 
     public function index()
     {
-        $result = Feedback::query()->with('user')->get()->toArray();
+        $result = Feedback::query()->with('user','user.userDetails')->get()->toArray();
         return $result;
     }
 
