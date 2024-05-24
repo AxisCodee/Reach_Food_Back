@@ -27,12 +27,27 @@ class CreateUserRequest extends FormRequest
             'name' => 'required|string|max:255',
             'user_name' => 'required|string|max:255|unique:users',
             'password' => 'required|string',
-            'role' => 'in:admin,customer,salesman,sales manager',
+            'role' => 'in:super admin,admin,customer,salesman,sales manager',
+            'customer_type' => 'in:shop,center',
             // user details
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            //'address_id' => 'required|exists:address,id',
+            'address_id' => 'required|exists:addresses,id',
             'location' => 'required|string|max:255',
-            'phone_number' => 'required|numeric',
+            'phone_number' => 'required|array',
+            'phone_number.*' => 'required|string|max:255',
+
+
+            // salesman
+            'salesManager_id' => 'exists:users,id',
+            'trips' => 'array',
+            'trips.*address_id' => ['required', 'exists:addresses,id'],
+            'trips.*day_id' => ['required', 'exists:days,id'],
+            'trips.*start_time' => ['required', 'date_format:H:i'],
+            'categories' => 'array',
+            'categories.*' => 'exists:categories,id',
+            // sales manager
+            'salesmen' => 'array',
+            'salesmen.*' => 'exists:users,id'
         ];
     }
 

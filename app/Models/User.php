@@ -25,9 +25,11 @@ class User extends Authenticatable
         'user_name',
         'password',
         'role',
+        'customer_type',
         'userDetails_id',
         'branch_id',
-        'salesManager_id'
+        'salesManager_id',
+        'superAdmin_id'
     ];
 
     /**
@@ -90,6 +92,11 @@ class User extends Authenticatable
         return $this->hasMany(Feedback::class);
     }
 
+    public function contacts(): HasMany
+    {
+        return $this->hasMany(Contact::class);
+    }
+
     public function permissions(): BelongsToMany
     {
         return $this->belongsToMany(Permission::class, 'user_permissions', 'user_id', 'permission_id');
@@ -97,8 +104,19 @@ class User extends Authenticatable
 
     public function categories(): BelongsToMany
     {
-        return $this->belongsToMany(Category::class);
+        return $this->belongsToMany(Category::class, 'user_category');
     }
 
+
+    public function salesManager()
+    {
+        return $this->belongsTo(User::class, 'salesManager_id');
+    }
+
+    public function salesmen()
+    {
+        return $this->hasMany(User::class, 'salesManager_id');
+
+    }
 
 }

@@ -2,7 +2,8 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Address;
+use App\Models\City;
 use Illuminate\Database\Seeder;
 
 class AddressSeeder extends Seeder
@@ -12,6 +13,25 @@ class AddressSeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        // Ensure you have some cities created before creating addresses
+        $cities = City::all();
+
+        if ($cities->isEmpty()) {
+            $this->command->info('No cities found. Please seed cities first.');
+            return;
+        }
+
+        $addresses = [
+            ['city_id' => $cities->random()->id, 'area' => 'Downtown'],
+            ['city_id' => $cities->random()->id, 'area' => 'Uptown'],
+            ['city_id' => $cities->random()->id, 'area' => 'Suburb'],
+            ['city_id' => $cities->random()->id, 'area' => 'Industrial Area'],
+            ['city_id' => $cities->random()->id, 'area' => 'Rural Area'],
+            // Add more addresses as needed
+        ];
+
+        foreach ($addresses as $address) {
+            Address::create($address);
+        }
     }
 }

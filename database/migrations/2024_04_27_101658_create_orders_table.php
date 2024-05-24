@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->enum('status', ['pending', 'accepted', 'cancelled', 'delivered'])->default('pending');
             $table->dateTime('order_date')->nullable();
             $table->dateTime('delivery_date')->nullable();
+            $table->time('delivery_time')->nullable();
             $table->bigInteger('total_price')->nullable();
             $table->timestamps();
         });

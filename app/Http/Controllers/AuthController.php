@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Roles;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\CreateUserRequest;
 use App\Models\User;
+use App\Services\TripService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -29,6 +31,46 @@ class AuthController extends Controller
                 'role' => $request->role,
             ]);
             $this->userService->createUserDetails($request, $user->id);
+            if ($request->role != Roles::CUSTOMER->value) {
+                if ($request->role != Roles::SUPER_ADMIN->value) {
+                    $user->update([
+                        'branch_id' => $request->branch_id
+                    ]);
+                    if ($request->role == Roles::ADMIN->value) {
+                        $user->update([
+                            'superAdmin_id' => auth('sanctum')->id()
+                        ]);
+                    }
+                    if ($request->role == Roles::SALES_MANAGER->value) {
+                        //link with salesmen
+                        $salesmen = $request['salesmen'];
+                        if ($salesmen) {
+                            foreach ($salesmen as $salesman) {
+                                $this->userService->linkWithSalesManager($salesman, $user->id);
+                            }
+                        }
+                    }
+                    if ($request->role == Roles::SALESMAN->value) {
+                        //create trips
+                        $user->update([
+                            'salesManager_id' => $request->salesManager_id,
+                        ]);
+                        $trips = $request['trips'];
+                        foreach ($trips as $trip) {
+                            $trip = app(TripService::class)->createTrip($trip);
+                            $this->userService->linkTripWithSalesman($trip, $user->id);
+                        }
+                        // link with categories
+                        $categories = $request['categories'];
+                        $user->categories()->attach($categories);
+                    }
+                }
+            }
+            if ($request->role == Roles::CUSTOMER->value) {
+                $user->update([
+                    'customer_type' => $request->customer_type,
+                ]);
+            }
             $token = $user->createToken('auth_token')->plainTextToken;
             return ResponseHelper::success([
                 'user' => $user,
@@ -50,7 +92,8 @@ class AuthController extends Controller
         }
         $token = $user->createToken('auth_token')->plainTextToken;
         return ResponseHelper::success([
-            'user' => $user->with(['userDetails', 'userDetails.address', 'userDetails.address.city',
+            'user' => $user->with(['contacts', 'userDetails', 'userDetails.address',
+                'userDetails.address.city',
                 'userDetails.address.city.country'])->find($user->id),
             'access_token' => $token,
             'token_type' => 'Bearer',

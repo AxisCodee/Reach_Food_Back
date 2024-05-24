@@ -25,7 +25,7 @@ class ProductController extends Controller
         return ResponseHelper::success($result, null, 'products created successfully', 200);
     }
 
-    public function update(StoreProductRequest $request,$product)
+    public function update(StoreProductRequest $request, $product)
     {
         $result = $this->productService->updateProduct($request, $product);
         return ResponseHelper::success($result, null, 'products update successfully', 200);

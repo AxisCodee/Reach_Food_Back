@@ -2,11 +2,11 @@
 
 namespace App\Services;
 
+use App\Models\Contact;
 use App\Models\User;
 use App\Models\UserDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Hash;
 
 /**
  * Class UserService.
@@ -22,13 +22,20 @@ class UserService
 
     public function createUserDetails(Request $request, $user_id)
     {
-        return UserDetail::query()->create([
-            'user_id' => $user_id,
-            'image' => $this->fileService->upload($request, 'image'),
-            'address_id' => $request->address_id,
-            'location' => $request->location,
-            'phone_number' => $request->phone_number
-        ]);
+        return DB::transaction(function () use ($request, $user_id) {
+            UserDetail::query()->create([
+                'user_id' => $user_id,
+                'image' => $this->fileService->upload($request, 'image'),
+                'address_id' => $request->address_id,
+                'location' => $request->location,
+            ]);
+            //dd($request['phone_number'] );
+            foreach ($request['phone_number'] as $item)
+                Contact::query()->create([
+                    'user_id' => $user_id,
+                    'phone_number' => $item
+                ]);
+        });
     }
 
     public function Show()
@@ -38,10 +45,26 @@ class UserService
 
     }
 
+    public function linkWithSalesManager($salesman, $salesManager_id)
+    {
+        return User::query()->findOrFail($salesman)
+            ->update([
+                'salesManager_id' => $salesManager_id
+            ]);
+    }
+
+    public function linkTripWithSalesman($trip, $salesmanId)
+    {
+        return $trip->update([
+            'salesman_id' => $salesmanId
+        ]);
+    }
+
     public function getUsersByType($request)
     {
-        $result = User::query()->where('role', $request->role)
-            //->where('subBranch_id',$request->subBranch_id)
+        $result = User::query()->with(['contacts:id,user_id,phone_number','userDetails.address'])
+            ->where('role', $request->role)
+            ->where('branch_id', $request->branch_id)
             ->get()->toArray();
         return $result;
     }

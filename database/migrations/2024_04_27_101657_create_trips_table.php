@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('trips', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('salesman_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('salesman_id')->nullable()->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('address_id')->constrained('addresses')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('day_id')->constrained('days')->cascadeOnDelete()->cascadeOnUpdate();
             $table->time('start_time')->nullable();
