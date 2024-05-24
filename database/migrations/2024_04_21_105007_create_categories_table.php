@@ -16,6 +16,8 @@ return new class extends Migration
             $table->string('name');
             $table->foreignId('branch_id')->nullable()->constrained('branches')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
+            $table->index('branch_id');
+
         });
     }
 
@@ -24,6 +26,9 @@ return new class extends Migration
      */
     public function down(): void
     {
+        Schema::table('categories', function (Blueprint $table) {
+            $table->dropIndex('branch_id');
+        });
         Schema::dropIfExists('categories');
     }
 };

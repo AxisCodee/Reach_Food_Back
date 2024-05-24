@@ -9,6 +9,7 @@ use App\Models\User;
 use App\Services\TripService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -120,4 +121,16 @@ class AuthController extends Controller
             ]);
         });
     }
+
+    public function me()
+{
+    $user = Auth::user();
+
+    if ($user) {
+        return ResponseHelper::success([auth('sanctum')->user()]);
+    }
+
+
+}
+
 }

@@ -21,7 +21,6 @@ class ProductController extends Controller
 
     {
         $result = $this->productService->storeProduct($request);
-        // $imagePath = app(FileService::class)->upload($request, 'image');
         return ResponseHelper::success($result, null, 'products created successfully', 200);
     }
 
