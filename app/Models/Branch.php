@@ -11,8 +11,9 @@ class Branch extends Model
 {
     use HasFactory;
 
-    protected $guarded=[];
-    public function address(): BelongsTo
+    protected $guarded = [];
+
+    public function city(): BelongsTo
     {
         return $this->belongsTo(City::class);
     }
@@ -20,5 +21,10 @@ class Branch extends Model
     public function users(): HasMany
     {
         return $this->hasMany(User::class);
+    }
+
+    public function categories(): HasMany
+    {
+        return $this->hasMany(Category::class);
     }
 }

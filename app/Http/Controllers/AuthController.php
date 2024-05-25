@@ -33,12 +33,10 @@ class AuthController extends Controller
                 'role' => $request->role,
             ]);
             $this->userService->createUserDetails($request, $user->id);
-
-
             //permissions
             foreach ($request['permission_id'] as $index => $permissionId) {
                 $status = $request['status'][$index];
-                    UserPermission::create([
+                UserPermission::create([
                     'permission_id' => $permissionId,
                     'user_id' => $user->id,
                     'status' => $status
@@ -56,9 +54,6 @@ class AuthController extends Controller
                         ]);
                     }
                     if ($request->role == Roles::SALES_MANAGER->value) {
-
-
-
                         //link with salesmen
                         $salesmen = $request['salesmen'];
                         if ($salesmen) {
@@ -73,13 +68,17 @@ class AuthController extends Controller
                             'salesManager_id' => $request->salesManager_id,
                         ]);
                         $trips = $request['trips'];
-                        foreach ($trips as $trip) {
-                            $trip = app(TripService::class)->createTrip($trip);
-                            $this->userService->linkTripWithSalesman($trip, $user->id);
+                        if ($trips) {
+                            foreach ($trips as $trip) {
+                                $trip = app(TripService::class)->createTrip($trip);
+                                $this->userService->linkTripWithSalesman($trip, $user->id);
+                            }
                         }
                         // link with categories
                         $categories = $request['categories'];
-                        $user->categories()->attach($categories);
+                        if ($categories) {
+                            $user->categories()->attach($categories);
+                        }
                     }
                 }
             }
@@ -119,8 +118,9 @@ class AuthController extends Controller
 
     public function logout()
     {
-        if (auth('sanctum')->user()) {
-            auth('sanctum')->user()->tokens()->delete();
+        $user = auth('sanctum')->user();
+        if ($user) {
+            $user->tokens()->delete();
             return ResponseHelper::success('Logged out successfully.');
         }
         return ResponseHelper::error('You are not authorized.', 401);
@@ -139,14 +139,12 @@ class AuthController extends Controller
     }
 
     public function me()
-{
-    $user = Auth::user();
-
-    if ($user) {
-        return ResponseHelper::success([auth('sanctum')->user()]);
+    {
+        $user = Auth::user();
+        if ($user) {
+            return ResponseHelper::success([auth('sanctum')->user()]);
+        }
+        return ResponseHelper::error('You are not authorized.', 401);
     }
-
-
-}
 
 }

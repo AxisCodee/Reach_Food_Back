@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\OrderController;
@@ -36,10 +37,13 @@ Route::prefix('user')->group(function () {
 });
 
 
+Route::prefix('branch')->group(function () {
+    Route::apiResource('branches', BranchController::class)
+        ->only('store', 'index');
+    Route::get('show/{id}', [BranchController::class, 'show']);
+    Route::post('/{id}', [BranchController::class, 'update']);
+    Route::delete('/{id}', [BranchController::class, 'destroy']);
 
-Route::prefix('order')->group(function () {
-    Route::controller(OrderController::class)->group(function () {
-    });
 });
 
 Route::prefix('product')->group(function () {
