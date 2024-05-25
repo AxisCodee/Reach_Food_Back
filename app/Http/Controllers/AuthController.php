@@ -44,7 +44,6 @@ class AuthController extends Controller
                     'status' => $status
                 ]);
             }
-            //////////
 
             if ($request->role != Roles::CUSTOMER->value) {
                 if ($request->role != Roles::SUPER_ADMIN->value) {
