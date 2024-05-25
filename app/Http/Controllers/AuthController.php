@@ -67,13 +67,17 @@ class AuthController extends Controller
                             'salesManager_id' => $request->salesManager_id,
                         ]);
                         $trips = $request['trips'];
-                        foreach ($trips as $trip) {
-                            $trip = app(TripService::class)->createTrip($trip);
-                            $this->userService->linkTripWithSalesman($trip, $user->id);
+                        if ($trips) {
+                            foreach ($trips as $trip) {
+                                $trip = app(TripService::class)->createTrip($trip);
+                                $this->userService->linkTripWithSalesman($trip, $user->id);
+                            }
                         }
                         // link with categories
                         $categories = $request['categories'];
-                        $user->categories()->attach($categories);
+                        if ($categories) {
+                            $user->categories()->attach($categories);
+                        }
                     }
                 }
             }
