@@ -6,6 +6,7 @@ use App\Helpers\ResponseHelper;
 use App\Http\Requests\StoreProductRequest;
 use App\Models\Product;
 use App\Services\ProductService;
+use Illuminate\Http\Request;
 
 class ProductController extends Controller
 {
@@ -46,6 +47,12 @@ class ProductController extends Controller
     {
         $result = $this->productService->deleteProduct($product);
         return ResponseHelper::success($result, null, 'products deleted successfully', 200);
+    }
+
+    public function updatePrice(Request $request)
+    {
+        $result = $this->productService->updatePrice($request);
+        return ResponseHelper::success(true, null, 'Prices updated successfully', 200);
     }
 
 }
