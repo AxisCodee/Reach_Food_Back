@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Models\Permission;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 
@@ -25,5 +26,14 @@ class UserController extends Controller
         $users = $this->userService->getUsersByType($request);
         return ResponseHelper::success($users);
     }
+
+    public function getPermissions()
+    {
+        $result = Permission::query()->get()->toArray();
+        return ResponseHelper::success($result);
+    }
+
+
+
 
 }
