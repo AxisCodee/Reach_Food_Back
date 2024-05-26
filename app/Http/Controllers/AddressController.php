@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Models\Address;
+use App\Models\Branch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -26,4 +27,12 @@ class AddressController extends Controller
             return ResponseHelper::success('Address imported successfully!');
         });
     }
+
+    public function branchAddresses($branch)//return addresses form branch city
+    {
+        $city = Branch::findOrFail($branch)->city()->first();
+        $addresses = $city->addresses;
+        return ResponseHelper::success($addresses->toArray());
+    }
+
 }

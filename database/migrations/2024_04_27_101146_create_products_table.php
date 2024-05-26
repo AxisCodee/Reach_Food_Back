@@ -26,7 +26,6 @@ return new class extends Migration {
             $table->integer('status')->nullable();
             $table->timestamps();
             $table->index('category_id');
-
         });
     }
 

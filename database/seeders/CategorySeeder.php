@@ -2,9 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Branch;
+use App\Models\Category;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class CategorySeeder extends Seeder
 {
@@ -13,18 +13,24 @@ class CategorySeeder extends Seeder
      */
     public function run(): void
     {
-        DB::table('categories')->insert([
-            'name' => 'category1',
-//            'branch_id' => 1, // replace with actual branch_id
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        $branches = Branch::all();
 
-        DB::table('categories')->insert([
-            'name' => 'category2',
-//            'branch_id' => 1, // replace with actual branch_id
-            'created_at' => now(),
-            'updated_at' => now(),
-        ]);
+        if ($branches->isEmpty()) {
+            $this->command->info('No branches found. Please seed branches first.');
+            return;
+        }
+
+        $categories = [
+            ['branch_id' => $branches->random()->id, 'name' => 'Category 1'],
+            ['branch_id' => $branches->random()->id, 'name' => 'Category 2'],
+            ['branch_id' => $branches->random()->id, 'name' => 'Category 3'],
+            ['branch_id' => $branches->random()->id, 'name' => 'Category 4'],
+            ['branch_id' => $branches->random()->id, 'name' => 'Category 5'],
+            // Add more addresses as needed
+        ];
+
+        foreach ($categories as $category) {
+            Category::create($category);
+        }
     }
 }

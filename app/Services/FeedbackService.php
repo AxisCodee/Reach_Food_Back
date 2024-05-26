@@ -32,7 +32,6 @@ class FeedbackService
 
     public function destroy($feedBack)
     {
-
         $result = Feedback::findOrFail($feedBack)->delete();
         return $result;
     }

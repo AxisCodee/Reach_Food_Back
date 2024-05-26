@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Enums\Roles;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -14,11 +14,35 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-//        DB::table('users')->insert([
-//            'name' => 'Admin',
-//            'user_name' => 'admin011',
-//            'password' => Hash::make('password'),
-//            'role' => 'admin',
-//        ]);
+        DB::table('users')->insert([
+            'name' => 'Super Admin',
+            'user_name' => 'super_admin01',
+            'password' => Hash::make('password'),
+            'role' => Roles::SUPER_ADMIN->value,
+        ]);
+        DB::table('users')->insert([
+            'name' => 'Admin',
+            'user_name' => 'admin01',
+            'password' => Hash::make('password'),
+            'role' => Roles::ADMIN->value,
+        ]);
+        DB::table('users')->insert([
+            'name' => 'Sales Manager',
+            'user_name' => 'salesManager01',
+            'password' => Hash::make('password'),
+            'role' => Roles::SALES_MANAGER->value,
+        ]);
+        DB::table('users')->insert([
+            'name' => 'Salesman',
+            'user_name' => 'salesman01',
+            'password' => Hash::make('password'),
+            'role' => Roles::SALESMAN->value,
+        ]);
+        DB::table('users')->insert([
+            'name' => 'Customer',
+            'user_name' => 'customer01',
+            'password' => Hash::make('password'),
+            'role' => Roles::CUSTOMER->value,
+        ]);
     }
 }

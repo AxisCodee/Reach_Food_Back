@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\CreateTripRequest;
 use App\Http\Requests\UpdateTripRequest;
+use App\Models\Day;
 use App\Services\TripService;
 use Illuminate\Http\Request;
 
@@ -51,5 +52,11 @@ class TripController extends Controller
             return ResponseHelper::success('Trip deleted successfully');
         }
         return ResponseHelper::error('Failed to delete trip');
+    }
+
+    public function getDays()
+    {
+        $days = Day::all()->toArray();
+        return ResponseHelper::success($days);
     }
 }
