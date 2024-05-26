@@ -54,7 +54,6 @@ Route::prefix('product')->group(function () {
     Route::get('show/{id}', [ProductController::class, 'show']);
     Route::post('updatePrice', [ProductController::class, 'updatePrice']);
 
-
 });
 
 //categories

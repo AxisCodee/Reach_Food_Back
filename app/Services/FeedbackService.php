@@ -23,13 +23,12 @@ class FeedbackService
 
     public function index()
     {
-        $result = Feedback::query()->with('user','user.userDetails')->get()->toArray();
+        $result = Feedback::query()->with('user', 'user.userDetails')->get()->toArray();
         return $result;
     }
 
     public function destroy($feedBack)
     {
-
         $result = Feedback::findOrFail($feedBack)->delete();
         return $result;
     }

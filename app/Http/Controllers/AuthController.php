@@ -34,13 +34,16 @@ class AuthController extends Controller
             ]);
             $this->userService->createUserDetails($request, $user->id);
             //permissions
-            foreach ($request['permission_id'] as $index => $permissionId) {
-                $status = $request['status'][$index];
-                UserPermission::create([
-                    'permission_id' => $permissionId,
-                    'user_id' => $user->id,
-                    'status' => $status
-                ]);
+            $permissions = $request['permissions'];
+            if ($permissions) {
+                foreach ($permissions as $permission) {
+                    $status = $permission['status'];
+                    UserPermission::create([
+                        'permission_id' => $permission['permission_id'],
+                        'user_id' => $user->id,
+                        'status' => $status
+                    ]);
+                }
             }
             if ($request->role == Roles::CUSTOMER->value) {
                 $user->update([
