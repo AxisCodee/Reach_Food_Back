@@ -22,7 +22,7 @@ class CategoryService
     {
         $branch_id = request()->input('branch_id');
         $result = Category::query()->where('branch_id', $branch_id)
-            ->paginate(10);
+            ->get()->toArray();
         return $result;
 
     }
