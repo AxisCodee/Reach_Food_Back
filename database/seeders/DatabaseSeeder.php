@@ -23,8 +23,8 @@ class DatabaseSeeder extends Seeder
             AddressSeeder::class,
             DaySeeder::class,
             PermissionSeeder::class,
-            CategorySeeder::class,
             BranchSeeder::class,
+            CategorySeeder::class,
             UserSeeder::class,
             // Add other seeders here if necessary
         ]);
