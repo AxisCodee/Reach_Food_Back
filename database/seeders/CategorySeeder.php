@@ -16,16 +16,16 @@ class CategorySeeder extends Seeder
         $branches = Branch::all();
 
         if ($branches->isEmpty()) {
-            $this->command->info('No branches found. Please seed cities first.');
+            $this->command->info('No branches found. Please seed branches first.');
             return;
         }
 
         $categories = [
-            ['city_id' => $branches->random()->id, 'name' => 'Category 1'],
-            ['city_id' => $branches->random()->id, 'name' => 'Category 2'],
-            ['city_id' => $branches->random()->id, 'name' => 'Category 3'],
-            ['city_id' => $branches->random()->id, 'name' => 'Category 4'],
-            ['city_id' => $branches->random()->id, 'name' => 'Category 5'],
+            ['branch_id' => $branches->random()->id, 'name' => 'Category 1'],
+            ['branch_id' => $branches->random()->id, 'name' => 'Category 2'],
+            ['branch_id' => $branches->random()->id, 'name' => 'Category 3'],
+            ['branch_id' => $branches->random()->id, 'name' => 'Category 4'],
+            ['branch_id' => $branches->random()->id, 'name' => 'Category 5'],
             // Add more addresses as needed
         ];
 
