@@ -29,7 +29,7 @@
         },
 
         "files": [
-            "app/Helper/ResponseHelper.php"
+            "app/Helpers/ResponseHelper.php"
         ]
     },
     "autoload-dev": {

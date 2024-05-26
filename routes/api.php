@@ -73,6 +73,7 @@ Route::prefix('feedback')->group(function () {
 
 Route::prefix('trip')->group(function () {
     Route::controller(TripController::class)->group(function () {
+        Route::apiResource('trips', TripController::class)->only('store', 'index');
 
 
         Route::get('/days', [TripController::class, 'getDays']);
