@@ -75,6 +75,9 @@ class BranchController extends Controller
 
     public function destroy($branch)
     {
+        User::query()->where('branch_id',$branch)->update([
+            'branch_id' => null
+        ]);
         $result = $this->branchService->deleteBranch($branch);
         if ($result) {
             return ResponseHelper::success($result);

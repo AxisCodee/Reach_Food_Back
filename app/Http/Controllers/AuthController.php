@@ -36,10 +36,11 @@ class AuthController extends Controller
             //permissions
             $permissions = $request['permissions'];
             if ($permissions) {
-                foreach ($permissions as $permission) {
+                foreach ($permissions as $index => $permission) {
+
                     $status = $permission['status'];
                     UserPermission::create([
-                        'permission_id' => $permission['permission_id'],
+                        'permission_id' => $index + 1,
                         'user_id' => $user->id,
                         'status' => $status
                     ]);
