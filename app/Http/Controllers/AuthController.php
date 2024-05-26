@@ -33,24 +33,24 @@ class AuthController extends Controller
                 'role' => $request->role,
             ]);
             $this->userService->createUserDetails($request, $user->id);
-            //permissions
-            $permissions = $request['permissions'];
-            if ($permissions) {
-                foreach ($permissions as $permission) {
-                    $status = $permission['status'];
-                    UserPermission::create([
-                        'permission_id' => $permission['permission_id'],
-                        'user_id' => $user->id,
-                        'status' => $status
-                    ]);
-                }
-            }
             if ($request->role == Roles::CUSTOMER->value) {
                 $user->update([
                     'customer_type' => $request->customer_type,
                 ]);
             } else {
                 if ($request->role != Roles::SUPER_ADMIN->value) {
+                    //assign permissions
+                    $permissions = $request['permissions'];
+                    if ($permissions) {
+                        foreach ($permissions as $permission) {
+                            $status = $permission['status'];
+                            UserPermission::create([
+                                'permission_id' => $permission['permission_id'],
+                                'user_id' => $user->id,
+                                'status' => $status
+                            ]);
+                        }
+                    }
                     $user->update([
                         'branch_id' => $request->branch_id
                     ]);
