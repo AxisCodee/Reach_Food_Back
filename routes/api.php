@@ -73,6 +73,9 @@ Route::prefix('feedback')->group(function () {
 
 Route::prefix('trip')->group(function () {
     Route::controller(TripController::class)->group(function () {
+
+
+        Route::get('/days', [TripController::class, 'getDays']);
     });
 });
 
