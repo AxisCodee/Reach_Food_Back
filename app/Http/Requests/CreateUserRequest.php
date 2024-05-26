@@ -45,7 +45,6 @@ class CreateUserRequest extends FormRequest
             'trips.*start_time' => ['required', 'date_format:H:i'],
             'categories' => 'array',
             'categories.*' => 'exists:categories,id',
-
             'permissions' => 'array',
             'permissions.*permission_id' => 'exists:permissions,id',
             'permissions.*status' => 'in:true,false',
