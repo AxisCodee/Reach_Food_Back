@@ -21,9 +21,12 @@ class FeedbackService
         return $result;
     }
 
+
     public function index()
     {
-        $result = Feedback::query()->with('user', 'user.userDetails')->get()->toArray();
+        $branch = request()->input('branch_id');
+        $result = Feedback::query()->where('branch_id',$branch)
+        ->with('user','user.userDetails')->get()->toArray();
         return $result;
     }
 
