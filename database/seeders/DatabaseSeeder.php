@@ -24,21 +24,9 @@ class DatabaseSeeder extends Seeder
             DaySeeder::class,
             PermissionSeeder::class,
             CategorySeeder::class,
+            BranchSeeder::class,
+            UserSeeder::class,
             // Add other seeders here if necessary
         ]);
-
-//        Branch::factory(10)->create();
-//        User::factory(10)->create();
-//        Category::factory(10)->create();
-//        Product::factory()->count(10)->create();
-
-
-        $this->call(CountrySeeder::class);
-        $this->call(CitySeeder::class);
-        $this->call(UserSeeder::class);
-//        User::factory()->create([
-//            'name' => 'Test User',
-//            'email' => 'test@example.com',
-//        ]);
     }
 }

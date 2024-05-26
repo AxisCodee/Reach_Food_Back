@@ -5,7 +5,6 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FeedbackController;
-use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\UserController;
@@ -22,7 +21,6 @@ Route::prefix('auth')->group(function () {
         Route::post('login', 'login');
         Route::get('logout', 'logout');
         Route::get('refresh', 'refresh');
-
     });
 });
 
@@ -31,7 +29,7 @@ Route::get('me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 Route::prefix('user')->group(function () {
     Route::apiResource('users', UserController::class)
         ->only('index');
-        Route::get('permissions', [UserController::class, 'getPermissions']);
+    Route::get('permissions', [UserController::class, 'getPermissions']);
 
 
 });
@@ -43,7 +41,10 @@ Route::prefix('branch')->group(function () {
     Route::get('show/{id}', [BranchController::class, 'show']);
     Route::post('/{id}', [BranchController::class, 'update']);
     Route::delete('/{id}', [BranchController::class, 'destroy']);
+});
 
+Route::prefix('address')->group(function () {
+    Route::get('branch/{id}', [AddressController::class, 'branchAddresses']);
 });
 
 Route::prefix('product')->group(function () {

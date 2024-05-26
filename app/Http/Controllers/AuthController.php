@@ -42,8 +42,11 @@ class AuthController extends Controller
                     'status' => $status
                 ]);
             }
-
-            if ($request->role != Roles::CUSTOMER->value) {
+            if ($request->role == Roles::CUSTOMER->value) {
+                $user->update([
+                    'customer_type' => $request->customer_type,
+                ]);
+            } else {
                 if ($request->role != Roles::SUPER_ADMIN->value) {
                     $user->update([
                         'branch_id' => $request->branch_id
@@ -81,11 +84,6 @@ class AuthController extends Controller
                         }
                     }
                 }
-            }
-            if ($request->role == Roles::CUSTOMER->value) {
-                $user->update([
-                    'customer_type' => $request->customer_type,
-                ]);
             }
             $token = $user->createToken('auth_token')->plainTextToken;
             return ResponseHelper::success([
@@ -128,14 +126,12 @@ class AuthController extends Controller
 
     public function refresh()//TODO
     {
-        return DB::transaction(function () {
-            auth('sanctum')->user()->tokens()->delete();
-            $token = auth('sanctum')->user()->createToken('auth_token')->plainTextToken;
-            return ResponseHelper::success([
-                'user' => auth('sanctum')->user(),
-                'token' => $token,
-            ]);
-        });
+        auth('sanctum')->user()->tokens()->delete();
+        $token = auth('sanctum')->user()->createToken('auth_token')->plainTextToken;
+        return ResponseHelper::success([
+            'user' => auth('sanctum')->user(),
+            'token' => $token,
+        ]);
     }
 
     public function me()
