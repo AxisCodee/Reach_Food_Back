@@ -2,7 +2,7 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -114,15 +114,21 @@ class User extends Authenticatable
     }
 
 
-    public function salesManager()
+    public function salesManager(): BelongsTo
     {
-        return $this->belongsTo(User::class, 'salesManager_id');
+        return $this->belongsTo(User::class, 'admin_id');
     }
 
-    public function salesmen()
+    public function salesmen(): HasMany
     {
         return $this->hasMany(User::class, 'salesManager_id');
 
     }
+
+    public function customers(): HasMany
+    {
+        return $this->hasMany(User::class, 'salesman_id');
+    }
+
 
 }

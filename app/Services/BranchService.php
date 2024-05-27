@@ -13,7 +13,7 @@ class BranchService
     {
         return Branch::query()
             ->with(['city.country', 'categories:id,name,branch_id', 'users' => function ($query) {
-                $query->where('role', 'admin');
+                $query->where('role', 'admin')->first();
             }])
             ->get()->toArray();
     }

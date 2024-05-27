@@ -64,18 +64,21 @@ class TripController extends Controller
 
     public function getSalesmanTrips()
     {
-        $salesman = User::FindOrFail(auth('sanctum')->id());
-//        $trips = $salesman->trips()->with(['day:id,name', 'address:id,city_id,area'])
-//            ->withCount('orders')->get()->toArray();
-        $trips = Trip::query()->where('address_id',$salesman->address_id)->get()->toArray();
+        $salesman = User::FindOrFail(10);//auth
+        $trips = $salesman->trips()->with(['day:id,name', 'address:id,city_id,area'])
+            ->withCount('orders')->get()->toArray();
         return ResponseHelper::success($trips);
 
     }
 
     public function getSalesmanTripsWeekly()
     {
-        $trips = Day::query()->with(['trips.address'])
-            ->get()->toArray();
+        $salesman = User::FindOrFail(10);//auth
+        $trips = $salesman->trips()
+            ->with(['day:id,name', 'address:id,city_id,area'])
+            ->get()
+            ->toArray();
         return ResponseHelper::success($trips);
     }
+
 }

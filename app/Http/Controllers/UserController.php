@@ -53,4 +53,12 @@ class UserController extends Controller
         return ResponseHelper::error('User not updated.');
     }
 
+    public function getSalesmanCustomers(Request $request)
+    {
+        $salesman = User::query()->findOrFail(10);//auth
+        $customers = $salesman->customers;
+        return ResponseHelper::success($customers);
+
+    }
+
 }
