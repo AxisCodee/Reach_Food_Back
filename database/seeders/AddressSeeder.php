@@ -22,11 +22,11 @@ class AddressSeeder extends Seeder
         }
 
         $addresses = [
-            ['city_id' => $cities->random()->id, 'area' => 'Downtown'],
-            ['city_id' => $cities->random()->id, 'area' => 'Uptown'],
-            ['city_id' => $cities->random()->id, 'area' => 'Suburb'],
-            ['city_id' => $cities->random()->id, 'area' => 'Industrial Area'],
-            ['city_id' => $cities->random()->id, 'area' => 'Rural Area'],
+            ['city_id' => $cities->random()->id, 'area' => 'منطقة 1'],
+            ['city_id' => $cities->random()->id, 'area' => 'منطقة 2'],
+            ['city_id' => $cities->random()->id, 'area' => 'منطقة 3'],
+            ['city_id' => $cities->random()->id, 'area' => 'منطقة 4'],
+            ['city_id' => $cities->random()->id, 'area' => 'منطقة 5'],
             // Add more addresses as needed
         ];
 
