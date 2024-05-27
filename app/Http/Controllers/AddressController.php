@@ -44,6 +44,12 @@ class AddressController extends Controller
         return ResponseHelper::success($addresses);
     }
 
+    public function getCountries()
+    {
+        $countries = $this->addressService->getCountries();
+        return ResponseHelper::success($countries);
+    }
+
     public function getCities($country)
     {
         $cities = $this->addressService->getCities($country);

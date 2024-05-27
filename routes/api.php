@@ -50,6 +50,7 @@ Route::prefix('branch')->group(function () {
 Route::prefix('address')->group(function () {
     Route::get('branch/{id}', [AddressController::class, 'branchAddresses']);
     Route::get('cities/{id}', [AddressController::class, 'getCities']);
+    Route::get('countries', [AddressController::class, 'getCountries']);
 });
 
 Route::prefix('product')->group(function () {
@@ -58,8 +59,8 @@ Route::prefix('product')->group(function () {
     Route::delete('/{id}', [ProductController::class, 'destroy']);
     Route::get('show/{id}', [ProductController::class, 'show']);
     Route::post('updatePrice', [ProductController::class, 'updatePrice']);
-    Route::prefix('salesman')->group(function () {
-        Route::get('index', [ProductController::class, 'show']);
+    Route::prefix('/salesman')->group(function () {
+        Route::get('index', [ProductController::class, 'salesmanProducts']);
     });
 });
 

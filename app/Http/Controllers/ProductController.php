@@ -51,13 +51,14 @@ class ProductController extends Controller
 
     public function updatePrice(Request $request)
     {
-        $result = $this->productService->updatePrice($request);
+        $this->productService->updatePrice($request);
         return ResponseHelper::success(true, null, 'Prices updated successfully', 200);
     }
 
     public function salesmanProducts()
     {
-
+        $products = $this->productService->getSalesmanProducts();
+        return ResponseHelper::success($products);
     }
 
 
