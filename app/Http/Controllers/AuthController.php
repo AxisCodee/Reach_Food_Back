@@ -34,7 +34,6 @@ class AuthController extends Controller
                 'branch_id' => $request->input('branch_id'),
             ]);
             $this->userService->createUserDetails($request, $user->id);
-
             if ($request->role == Roles::CUSTOMER->value) {
                 $user->update([
                     'customer_type' => $request->customer_type,

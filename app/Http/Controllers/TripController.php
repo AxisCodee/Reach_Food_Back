@@ -6,8 +6,6 @@ use App\Helpers\ResponseHelper;
 use App\Http\Requests\CreateTripRequest;
 use App\Http\Requests\UpdateTripRequest;
 use App\Models\Day;
-use App\Models\Trip;
-use App\Models\User;
 use App\Services\TripService;
 use Illuminate\Http\Request;
 
@@ -35,6 +33,7 @@ class TripController extends Controller
     public function store(CreateTripRequest $request)
     {
         $trip = $this->tripService->createTrip($request);
+        $trip->update(['salesman_id' => $request->salesman_id]);
         return ResponseHelper::success($trip);
     }
 
@@ -64,14 +63,13 @@ class TripController extends Controller
 
     public function salesmanTrips()
     {
-       $trips=$this->tripService->getSalesmanTrips();
+        $trips = $this->tripService->getSalesmanTrips();
         return ResponseHelper::success($trips);
 
     }
 
     public function salesmanTripsWeekly()
     {
-
         $trips = $this->tripService->getSalesmanTripsWeekly();
         return ResponseHelper::success($trips);
     }
