@@ -5,11 +5,20 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseHelper;
 use App\Models\Address;
 use App\Models\Branch;
+use App\Services\AddressService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class AddressController extends Controller
 {
+
+    protected $addressService;
+
+    public function __construct(AddressService $addressService)
+    {
+        $this->addressService = $addressService;
+    }
+
     public function importFromJson(Request $request)
     {
         return DB::transaction(function () use ($request) {
@@ -33,6 +42,12 @@ class AddressController extends Controller
         $city = Branch::findOrFail($branch)->city()->first();
         $addresses = $city->addresses;
         return ResponseHelper::success($addresses->toArray());
+    }
+
+    public function getCities($country)
+    {
+        $cities = $this->addressService->getCities($country);
+        return ResponseHelper::success($cities);
     }
 
 }

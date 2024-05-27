@@ -31,6 +31,9 @@ Route::prefix('user')->group(function () {
         ->only('index', 'destroy');
     Route::get('permissions', [UserController::class, 'getPermissions']);
     Route::post('/update/{id}', [UserController::class, 'update']);
+    Route::prefix('/salesman')->group(function () {
+        Route::get('/customers', [UserController::class, 'getSalesmanCustomers']);
+    });
 
 
 });
@@ -46,6 +49,7 @@ Route::prefix('branch')->group(function () {
 
 Route::prefix('address')->group(function () {
     Route::get('branch/{id}', [AddressController::class, 'branchAddresses']);
+    Route::get('cities/{id}', [AddressController::class, 'getCities']);
 });
 
 Route::prefix('product')->group(function () {
