@@ -28,8 +28,9 @@ Route::get('me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 
 Route::prefix('user')->group(function () {
     Route::apiResource('users', UserController::class)
-        ->only('index');
+        ->only('index', 'destroy');
     Route::get('permissions', [UserController::class, 'getPermissions']);
+    Route::post('/update/{id}', [UserController::class, 'update']);
 
 
 });
@@ -74,9 +75,12 @@ Route::prefix('feedback')->group(function () {
 Route::prefix('trip')->group(function () {
     Route::controller(TripController::class)->group(function () {
         Route::apiResource('trips', TripController::class)->only('store', 'index');
-
-
         Route::get('/days', [TripController::class, 'getDays']);
+
+        Route::prefix('salesman')->group(function () {
+            Route::get('/index', [TripController::class, 'getSalesmanTrips']);
+            Route::get('/index/weekly', [TripController::class, 'getSalesmanTripsWeekly']);
+        });
     });
 });
 

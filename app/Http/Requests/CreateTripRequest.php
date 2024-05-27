@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class CreateTripRequest extends FormRequest
 {
@@ -25,7 +27,20 @@ class CreateTripRequest extends FormRequest
             'address_id' => ['required', 'exists:addresses,id'],
             'day_id' => ['required', 'exists:days,id'],
             'start_time' => ['required', 'date_format:H:i'],
-            'salesman_id' => ['required', 'exists:users,id'],
+            'salesman_id' => ['exists:users,id'],
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        $errors = $validator->errors();
+        $transformedErrors = [];
+        foreach ($errors->all() as $errorMessage) {
+            $transformedErrors[] = $errorMessage;
+        }
+        throw new HttpResponseException(response()->json([
+            'message' => 'Validation Error',
+            'errors' => $transformedErrors,
+        ], 422));
     }
 }

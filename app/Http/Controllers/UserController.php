@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\UpdateUserRequest;
 use App\Models\Permission;
+use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
 
@@ -33,7 +35,24 @@ class UserController extends Controller
         return ResponseHelper::success($result);
     }
 
+    public function destroy($user)
+    {
+        $result = User::findOrFail($user)->delete();
+        if ($result) {
+            return ResponseHelper::success('User deleted successfully.');
+        }
+        return ResponseHelper::error('User not found.');
+    }
 
+    public function update(UpdateUserRequest $request, $user)
+    {
+        $user = User::FindOrFail($user);
+        $result = $this->userService->updateUserDetails($request, $user);
+        if ($result) {
+            return ResponseHelper::success('User updated successfully.');
+        }
+        return ResponseHelper::error('User not found.');
+    }
 
 
 }

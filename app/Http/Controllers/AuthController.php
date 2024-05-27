@@ -31,6 +31,7 @@ class AuthController extends Controller
                 'user_name' => $request->user_name,
                 'password' => Hash::make($request['password']),
                 'role' => $request->role,
+                'branch_id' => $request->branch_id,
             ]);
             $this->userService->createUserDetails($request, $user->id);
 

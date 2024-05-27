@@ -36,6 +36,33 @@ class UserService
         return true;
     }
 
+    public function updateUserDetails(Request $request, $user_id)
+    {
+        return DB::transaction(function () use ($request, $user_id) {
+            $user = User::query()->findOrFail($user_id);
+            $user->update([
+                ''
+            ]);
+            $userDetail = $user->userDetails;
+            $userDetail->update([
+                'image' => $this->fileService
+                    ->update($userDetail->image, $request->file('image'), 'image'),
+                'address_id' => $request['address_id'],
+                'location' => $request['location'],
+            ]);
+            $contacts = $request['phone_number'];
+            if ($contacts) {
+                $user->contacts()->delete();
+                foreach ($contacts as $item) {
+                    Contact::query()->create([
+                        'user_id' => $user_id,
+                        'phone_number' => $item
+                    ]);
+                }
+            }
+        });
+    }
+
     public function Show()
     {
         $result = User::get();
@@ -59,7 +86,7 @@ class UserService
 
     public function getUsersByType($request)
     {
-        $result = User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address'])
+        $result = User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address.city.country'])
             ->where('role', $request->role)
             ->where('branch_id', $request->branch_id)
             ->get()->toArray();

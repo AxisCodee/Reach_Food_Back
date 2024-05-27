@@ -85,7 +85,7 @@ class User extends Authenticatable
 
     public function trips(): HasMany
     {
-        return $this->hasMany(Trip::class);
+        return $this->hasMany(Trip::class, 'salesman_id');
     }
 
     public function feedbacks(): HasMany
