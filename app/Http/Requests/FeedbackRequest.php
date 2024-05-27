@@ -22,7 +22,8 @@ class FeedbackRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'content'=>'string|required'
+            'content'=>'string|required',
+            'branch_id'=> 'exists:branches,id'
         ];
     }
 }

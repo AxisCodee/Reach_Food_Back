@@ -16,7 +16,9 @@ class FeedbackService
     {
         $result = Feedback::query()->create([
             'user_id' => Auth::user()->id,
-            'content' => $request->content
+            'content' => $request->content,
+            'branch_id' => $request->branch_id
+
         ]);
         return $result;
     }
