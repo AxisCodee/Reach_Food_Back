@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\UserDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * Class UserService.
@@ -41,12 +42,15 @@ class UserService
         return DB::transaction(function () use ($request, $user_id) {
             $user = User::query()->findOrFail($user_id);
             $user->update([
-                ''
+                'name' => $request->name,
+                'user_name' => $request->user_name,
+                'password' => Hash::make($request['password']),
+                'branch_id' => $request->branch_id,
             ]);
             $userDetail = $user->userDetails;
             $userDetail->update([
                 'image' => $this->fileService
-                    ->update($userDetail->image, $request->file('image'), 'image'),
+                    ->update($userDetail->image, $request, 'image'),
                 'address_id' => $request['address_id'],
                 'location' => $request['location'],
             ]);
@@ -60,6 +64,7 @@ class UserService
                     ]);
                 }
             }
+            return true;
         });
     }
 

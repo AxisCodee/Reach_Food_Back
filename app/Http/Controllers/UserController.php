@@ -46,13 +46,11 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, $user)
     {
-        $user = User::FindOrFail($user);
         $result = $this->userService->updateUserDetails($request, $user);
         if ($result) {
             return ResponseHelper::success('User updated successfully.');
         }
-        return ResponseHelper::error('User not found.');
+        return ResponseHelper::error('User not updated.');
     }
-
 
 }

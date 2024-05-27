@@ -16,7 +16,6 @@ return new class extends Migration {
             $table->foreignId('address_id')->nullable()->constrained('addresses')->cascadeOnDelete()->cascadeOnUpdate();
             $table->text('image')->nullable();
             $table->string('location')->nullable();
-            $table->integer('phone_number')->nullable();
             $table->timestamps();
         });
     }

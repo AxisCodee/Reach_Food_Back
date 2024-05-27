@@ -2,7 +2,9 @@
 
 namespace App\Http\Requests;
 
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Http\Exceptions\HttpResponseException;
 
 class UpdateUserRequest extends FormRequest
 {
@@ -22,7 +24,46 @@ class UpdateUserRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
+            'name' => 'string|max:255',
+            'user_name' => 'string|max:255|unique:users',
+            'password' => 'string',
+            'role' => 'in:super admin,admin,customer,salesman,sales manager',
+            'customer_type' => 'in:shop,center',
+            // user details
+            'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'address_id' => 'exists:addresses,id',
+            'location' => 'string|max:255',
+            'phone_number' => 'array',
+            'phone_number.*' => 'string|max:255',
+
+
+            // salesman
+//            'salesManager_id' => 'exists:users,id',
+//            'trips' => 'array',
+//            'trips.*address_id' => ['required', 'exists:addresses,id'],
+//            'trips.*day_id' => ['required', 'exists:days,id'],
+//            'trips.*start_time' => ['required', 'date_format:H:i'],
+//            'categories' => 'array',
+//            'categories.*' => 'exists:categories,id',
+//            'permissions' => 'array',
+//            'permissions.*permission_id' => 'exists:permissions,id',
+//            'permissions.*status' => 'in:true,false',
+//            // sales manager
+//            'salesmen' => 'array',
+//            'salesmen.*' => 'exists:users,id'
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        $errors = $validator->errors();
+        $transformedErrors = [];
+        foreach ($errors->all() as $errorMessage) {
+            $transformedErrors[] = $errorMessage;
+        }
+        throw new HttpResponseException(response()->json([
+            'message' => 'Validation Error',
+            'errors' => $transformedErrors,
+        ], 422));
     }
 }
