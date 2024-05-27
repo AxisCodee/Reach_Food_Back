@@ -55,4 +55,10 @@ class ProductController extends Controller
         return ResponseHelper::success(true, null, 'Prices updated successfully', 200);
     }
 
+    public function salesmanProducts()
+    {
+
+    }
+
+
 }

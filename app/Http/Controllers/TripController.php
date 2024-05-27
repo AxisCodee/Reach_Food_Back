@@ -62,22 +62,17 @@ class TripController extends Controller
         return ResponseHelper::success($days);
     }
 
-    public function getSalesmanTrips()
+    public function salesmanTrips()
     {
-        $salesman = User::FindOrFail(10);//auth
-        $trips = $salesman->trips()->with(['day:id,name', 'address:id,city_id,area'])
-            ->withCount('orders')->get()->toArray();
+       $trips=$this->tripService->getSalesmanTrips();
         return ResponseHelper::success($trips);
 
     }
 
-    public function getSalesmanTripsWeekly()
+    public function salesmanTripsWeekly()
     {
-        $salesman = User::FindOrFail(10);//auth
-        $trips = $salesman->trips()
-            ->with(['day:id,name', 'address:id,city_id,area'])
-            ->get()
-            ->toArray();
+
+        $trips = $this->tripService->getSalesmanTripsWeekly();
         return ResponseHelper::success($trips);
     }
 

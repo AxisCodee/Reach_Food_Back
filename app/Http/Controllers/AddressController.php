@@ -40,8 +40,8 @@ class AddressController extends Controller
     public function branchAddresses($branch)//return addresses form branch city
     {
         $city = Branch::findOrFail($branch)->city()->first();
-        $addresses = $city->addresses;
-        return ResponseHelper::success($addresses->toArray());
+        $addresses = $city->addresses->toArray();
+        return ResponseHelper::success($addresses);
     }
 
     public function getCities($country)

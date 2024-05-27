@@ -58,7 +58,9 @@ Route::prefix('product')->group(function () {
     Route::delete('/{id}', [ProductController::class, 'destroy']);
     Route::get('show/{id}', [ProductController::class, 'show']);
     Route::post('updatePrice', [ProductController::class, 'updatePrice']);
-
+    Route::prefix('salesman')->group(function () {
+        Route::get('index', [ProductController::class, 'show']);
+    });
 });
 
 //categories
@@ -82,8 +84,8 @@ Route::prefix('trip')->group(function () {
         Route::get('/days', [TripController::class, 'getDays']);
 
         Route::prefix('salesman')->group(function () {
-            Route::get('/index', [TripController::class, 'getSalesmanTrips']);
-            Route::get('/index/weekly', [TripController::class, 'getSalesmanTripsWeekly']);
+            Route::get('/index', [TripController::class, 'salesmanTrips']);
+            Route::get('/index/weekly', [TripController::class, 'salesmanTripsWeekly']);
         });
     });
 });
