@@ -32,4 +32,10 @@ class Trip extends Model
     {
         return $this->belongsTo(Day::class);
     }
+
+    public function dates(): HasMany
+    {
+        return $this->hasMany(TripDates::class);
+    }
+    
 }

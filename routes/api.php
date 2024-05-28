@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\UserController;
@@ -30,6 +31,13 @@ Route::prefix('user')->group(function () {
     Route::apiResource('users', UserController::class)
         ->only('index');
     Route::get('permissions', [UserController::class, 'getPermissions']);
+});
+
+Route::prefix('order')->group(function () {
+    Route::apiResource('users', UserController::class)
+        ->only('index');
+    Route::post('assign', [OrderController::class, 'assignOrder']);
+    Route::post('update/{id}', [OrderController::class, 'update']);
 
 
 });
@@ -53,7 +61,6 @@ Route::prefix('product')->group(function () {
     Route::delete('/{id}', [ProductController::class, 'destroy']);
     Route::get('show/{id}', [ProductController::class, 'show']);
     Route::post('updatePrice', [ProductController::class, 'updatePrice']);
-
 });
 
 //categories
