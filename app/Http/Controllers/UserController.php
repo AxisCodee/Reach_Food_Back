@@ -51,9 +51,30 @@ class UserController extends Controller
     public function getSalesmanCustomers()
     {
         $salesman = User::query()->findOrFail(4);//auth
-        $customers=  $salesman->with(['trips:.orders.customer'])->get()->toArray();
+        $customers = $salesman->with(['trips:.orders.customer'])->get()->toArray();
         return ResponseHelper::success($customers);
 
     }
+
+//    public function branchCustomers(Request $request)
+//    {
+//        $customers = $this->userService->getBranchCustomers($request);
+//        return ResponseHelper::success($customers);
+//
+//    }
+
+//    public function categoryUsers(Request $request)
+//    {
+//        $customers = $this->userService->getCategoryUsers($request);
+//        return ResponseHelper::success($customers);
+//
+//    }
+//
+//    public function admins()
+//    {
+//        $admins = $this->userService->getAdmins();
+//        return ResponseHelper::success($admins);
+//
+//    }
 
 }

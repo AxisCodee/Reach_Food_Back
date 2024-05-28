@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\Roles;
 use App\Models\Contact;
 use App\Models\User;
 use App\Models\UserDetail;
@@ -89,13 +90,54 @@ class UserService
         ]);
     }
 
+//    public function getBranchCustomers($request)
+//    {
+//        return User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address.city.country'])
+//            ->where('role', 'customer')
+//            ->where('branch_id', $request->branch_id)
+//            ->get()->toArray();
+//    }
+
+//    public function getCategoryUsers($request)
+//    {
+//        return User::query()->with(['contacts:id,user_id,phone_number', 'branch.city.country'])
+//            ->where('role', $request->role)
+//            ->whereHas('categories', function ($query) use ($request) {
+//                $query->where('category_id', $request->category_id);
+//            })
+//            ->get()->toArray();
+//    }
+
+//    public function getAdmins()
+//    {
+//        return User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address.city.country',
+//            'branch.city.country'])
+//            ->where('role', 'admin')
+//            ->get()->toArray();
+//    }
+
+
     public function getUsersByType($request)
     {
-        $result = User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address.city.country', 'branch.city'])
-            ->where('role', $request->role)
-            //->where('branch_id', $request->branch_id)
-            ->get()->toArray();
-        return $result;
+        if ($request->role == Roles::CUSTOMER->value) {
+            return User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address.city.country'])
+                ->where('role', 'customer')
+                ->where('branch_id', $request->branch_id)
+                ->get()->toArray();
+        }
+        if ($request->role == Roles::ADMIN->value) {
+            return User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address.city.country',
+                'branch.city.country'])
+                ->where('role', 'admin')
+                ->get()->toArray();
+        } else {
+            return User::query()->with(['contacts:id,user_id,phone_number', 'branch.city.country'])
+                ->where('role', $request->role)
+                ->whereHas('categories', function ($query) use ($request) {
+                    $query->where('category_id', $request->category_id);
+                })
+                ->get()->toArray();
+        }
     }
 
 }

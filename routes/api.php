@@ -29,7 +29,11 @@ Route::get('me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 
 Route::prefix('user')->group(function () {
     Route::apiResource('users', UserController::class)
-        ->only('index', 'destroy');
+        ->only( 'index','destroy');
+//    Route::get('/admins',[UserController::class,'admins']);
+//    Route::get('/categoryUsers',[UserController::class,'categoryUsers']);
+//    Route::get('/branchCustomers',[UserController::class,'branchCustomers']);
+
     Route::get('permissions', [PermissionController::class, 'index']);
     Route::post('/update/{id}', [UserController::class, 'update']);
     Route::prefix('/salesman')->group(function () {
