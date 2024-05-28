@@ -91,7 +91,7 @@ class UserService
 
     public function getUsersByType($request)
     {
-        $result = User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address.city.country'])
+        $result = User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address.city.country', 'branch.city'])
             ->where('role', $request->role)
             ->where('branch_id', $request->branch_id)
             ->get()->toArray();
