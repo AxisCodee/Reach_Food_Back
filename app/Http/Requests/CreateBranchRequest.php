@@ -26,7 +26,7 @@ class CreateBranchRequest extends FormRequest
             'city_id' => 'required|exists:cities,id',
             'categories' => 'required|array',
             'categories.name*' => 'required',
-            'admin_id' => 'required|exists:users,id',
+            'admin_id' => 'exists:users,id',
         ];
     }
 }

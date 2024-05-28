@@ -37,8 +37,11 @@ class BranchController extends Controller
                     $category->update(['branch_id' => $branch->id]);
                 }
             }
-            $admin = User::findOrFail($request->admin_id);
-            $admin->update(['branch_id' => $branch->id]);
+
+            if ($request->admin_id){
+                $admin = User::findOrFail($request->admin_id);
+                $admin->update(['branch_id' => $branch->id]);
+            }
             return ResponseHelper::success($branch);
         });
     }
