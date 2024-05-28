@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\Category;
+use App\Models\Country;
 use App\Models\User;
 
 /**
@@ -52,5 +53,10 @@ class CategoryService
     {
         $salesman = User::findOrFail(19);//auth
         return $salesman->categories->toArray();
+    }
+
+    public function getCountriesCategories()
+    {
+        return Country::with(['cities.branch.categories'])->get()->toArray();
     }
 }

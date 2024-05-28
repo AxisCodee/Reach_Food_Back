@@ -55,4 +55,10 @@ class CategoryController extends Controller
         $categories = $this->categoryService->getSalesmanCategories();
         return ResponseHelper::success($categories);
     }
+
+    public function countriesCategories()
+    {
+        $categories = $this->categoryService->getCountriesCategories();
+        return ResponseHelper::success($categories);
+    }
 }

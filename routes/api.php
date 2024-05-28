@@ -68,6 +68,7 @@ Route::prefix('product')->group(function () {
 //categories
 Route::apiResource('category', CategoryController::class)->only('store', 'index');
 Route::prefix('category')->group(function () {
+    Route::get('/countries', [CategoryController::class, 'countriesCategories']);
     Route::post('/{id}', [CategoryController::class, 'update']);
     Route::delete('/{id}', [CategoryController::class, 'destroy']);
     Route::get('/{id}', [CategoryController::class, 'show']);
