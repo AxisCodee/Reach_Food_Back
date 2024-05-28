@@ -26,7 +26,6 @@ class BranchController extends Controller
         return ResponseHelper::success($result);
     }
 
-
     public function store(CreateBranchRequest $request)
     {
         return DB::transaction(function () use ($request) {
@@ -75,7 +74,7 @@ class BranchController extends Controller
 
     public function destroy($branch)
     {
-        User::query()->where('branch_id',$branch)->update([
+        User::query()->where('branch_id', $branch)->update([
             'branch_id' => null
         ]);
         $result = $this->branchService->deleteBranch($branch);

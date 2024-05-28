@@ -55,9 +55,9 @@ class ProductController extends Controller
         return ResponseHelper::success(true, null, 'Prices updated successfully', 200);
     }
 
-    public function salesmanProducts()
+    public function salesmanProducts(Request $request)
     {
-        $products = $this->productService->getSalesmanProducts();
+        $products = $this->productService->getSalesmanProducts($request);
         return ResponseHelper::success($products);
     }
 

@@ -29,11 +29,6 @@ class UserController extends Controller
         return ResponseHelper::success($users);
     }
 
-    public function getPermissions()
-    {
-        $result = Permission::query()->get()->toArray();
-        return ResponseHelper::success($result);
-    }
 
     public function destroy($user)
     {

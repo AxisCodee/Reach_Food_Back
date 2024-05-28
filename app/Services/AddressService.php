@@ -14,8 +14,10 @@ class AddressService
     public function getAddresses()
     {
 
-    }public function getCountries()
-{
+    }
+
+    public function getCountries()
+    {
         return Country::all()->toArray();
 
     }

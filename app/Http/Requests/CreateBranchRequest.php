@@ -22,7 +22,7 @@ class CreateBranchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|unique:branches,name',
+           // 'name' => 'required|unique:branches,name',
             'city_id' => 'required|exists:cities,id',
             'categories' => 'required|array',
             'categories.name*' => 'required',

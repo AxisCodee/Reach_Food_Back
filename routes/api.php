@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\UserController;
@@ -29,7 +30,7 @@ Route::get('me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 Route::prefix('user')->group(function () {
     Route::apiResource('users', UserController::class)
         ->only('index', 'destroy');
-    Route::get('permissions', [UserController::class, 'getPermissions']);
+    Route::get('permissions', [PermissionController::class, 'index']);
     Route::post('/update/{id}', [UserController::class, 'update']);
     Route::prefix('/salesman')->group(function () {
         Route::get('/customers', [UserController::class, 'getSalesmanCustomers']);
@@ -70,6 +71,10 @@ Route::prefix('category')->group(function () {
     Route::post('/{id}', [CategoryController::class, 'update']);
     Route::delete('/{id}', [CategoryController::class, 'destroy']);
     Route::get('/{id}', [CategoryController::class, 'show']);
+    Route::prefix('salesman')->group(function () {
+        Route::get('/index', [CategoryController::class, 'salesmanCategories']);
+
+    });
 });
 
 Route::prefix('feedback')->group(function () {
@@ -82,10 +87,10 @@ Route::prefix('feedback')->group(function () {
 Route::prefix('trip')->group(function () {
     Route::controller(TripController::class)->group(function () {
         Route::apiResource('trips', TripController::class)->only('store', 'index');
-        Route::get('/days', [TripController::class, 'getDays']);
 
+        Route::get('/days', [TripController::class, 'getDays']);
         Route::prefix('salesman')->group(function () {
-            Route::get('/index', [TripController::class, 'salesmanTrips']);
+            Route::get('/index/daily', [TripController::class, 'salesmanTripsDaily']);
             Route::get('/index/weekly', [TripController::class, 'salesmanTripsWeekly']);
         });
     });

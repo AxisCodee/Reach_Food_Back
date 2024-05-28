@@ -61,7 +61,7 @@ class TripController extends Controller
         return ResponseHelper::success($days);
     }
 
-    public function salesmanTrips()
+    public function salesmanTripsDaily()
     {
         $trips = $this->tripService->getSalesmanTrips();
         return ResponseHelper::success($trips);
