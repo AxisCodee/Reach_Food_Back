@@ -93,7 +93,7 @@ class UserService
     {
         $result = User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address.city.country', 'branch.city'])
             ->where('role', $request->role)
-            ->where('branch_id', $request->branch_id)
+            //->where('branch_id', $request->branch_id)
             ->get()->toArray();
         return $result;
     }
