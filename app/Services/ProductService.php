@@ -4,7 +4,10 @@ namespace App\Services;
 
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\StoreProductRequest;
+use App\Models\Category;
 use App\Models\Product;
+use App\Models\User;
+use Illuminate\Http\Request;
 
 /**
  * Class ProductService.
@@ -65,5 +68,10 @@ class ProductService
         return $result;
     }
 
+    public function getSalesmanProducts($request)
+    {
+        $products = Category::findOrFail($request->category_id)->products()->get()->toArray();
+        return $products;
+    }
 
 }

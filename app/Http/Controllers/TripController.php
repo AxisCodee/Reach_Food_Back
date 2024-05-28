@@ -30,9 +30,10 @@ class TripController extends Controller
         return ResponseHelper::success($trip);
     }
 
-    public function create(CreateTripRequest $request)
+    public function store(CreateTripRequest $request)
     {
         $trip = $this->tripService->createTrip($request);
+        $trip->update(['salesman_id' => $request->salesman_id]);
         return ResponseHelper::success($trip);
     }
 
@@ -59,4 +60,18 @@ class TripController extends Controller
         $days = Day::all()->toArray();
         return ResponseHelper::success($days);
     }
+
+    public function salesmanTripsDaily()
+    {
+        $trips = $this->tripService->getSalesmanTrips();
+        return ResponseHelper::success($trips);
+
+    }
+
+    public function salesmanTripsWeekly()
+    {
+        $trips = $this->tripService->getSalesmanTripsWeekly();
+        return ResponseHelper::success($trips);
+    }
+
 }

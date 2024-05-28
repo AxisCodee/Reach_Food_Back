@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
             BranchSeeder::class,
             CategorySeeder::class,
             UserSeeder::class,
+            UserDetailsSeeder::class
             // Add other seeders here if necessary
         ]);
     }

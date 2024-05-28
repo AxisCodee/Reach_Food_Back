@@ -2,11 +2,13 @@
 
 namespace App\Services;
 
+use App\Enums\Roles;
 use App\Models\Contact;
 use App\Models\User;
 use App\Models\UserDetail;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 /**
  * Class UserService.
@@ -36,6 +38,37 @@ class UserService
         return true;
     }
 
+    public function updateUserDetails(Request $request, $user_id)
+    {
+        return DB::transaction(function () use ($request, $user_id) {
+            $user = User::query()->findOrFail($user_id);
+            $user->update([
+                'name' => $request->name,
+                'user_name' => $request->user_name,
+                'password' => Hash::make($request['password']),
+                'branch_id' => $request->branch_id,
+            ]);
+            $userDetail = $user->userDetails;
+            $userDetail->update([
+                'image' => $this->fileService
+                    ->update($userDetail->image, $request, 'image'),
+                'address_id' => $request['address_id'],
+                'location' => $request['location'],
+            ]);
+            $contacts = $request['phone_number'];
+            if ($contacts) {
+                $user->contacts()->delete();
+                foreach ($contacts as $item) {
+                    Contact::query()->create([
+                        'user_id' => $user_id,
+                        'phone_number' => $item
+                    ]);
+                }
+            }
+            return true;
+        });
+    }
+
     public function Show()
     {
         $result = User::get();
@@ -57,13 +90,54 @@ class UserService
         ]);
     }
 
+//    public function getBranchCustomers($request)
+//    {
+//        return User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address.city.country'])
+//            ->where('role', 'customer')
+//            ->where('branch_id', $request->branch_id)
+//            ->get()->toArray();
+//    }
+
+//    public function getCategoryUsers($request)
+//    {
+//        return User::query()->with(['contacts:id,user_id,phone_number', 'branch.city.country'])
+//            ->where('role', $request->role)
+//            ->whereHas('categories', function ($query) use ($request) {
+//                $query->where('category_id', $request->category_id);
+//            })
+//            ->get()->toArray();
+//    }
+
+//    public function getAdmins()
+//    {
+//        return User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address.city.country',
+//            'branch.city.country'])
+//            ->where('role', 'admin')
+//            ->get()->toArray();
+//    }
+
+
     public function getUsersByType($request)
     {
-        $result = User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address'])
-            ->where('role', $request->role)
-            ->where('branch_id', $request->branch_id)
-            ->get()->toArray();
-        return $result;
+        if ($request->role == Roles::CUSTOMER->value) {
+            return User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address.city.country'])
+                ->where('role', 'customer')
+                ->where('branch_id', $request->branch_id)
+                ->get()->toArray();
+        }
+        if ($request->role == Roles::ADMIN->value) {
+            return User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address.city.country',
+                'branch.city.country'])
+                ->where('role', 'admin')
+                ->get()->toArray();
+        } else {
+            return User::query()->with(['contacts:id,user_id,phone_number', 'branch.city.country'])
+                ->where('role', $request->role)
+                ->whereHas('categories', function ($query) use ($request) {
+                    $query->where('category_id', $request->category_id);
+                })
+                ->get()->toArray();
+        }
     }
 
 }

@@ -51,8 +51,15 @@ class ProductController extends Controller
 
     public function updatePrice(Request $request)
     {
-        $result = $this->productService->updatePrice($request);
+        $this->productService->updatePrice($request);
         return ResponseHelper::success(true, null, 'Prices updated successfully', 200);
     }
+
+    public function salesmanProducts(Request $request)
+    {
+        $products = $this->productService->getSalesmanProducts($request);
+        return ResponseHelper::success($products);
+    }
+
 
 }

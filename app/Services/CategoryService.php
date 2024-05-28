@@ -3,6 +3,8 @@
 namespace App\Services;
 
 use App\Models\Category;
+use App\Models\Country;
+use App\Models\User;
 
 /**
  * Class CategoryService.
@@ -27,11 +29,6 @@ class CategoryService
 
     }
 
-    public function destroy($category)
-    {
-        $result = Category::findOrFail($category)->delete();
-        return $result;
-    }
 
     public function update($request, $category)
     {
@@ -50,5 +47,16 @@ class CategoryService
     {
         $result = Category::findOrFail($category)->delete();
         return $result;
+    }
+
+    public function getSalesmanCategories()
+    {
+        $salesman = User::findOrFail(19);//auth
+        return $salesman->categories->toArray();
+    }
+
+    public function getCountriesCategories()
+    {
+        return Country::with(['cities.branch.categories'])->get()->toArray();
     }
 }

@@ -14,7 +14,7 @@ class CountrySeeder extends Seeder
     public function run(): void
     {
         Country::create([
-            'name' => 'Syria',
+            'name' => 'سوريا',
         ]);
     }
 }

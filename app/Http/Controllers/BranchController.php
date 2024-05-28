@@ -26,7 +26,6 @@ class BranchController extends Controller
         return ResponseHelper::success($result);
     }
 
-
     public function store(CreateBranchRequest $request)
     {
         return DB::transaction(function () use ($request) {
@@ -38,8 +37,11 @@ class BranchController extends Controller
                     $category->update(['branch_id' => $branch->id]);
                 }
             }
-            $admin = User::findOrFail($request->admin_id);
-            $admin->update(['branch_id' => $branch->id]);
+
+            if ($request->admin_id){
+                $admin = User::findOrFail($request->admin_id);
+                $admin->update(['branch_id' => $branch->id]);
+            }
             return ResponseHelper::success($branch);
         });
     }
@@ -75,7 +77,7 @@ class BranchController extends Controller
 
     public function destroy($branch)
     {
-        User::query()->where('branch_id',$branch)->update([
+        User::query()->where('branch_id', $branch)->update([
             'branch_id' => null
         ]);
         $result = $this->branchService->deleteBranch($branch);
@@ -84,5 +86,6 @@ class BranchController extends Controller
         }
         return ResponseHelper::error('Branch not deleted.');
     }
+
 
 }
