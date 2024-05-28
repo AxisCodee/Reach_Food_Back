@@ -9,13 +9,17 @@ use App\Models\Branch;
  */
 class BranchService
 {
+
+
     public function getBranches()
     {
         return Branch::query()
-            ->with(['city.country', 'categories:id,name,branch_id', 'users' => function ($query) {
-                $query->where('role', 'admin')->first();
-            }])
-            ->get()->toArray();
+            ->with(['city.country', 'categories:id,name,branch_id'])
+            ->with('users', function ($query) {
+                $query->where('role', 'admin');
+            })
+            ->get()
+            ->toArray();
     }
 
     public function showBranch($id)
