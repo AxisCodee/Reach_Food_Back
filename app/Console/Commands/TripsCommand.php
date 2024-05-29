@@ -36,7 +36,7 @@ class TripsCommand extends Command
             if($trip->day === Carbon::now()->format('l') ){
 
                 $trip_date=TripDates::query();
-                
+
                 $trip_date->create([
                     'trip_id'=>$trip->id,
                     'start_time'=>$trip->start_time,
