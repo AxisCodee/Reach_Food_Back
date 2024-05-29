@@ -13,10 +13,11 @@ return new class extends Migration {
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->foreignId('customer_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('trip_id')->constrained('trips')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('trip_date_id')->nullable()->constrained('trip_dates')->cascadeOnDelete()->cascadeOnUpdate();
             $table->enum('status', ['pending', 'accepted', 'cancelled', 'delivered'])->default('pending');
+            $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete()->cascadeOnUpdate();
             $table->dateTime('order_date')->nullable();
-            $table->dateTime('delivery_date')->nullable();
+            $table->date('delivery_date')->nullable();
             $table->time('delivery_time')->nullable();
             $table->bigInteger('total_price')->nullable();
             $table->timestamps();

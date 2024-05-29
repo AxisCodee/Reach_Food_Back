@@ -14,7 +14,8 @@ return new class extends Migration {
             $table->id();
             $table->foreignId('salesman_id')->nullable()->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('address_id')->constrained('addresses')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreignId('day_id')->constrained('days')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('day');
             $table->time('start_time')->nullable();
             $table->timestamps();
         });
