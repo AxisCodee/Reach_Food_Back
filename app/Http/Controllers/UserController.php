@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\DeleteUserRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\Permission;
 use App\Models\User;
@@ -38,6 +39,7 @@ class UserController extends Controller
         }
         return ResponseHelper::error('User not found.');
     }
+
 
     public function update(UpdateUserRequest $request, $user)
     {

@@ -49,9 +49,13 @@ class UserService
                 'branch_id' => $request->branch_id,
             ]);
             $userDetail = $user->userDetails;
+            if ($request->hasFile('image')) {
+                $userDetail->update([
+                    'image' => $this->fileService
+                        ->update($userDetail->image, $request, 'image'),
+                ]);
+            }
             $userDetail->update([
-                'image' => $this->fileService
-                    ->update($userDetail->image, $request, 'image'),
                 'address_id' => $request['address_id'],
                 'location' => $request['location'],
             ]);
@@ -90,38 +94,12 @@ class UserService
         ]);
     }
 
-//    public function getBranchCustomers($request)
-//    {
-//        return User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address.city.country'])
-//            ->where('role', 'customer')
-//            ->where('branch_id', $request->branch_id)
-//            ->get()->toArray();
-//    }
-
-//    public function getCategoryUsers($request)
-//    {
-//        return User::query()->with(['contacts:id,user_id,phone_number', 'branch.city.country'])
-//            ->where('role', $request->role)
-//            ->whereHas('categories', function ($query) use ($request) {
-//                $query->where('category_id', $request->category_id);
-//            })
-//            ->get()->toArray();
-//    }
-
-//    public function getAdmins()
-//    {
-//        return User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address.city.country',
-//            'branch.city.country'])
-//            ->where('role', 'admin')
-//            ->get()->toArray();
-//    }
-
 
     public function getUsersByType($request)
     {
         if ($request->role == Roles::CUSTOMER->value) {
             return User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address.city.country'])
-                ->where('role', 'customer')
+                ->where('role', Roles::CUSTOMER->value)
                 ->where('branch_id', $request->branch_id)
                 ->get()->toArray();
         }
@@ -131,7 +109,8 @@ class UserService
                 ->where('role', 'admin')
                 ->get()->toArray();
         } else {
-            return User::query()->with(['contacts:id,user_id,phone_number', 'branch.city.country'])
+            return User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address.city.country',
+                'branch.city.country'])
                 ->where('role', $request->role)
                 ->whereHas('categories', function ($query) use ($request) {
                     $query->where('category_id', $request->category_id);
