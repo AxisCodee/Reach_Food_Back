@@ -30,7 +30,7 @@ Route::get('me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 Route::prefix('user')->group(function () {
     Route::apiResource('users', UserController::class)
         ->only('index');
-    Route::get('permissions', [UserController::class, 'getPermissions']);
+    Route::get('permissions', [PermissionController::class, 'index']);
 
 
 });
