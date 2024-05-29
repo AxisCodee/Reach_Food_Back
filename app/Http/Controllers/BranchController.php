@@ -9,6 +9,7 @@ use App\Models\Branch;
 use App\Models\Category;
 use App\Models\User;
 use App\Services\BranchService;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
 class BranchController extends Controller
@@ -38,7 +39,7 @@ class BranchController extends Controller
                 }
             }
 
-            if ($request->admin_id){
+            if ($request->admin_id) {
                 $admin = User::findOrFail($request->admin_id);
                 $admin->update(['branch_id' => $branch->id]);
             }
@@ -85,6 +86,15 @@ class BranchController extends Controller
             return ResponseHelper::success($result);
         }
         return ResponseHelper::error('Branch not deleted.');
+    }
+
+    public function deleteBranches(Request $request)//
+    {
+        $branches = $request['branches'];
+        foreach ($branches as $branch) {
+            $this->branchService->deleteBranch($branch);
+        }
+        return ResponseHelper::success('Branches deleted successfully.');
     }
 
 

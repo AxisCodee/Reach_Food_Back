@@ -33,4 +33,13 @@ class FeedbackController extends Controller
         $result = $this->feedbackService->destroy($feedback);
         return ResponseHelper::success($result, null, 'feedback returned successfully', 200);
     }
+
+    public function deleteFeedback(Request $request)//
+    {
+        $feedbacks = $request['feedbacks'];
+        foreach ($feedbacks as $feedback) {
+            $this->feedbackService->destroy($feedback);
+        }
+        return ResponseHelper::success('feedbacks deleted successfully.');
+    }
 }
