@@ -35,23 +35,25 @@ class ProductService
     }
 
     public function updatePrice($request)
-{
-    $results = [];
+    {
+        $results = [];
 
-    foreach ($request->product['id'] as $index => $product_id) {
-        $retail_price = $request->product['retail_price'][$index];
-        $wholesale_price = $request->product['wholesale_price'][$index];
+        foreach ($request->product as $product) {
+            $updatedProduct = Product::where('id', $product['id'])
+                ->update([
+                    'retail_price' => $product['retail_price'],
+                    'wholesale_price' => $product['wholesale_price']
+                ]);
 
-        $updatedProduct = Product::where('id', $product_id)->update([
-            'retail_price' =>  $retail_price,
-            'wholesale_price' =>  $wholesale_price
-        ]);
+            $results[] = [
+                'id' => $product['id'],
+                'retail_price' => $product['retail_price'],
+                'wholesale_price' => $product['wholesale_price']
+            ];
+        }
 
-        $results[] = $updatedProduct;
+        return  $updatedProduct;
     }
-
-    return $results;
-}
 
     public function indexProduct()
     {
