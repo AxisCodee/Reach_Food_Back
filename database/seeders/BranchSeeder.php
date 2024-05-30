@@ -21,11 +21,11 @@ class BranchSeeder extends Seeder
         }
 
         $branches = [
-            ['city_id' => $cities->random()->id, 'name' => 'Branch 1'],
-            ['city_id' => $cities->random()->id, 'name' => 'Branch 2'],
-            ['city_id' => $cities->random()->id, 'name' => 'Branch 3'],
-            ['city_id' => $cities->random()->id, 'name' => 'Branch 4'],
-            ['city_id' => $cities->random()->id, 'name' => 'Branch 5'],
+            ['city_id' => $cities->random()->id, 'name' => 'فرع 1'],
+            ['city_id' => $cities->random()->id, 'name' => 'فرع 2'],
+            ['city_id' => $cities->random()->id, 'name' => 'فرع 3'],
+            ['city_id' => $cities->random()->id, 'name' => 'فرع 4'],
+            ['city_id' => $cities->random()->id, 'name' => 'فرع 5'],
             // Add more addresses as needed
         ];
 

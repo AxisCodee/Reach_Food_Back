@@ -21,11 +21,11 @@ class CategorySeeder extends Seeder
         }
 
         $categories = [
-            ['branch_id' => $branches->random()->id, 'name' => 'Category 1'],
-            ['branch_id' => $branches->random()->id, 'name' => 'Category 2'],
-            ['branch_id' => $branches->random()->id, 'name' => 'Category 3'],
-            ['branch_id' => $branches->random()->id, 'name' => 'Category 4'],
-            ['branch_id' => $branches->random()->id, 'name' => 'Category 5'],
+            ['branch_id' => $branches->random()->id, 'name' => 'فئة 1'],
+            ['branch_id' => $branches->random()->id, 'name' => 'فئة 2'],
+            ['branch_id' => $branches->random()->id, 'name' => 'فئة 3'],
+            ['branch_id' => $branches->random()->id, 'name' => 'فئة 4'],
+            ['branch_id' => $branches->random()->id, 'name' => 'فئة 5'],
             // Add more addresses as needed
         ];
 
