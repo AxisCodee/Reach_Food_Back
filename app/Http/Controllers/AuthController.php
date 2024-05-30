@@ -89,12 +89,15 @@ class AuthController extends Controller
                     }
                 }
             }
-            $token = $user->createToken('auth_token')->plainTextToken;
-            return ResponseHelper::success([
-                'user' => $user,
-                'access_token' => $token,
-                'token_type' => 'Bearer',
-            ]);
+           $token = $user->createToken('auth_token', ['*'], now()->addMinutes(10000))->plainTextToken;
+$expiresAt = $user->tokens()->latest()->first()->expires_at;
+
+return ResponseHelper::success([
+    'user' => $user,
+    'access_token' => $token,
+    'token_type' => 'Bearer',
+    'expires_at' => $expiresAt,
+]);
         });
     }
 
@@ -108,13 +111,16 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->password, $user->password)) {
             return ResponseHelper::error('Invalid username or password.', 401);
         }
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('auth_token', ['*'], now()->addMinutes(10000))->plainTextToken;
+        $expiresAt = $user->tokens()->latest()->first()->expires_at;
+
         return ResponseHelper::success([
             'user' => $user->with(['contacts', 'userDetails', 'userDetails.address',
-                'userDetails.address.city',
-                'userDetails.address.city.country'])->find($user->id),
+                        'userDetails.address.city',
+                        'userDetails.address.city.country'])->find($user->id),
             'access_token' => $token,
             'token_type' => 'Bearer',
+            'expires_at' => $expiresAt,
         ]);
     }
 
