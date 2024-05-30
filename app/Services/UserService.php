@@ -24,7 +24,7 @@ class UserService
 
     public function createUserDetails(Request $request, $user_id)
     {
-       $image =  UserDetail::findOrFail($user_id);
+
         UserDetail::query()->create([
             'user_id' => $user_id,
             'image' => $this->fileService->upload($request, 'image'),
