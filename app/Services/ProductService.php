@@ -22,14 +22,20 @@ class ProductService
     }
 
     public function updateProduct($request, $product)
-    {
+{
+    $data = $request->validated();
+
+    if ($request->hasFile('image')) {
         $imagePath = app(FileService::class)->upload($request, 'image');
-        $data = $request->validated();
         $data['image'] = $imagePath;
-        $result = Product::findOrFail($product)
-            ->update($data);
-        return $result;
+    } else {
+        $existingProduct = Product::findOrFail($product);
+        $data['image'] = $existingProduct->image;
     }
+
+    $result = Product::findOrFail($product)->update($data);
+    return $result;
+}
 
     public function updatePrice($request)
     {
