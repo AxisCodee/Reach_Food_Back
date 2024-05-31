@@ -21,12 +21,9 @@ class DatabaseSeeder extends Seeder
             CountrySeeder::class,
             CitySeeder::class,
             AddressSeeder::class,
-            DaySeeder::class,
             PermissionSeeder::class,
             BranchSeeder::class,
-            CategorySeeder::class,
             UserSeeder::class,
-            UserDetailsSeeder::class
             // Add other seeders here if necessary
         ]);
     }

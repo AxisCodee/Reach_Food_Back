@@ -29,7 +29,6 @@ class UpdateUserRequest extends FormRequest
             'password' => 'string',
             'role' => 'in:super admin,admin,customer,salesman,sales manager',
             'customer_type' => 'in:shop,center',
-            // user details
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'address_id' => 'exists:addresses,id',
             'location' => 'string|max:255',

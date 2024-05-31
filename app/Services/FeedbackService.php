@@ -18,7 +18,6 @@ class FeedbackService
             'user_id' => Auth::user()->id,
             'content' => $request->content,
             'branch_id' => $request->branch_id
-
         ]);
         return $result;
     }
@@ -27,8 +26,8 @@ class FeedbackService
     public function index()
     {
         $branch = request()->input('branch_id');
-        $result = Feedback::query()->where('branch_id',$branch)
-        ->with('user','user.userDetails')->get()->toArray();
+        $result = Feedback::query()->where('branch_id', $branch)
+            ->with('user')->get()->toArray();
         return $result;
     }
 

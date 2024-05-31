@@ -28,14 +28,10 @@ class Trip extends Model
         return $this->hasMany(Order::class);
     }
 
-    public function day(): BelongsTo
-    {
-        return $this->belongsTo(Day::class);
-    }
 
     public function dates(): HasMany
     {
         return $this->hasMany(TripDates::class);
     }
-    
+
 }

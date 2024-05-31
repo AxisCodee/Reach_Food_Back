@@ -4,7 +4,6 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\StoreProductRequest;
-use App\Models\Product;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
 
@@ -59,6 +58,15 @@ class ProductController extends Controller
     {
         $products = $this->productService->getSalesmanProducts($request);
         return ResponseHelper::success($products);
+    }
+
+    public function importProducts(Request $request)
+    {
+        $products = $request['products'];
+        foreach ($products as $product) {
+            $this->productService->importProduct($product, $request->category_id);
+        }
+        return ResponseHelper::success('Products imported successfully');
     }
 
 

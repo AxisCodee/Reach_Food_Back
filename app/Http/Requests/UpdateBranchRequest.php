@@ -23,8 +23,6 @@ class UpdateBranchRequest extends FormRequest
     {
         return [
             'city_id' => 'exists:cities,id',
-            'categories' => 'array',
-            'categories.name*' => 'required',
             'admin_id' => 'exists:users,id',
         ];
     }

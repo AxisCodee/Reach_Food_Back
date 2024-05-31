@@ -3,9 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
-use App\Http\Requests\DeleteUserRequest;
 use App\Http\Requests\UpdateUserRequest;
-use App\Models\Permission;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
@@ -18,11 +16,6 @@ class UserController extends Controller
     {
         $this->userService = $userService;
     }
-//    public function show()//???
-//    {
-//        $result =app(UserService::class)->show();
-//        return ResponseHelper::success($result, null, 'products returned successfully', 200);
-//    }
 
     public function index(Request $request)
     {
@@ -30,6 +23,11 @@ class UserController extends Controller
         return ResponseHelper::success($users);
     }
 
+    public function show($user)//???
+    {
+        $result = $this->userService->show($user);
+        return ResponseHelper::success($result);
+    }
 
     public function destroy($user)
     {
@@ -43,7 +41,7 @@ class UserController extends Controller
 
     public function update(UpdateUserRequest $request, $user)
     {
-        $result = $this->userService->updateUserDetails($request, $user);
+        $result = $this->userService->updateUser($request, $user);
         if ($result) {
             return ResponseHelper::success('User updated successfully.');
         }
@@ -57,26 +55,5 @@ class UserController extends Controller
         return ResponseHelper::success($customers);
 
     }
-
-//    public function branchCustomers(Request $request)
-//    {
-//        $customers = $this->userService->getBranchCustomers($request);
-//        return ResponseHelper::success($customers);
-//
-//    }
-
-//    public function categoryUsers(Request $request)
-//    {
-//        $customers = $this->userService->getCategoryUsers($request);
-//        return ResponseHelper::success($customers);
-//
-//    }
-//
-//    public function admins()
-//    {
-//        $admins = $this->userService->getAdmins();
-//        return ResponseHelper::success($admins);
-//
-//    }
 
 }

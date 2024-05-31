@@ -15,11 +15,12 @@ return new class extends Migration {
             $table->string('name');
             $table->string('user_name')->unique();
             $table->string('password');
-            $table->foreignId('salesManager_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->foreignId('superAdmin_id')->nullable()->constrained('users')->onDelete('set null');
             $table->foreignId('branch_id')->nullable()->constrained('branches')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->enum('role', ['admin', 'super admin', 'customer', 'salesman', 'sales manager'])->default('customer');
+            $table->foreignId('address_id')->nullable()->constrained('addresses')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('location')->nullable();
+            $table->enum('role', ['customer', 'salesman', 'sales manager', 'admin', 'super admin'])->default('customer');
             $table->enum('customer_type', ['shop', 'center'])->nullable();
+            $table->text('image')->nullable();
             $table->rememberToken();
             $table->timestamps();
         });

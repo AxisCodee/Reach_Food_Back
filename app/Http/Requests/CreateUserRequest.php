@@ -38,13 +38,15 @@ class CreateUserRequest extends FormRequest
 
 
             // salesman
-            'salesManager_id' => 'exists:users,id',
-            'trips' => 'array',
+            //'salesManager_id' => 'exists:users,id',
+            'trips' => 'array',//
             'trips.*address_id' => ['required', 'exists:addresses,id'],
             'trips.*day_id' => ['required', 'exists:days,id'],
-            'trips.*start_time' => ['required', 'date_format:H:i'],
-            'categories' => 'array',
-            'categories.*' => 'exists:categories,id',
+            'trips.*start_time' => ['required', 'date_format:H:i'],//
+
+            'branches' => 'array',
+            'branches.*branch_id' => 'exists:categories,id',
+            'branches.*salesManger_id' => 'exists:users,id',
             'permissions' => 'array',
             'permissions.*permission_id' => 'exists:permissions,id',
             'permissions.*status' => 'in:true,false',

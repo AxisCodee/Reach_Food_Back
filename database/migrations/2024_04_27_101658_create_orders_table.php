@@ -15,7 +15,7 @@ return new class extends Migration {
             $table->foreignId('customer_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('trip_date_id')->nullable()->constrained('trip_dates')->cascadeOnDelete()->cascadeOnUpdate();
             $table->enum('status', ['pending', 'accepted', 'cancelled', 'delivered'])->default('pending');
-            $table->foreignId('category_id')->constrained('categories')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('branch_id')->constrained('branches')->cascadeOnDelete()->cascadeOnUpdate();
             $table->dateTime('order_date')->nullable();
             $table->date('delivery_date')->nullable();
             $table->time('delivery_time')->nullable();
