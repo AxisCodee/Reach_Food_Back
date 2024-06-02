@@ -18,7 +18,7 @@ class AddressService
 
     public function getCountries()
     {
-        return Country::all()->toArray();
+        return Country::query()->with(['cities.branch'])->get()->toArray();
 
     }
 
