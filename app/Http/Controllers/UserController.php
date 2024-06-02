@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Roles;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
@@ -39,9 +40,16 @@ class UserController extends Controller
     }
 
 
-    public function update(UpdateUserRequest $request, $user)
+    public function update(UpdateUserRequest $request, $user_id)
     {
-        $result = $this->userService->updateUser($request, $user);
+        $result = $this->userService->updateUser($request, $user_id);
+        $user = User::findOrFail($user_id);
+        if ($user->role == Roles::SALESMAN->value) {
+            $this->userService->updateSalesman($request, $user);
+        }
+        if ($user->role == Roles::SALES_MANAGER->value) {
+            $this->userService->updateSalesManager($request, $user);
+        }
         if ($result) {
             return ResponseHelper::success('User updated successfully.');
         }
