@@ -23,7 +23,7 @@ class StoreProductRequest extends FormRequest
     {
         return [
             'name' => 'required|string',
-            'category_id' => 'required|exists:categories,id',
+            'branch_id' => 'required|exists:branches,id',
             'description' => 'nullable|string',
             'stock_quantity' => 'nullable|numeric',
             'amount_unit' => 'required|in:kg,piece',

@@ -55,11 +55,6 @@ class TripController extends Controller
         return ResponseHelper::error('Failed to delete trip');
     }
 
-    public function getDays()
-    {
-        $days = Day::all()->toArray();
-        return ResponseHelper::success($days);
-    }
 
     public function salesmanTripsDaily()
     {

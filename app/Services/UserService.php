@@ -5,7 +5,7 @@ namespace App\Services;
 use App\Enums\Roles;
 use App\Models\Contact;
 use App\Models\User;
-use App\Models\UserDetail;
+use App\Models\UserPermission;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -22,24 +22,17 @@ class UserService
         $this->fileService = $fileService;
     }
 
-    public function createUserDetails(Request $request, $user_id)
+    public function createUserContacts($contacts, $user_id)
     {
-
-        UserDetail::query()->create([
-            'user_id' => $user_id,
-            'image' => $this->fileService->upload($request, 'image'),
-            'address_id' => $request->address_id,
-            'location' => $request->location,
-        ]);
-        foreach ($request['phone_number'] as $item)
+        foreach ($contacts as $contact)
             Contact::query()->create([
                 'user_id' => $user_id,
-                'phone_number' => $item
+                'phone_number' => $contact
             ]);
         return true;
     }
 
-    public function updateUserDetails(Request $request, $user_id)
+    public function updateUser(Request $request, $user_id)
     {
         return DB::transaction(function () use ($request, $user_id) {
             $user = User::query()->findOrFail($user_id);
@@ -48,44 +41,68 @@ class UserService
                 'user_name' => $request->user_name,
                 'password' => Hash::make($request['password']),
                 'branch_id' => $request->branch_id,
+                'address_id' => $request->address_id,
+                'location' => $request->location,
             ]);
-            $userDetail = $user->userDetails;
             if ($request->hasFile('image')) {
-                $userDetail->update([
+                $user->update([
                     'image' => $this->fileService
-                        ->update($userDetail->image, $request, 'image'),
+                        ->update($user->image, $request, 'image'),
                 ]);
             }
-            $userDetail->update([
-                'address_id' => $request['address_id'],
-                'location' => $request['location'],
-            ]);
             $contacts = $request['phone_number'];
             if ($contacts) {
                 $user->contacts()->delete();
-                foreach ($contacts as $item) {
-                    Contact::query()->create([
-                        'user_id' => $user_id,
-                        'phone_number' => $item
-                    ]);
-                }
+                $this->createUserContacts($contacts, $user_id);
             }
             return true;
         });
     }
 
-    public function Show()
+    public function updateSalesman($request, $user)
     {
-        $result = User::get();
-        return $result;
+        //update permissions
+        $permissions = $request['permissions'];
+        if ($permissions) {
+            foreach ($permissions as $index => $permission) {
+                $status = $permission['status'];
+                UserPermission::query()->where('user_id', $user->id)
+                    ->where('permission_id', $index + 1)
+                    ->update([
+                        'status' => $status
+                    ]);
+            }
+        }
+        //update branches
+        // Get branches data from the request
+        $branches = $request['branches'];
+        if ($branches) {
+            $user->salesManager()->detach();
+            foreach ($branches as $branch) {
+                $user->salesManager()->attach($branch['salesManager_id']);
+            }
+        }
+
     }
 
-    public function linkWithSalesManager($salesman, $salesManager_id)
+    public function updateSalesManager($request, $user)
     {
-        return User::query()->findOrFail($salesman)
-            ->update([
-                'salesManager_id' => $salesManager_id
-            ]);
+        $user->update([//link with category(branch)
+            'branch_id' => $request->branch_id
+        ]);
+        //link with salesmen
+        $salesmen = $request['salesmen'];
+        if ($salesmen) {
+            $user->salesman()->detach();
+            $user->salesman()->attach($salesmen);
+        }
+
+    }
+
+    public function show($user)
+    {
+        return User::query()->with(['contacts', 'address.city.country'])
+            ->findOrFail($user);
     }
 
     public function linkTripWithSalesman($trip, $salesmanId)
@@ -98,26 +115,34 @@ class UserService
 
     public function getUsersByType($request)
     {
-        if ($request->role == Roles::CUSTOMER->value) {
-            return User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address.city.country'])
+        if ($request->role == Roles::CUSTOMER->value) {//By City
+            return User::query()->with(['contacts:id,user_id,phone_number', 'address.city'])
                 ->where('role', Roles::CUSTOMER->value)
-                ->where('branch_id', $request->branch_id)
-                ->get()->toArray();
-        }
-        if ($request->role == Roles::ADMIN->value) {
-            return User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address.city.country',
-                'branch.city.country'])
-                ->where('role', 'admin')
-                ->get()->toArray();
-        } else {
-            return User::query()->with(['contacts:id,user_id,phone_number', 'userDetails.address.city.country',
-                'branch.city.country'])
-                ->where('role', $request->role)
-                ->whereHas('categories', function ($query) use ($request) {
-                    $query->where('category_id', $request->category_id);
+                ->whereHas('address', function ($query) use ($request) {
+                    $query->where('city_id', $request->city_id);//TODO city Customers
                 })
                 ->get()->toArray();
         }
+        if ($request->role == Roles::ADMIN->value) {
+            return User::query()->with(['contacts:id,user_id,phone_number', 'address.city.country'])
+                ->where('role', Roles::ADMIN->value)
+                ->get()->toArray();
+        }
+        //By Branch
+        if ($request->role == Roles::SALES_MANAGER->value) {
+            return User::query()->with(['contacts:id,user_id,phone_number', 'address.city.country'])
+                ->where('role', Roles::SALES_MANAGER->value)
+                ->where('branch_id', $request->branch_id)
+                ->get()->toArray();
+        } else {//Salesman
+            return User::query()->with(['contacts:id,user_id,phone_number', 'address.city.country'])
+                ->where('role', Roles::SALESMAN->value)
+                ->whereHas('salesManager', function ($query) use ($request) {
+                    $query->where('branch_id', $request->branch_id);
+                })
+                ->get()->toArray();
+        }
+
     }
 
 }

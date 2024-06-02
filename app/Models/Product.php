@@ -9,8 +9,9 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 class Product extends Model
 {
     use HasFactory;
+
     public $timestamps = false;
-    protected $guarded=[];
+    protected $guarded = [];
 
     public function orders(): BelongsToMany
     {

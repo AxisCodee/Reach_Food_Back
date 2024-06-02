@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
@@ -27,10 +26,10 @@ class User extends Authenticatable
         'password',
         'role',
         'customer_type',
-        'userDetails_id',
         'branch_id',
-        'salesManager_id',
-        'superAdmin_id'
+        'address_id',
+        'location',
+        'image'
     ];
 
     /**
@@ -73,14 +72,10 @@ class User extends Authenticatable
         } else return null;
     }
 
-    public function userDetails(): HasOne
-    {
-        return $this->hasOne(UserDetail::class);
-    }
 
     public function orders(): HasMany
     {
-        return $this->hasMany(Order::class,'customer_id');
+        return $this->hasMany(Order::class, 'customer_id');
     }
 
     public function trips(): HasMany
@@ -108,26 +103,20 @@ class User extends Authenticatable
         return $this->belongsTo(Branch::class);
     }
 
-    public function categories(): BelongsToMany
+    public function address(): BelongsTo
     {
-        return $this->belongsToMany(Category::class, 'user_category');
+        return $this->belongsTo(Address::class);
     }
 
-
-    public function salesManager(): BelongsTo
+    public function salesManager(): BelongsToMany//
     {
-        return $this->belongsTo(User::class, 'admin_id');
+        return $this->belongsToMany(User::class, 'salesManager_salesman', 'salesman_id', 'salesManager_id');
     }
 
-    public function salesmen(): HasMany
+    public function salesman(): belongsToMany//
     {
-        return $this->hasMany(User::class, 'salesManager_id');
+        return $this->belongsToMany(User::class, 'salesManager_salesman', 'salesManager_id', 'salesman_id');
 
-    }
-
-    public function customers(): HasMany
-    {
-        return $this->hasMany(User::class, 'salesman_id');
     }
 
 

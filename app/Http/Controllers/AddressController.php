@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseHelper;
 use App\Models\Address;
 use App\Models\Branch;
+use App\Models\City;
 use App\Services\AddressService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -37,9 +38,9 @@ class AddressController extends Controller
         });
     }
 
-    public function branchAddresses($branch)//return addresses form branch city
+    public function getAddresses($city)
     {
-        $city = Branch::findOrFail($branch)->city()->first();
+        $city = City::findOrFail($city);
         $addresses = $city->addresses->toArray();
         return ResponseHelper::success($addresses);
     }

@@ -14,9 +14,9 @@ class BranchService
     public function getBranches()
     {
         return Branch::query()
-            ->with(['city.country', 'categories:id,name,branch_id'])
+            ->with(['city.country'])
             ->with('users', function ($query) {
-                $query->where('role', 'admin');
+                $query->where('role', 'sales manager');
             })
             ->get()
             ->toArray();
@@ -25,9 +25,9 @@ class BranchService
     public function showBranch($id)
     {
         return Branch::query()
-            ->with(['city.country', 'categories:id,name,branch_id'])
+            ->with(['city.country'])
             ->with('users', function ($query) {
-                $query->where('role', 'admin');
+                $query->where('role', 'sales manager');
             })
             ->findOrFail($id);
     }

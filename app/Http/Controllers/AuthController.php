@@ -7,6 +7,7 @@ use App\Helpers\ResponseHelper;
 use App\Http\Requests\CreateUserRequest;
 use App\Models\User;
 use App\Models\UserPermission;
+use App\Services\FileService;
 use App\Services\TripService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
@@ -31,72 +32,65 @@ class AuthController extends Controller
                 'user_name' => $request->user_name,
                 'password' => Hash::make($request['password']),
                 'role' => $request->role,
-                'branch_id' => $request->input('branch_id'),
+                'image' => app(FileService::class)->upload($request, 'image'),
+                'address_id' => $request->address_id,
+                'location' => $request->location,
             ]);
-            $this->userService->createUserDetails($request, $user->id);
+            $contacts = $request['phone_number'];
+            $this->userService->createUserContacts($contacts,$user->id);
             if ($request->role == Roles::CUSTOMER->value) {
                 $user->update([
                     'customer_type' => $request->customer_type,
                 ]);
             } else {
                 if ($request->role != Roles::SUPER_ADMIN->value) {
-                    //assign permissions
-                    $permissions = $request['permissions'];
-                    if ($permissions) {
-                        foreach ($permissions as $index => $permission) {
-                            $status = $permission['status'];
-                            UserPermission::create([
-                                'permission_id' => $index + 1,
-                                'user_id' => $user->id,
-                                'status' => $status
-                            ]);
-                        }
-                    }
-                    $user->update([
-                        'branch_id' => $request->branch_id
-                    ]);
-                    if ($request->role == Roles::ADMIN->value) {
-                        $user->update([
-                            'superAdmin_id' => auth('sanctum')->id()
-                        ]);
-                    }
                     if ($request->role == Roles::SALES_MANAGER->value) {
+                        $user->update([//link with category(branch)
+                            'branch_id' => $request->input('branch_id')
+                        ]);
                         //link with salesmen
                         $salesmen = $request['salesmen'];
                         if ($salesmen) {
-                            foreach ($salesmen as $salesman) {
-                                $this->userService->linkWithSalesManager($salesman, $user->id);
-                            }
+                           // $user->salesManager()->attach($salesmen);
+                            $user->salesman()->attach($salesmen);
                         }
                     }
                     if ($request->role == Roles::SALESMAN->value) {
-                        //create trips
-                        $user->update([
-                            'salesManager_id' => $request->salesManager_id,
-                        ]);
-                        $trips = $request['trips'];
-                        if ($trips) {
-                            foreach ($trips as $trip) {
-                                $trip = app(TripService::class)->createTrip($trip);
-                                $this->userService->linkTripWithSalesman($trip, $user->id);
+                        //assign permissions
+                        $permissions = $request['permissions'];
+                        if ($permissions) {
+                            foreach ($permissions as $index => $permission) {
+                                $status = $permission['status'];
+                                UserPermission::create([
+                                    'permission_id' => $index + 1,
+                                    'user_id' => $user->id,
+                                    'status' => $status
+                                ]);
                             }
                         }
+                        //TRIPS
+//                        $trips = $request['trips'];
+//                        if ($trips) {
+//                            foreach ($trips as $trip) {
+//                                $trip = app(TripService::class)->createTrip($trip);
+//                                $this->userService->linkTripWithSalesman($trip, $user->id);
+//                            }
+//                        }
                         // link with categories
-                        $categories = $request['categories'];
-                        if ($categories) {
-                            $user->categories()->attach($categories);
+                        $branches = $request['branches'];
+                        if ($branches) {
+                            foreach ($branches as $branch) {
+                                $user->salesManager()->attach($branch['salesManager_id']);
+                            }
                         }
                     }
                 }
             }
-            $token = $user->createToken('auth_token', ['*'], now()->addMinutes(10000))->plainTextToken;
-            $expiresAt = $user->tokens()->latest()->first()->expires_at;
-
+            $token = $user->createToken('auth_token')->plainTextToken;
             return ResponseHelper::success([
                 'user' => $user,
                 'access_token' => $token,
                 'token_type' => 'Bearer',
-                'expires_at' => $expiresAt,
             ]);
         });
     }
@@ -115,11 +109,9 @@ class AuthController extends Controller
         $expiresAt = $user->tokens()->latest()->first()->expires_at;
 
         return ResponseHelper::success([
-            'user' => $user->with([
-                'contacts', 'userDetails', 'userDetails.address',
-                'userDetails.address.city',
-                'userDetails.address.city.country'
-            ])->find($user->id),
+            'user' => $user->with(['contacts', 'userDetails', 'userDetails.address',
+                        'userDetails.address.city',
+                        'userDetails.address.city.country'])->find($user->id),
             'access_token' => $token,
             'token_type' => 'Bearer',
             'expires_at' => $expiresAt,

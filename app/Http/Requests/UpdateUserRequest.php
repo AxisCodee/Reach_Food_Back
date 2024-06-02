@@ -25,11 +25,10 @@ class UpdateUserRequest extends FormRequest
     {
         return [
             'name' => 'string|max:255',
-            'user_name' => 'string|max:255|unique:users',
+            'user_name' => 'string|max:255',
             'password' => 'string',
             'role' => 'in:super admin,admin,customer,salesman,sales manager',
             'customer_type' => 'in:shop,center',
-            // user details
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'address_id' => 'exists:addresses,id',
             'location' => 'string|max:255',
@@ -38,19 +37,21 @@ class UpdateUserRequest extends FormRequest
 
 
             // salesman
-//            'salesManager_id' => 'exists:users,id',
+            'branches' => 'array',
+            'branches.*branch_id' => 'exists:branches,id',
+            'branches.*salesManger_id' => 'exists:users,id',
 //            'trips' => 'array',
 //            'trips.*address_id' => ['required', 'exists:addresses,id'],
 //            'trips.*day_id' => ['required', 'exists:days,id'],
 //            'trips.*start_time' => ['required', 'date_format:H:i'],
-//            'categories' => 'array',
-//            'categories.*' => 'exists:categories,id',
-//            'permissions' => 'array',
-//            'permissions.*permission_id' => 'exists:permissions,id',
-//            'permissions.*status' => 'in:true,false',
-//            // sales manager
-//            'salesmen' => 'array',
-//            'salesmen.*' => 'exists:users,id'
+
+            'permissions' => 'array',
+            'permissions.*permission_id' => 'exists:permissions,id',
+            'permissions.*status' => 'in:true,false',
+            // sales manager
+            'branch_id' => 'exists:branches,id',
+            'salesmen' => 'array',
+            'salesmen.*' => 'exists:users,id'
         ];
     }
 

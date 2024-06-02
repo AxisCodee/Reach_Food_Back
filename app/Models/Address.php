@@ -21,11 +21,11 @@ class Address extends Model
     public function trips(): HasMany
     {
         return $this->hasMany(Trip::class);
+    } public function users(): HasMany
+    {
+        return $this->hasMany(User::class);
     }
 
-    public function usersDetails(): HasMany
-    {
-        return $this->hasMany(UserDetail::class);
-    }
+
 
 }

@@ -23,8 +23,4 @@ class Branch extends Model
         return $this->hasMany(User::class);
     }
 
-    public function categories(): HasMany
-    {
-        return $this->hasMany(Category::class);
-    }
 }

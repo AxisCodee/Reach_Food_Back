@@ -2,12 +2,9 @@
 
 namespace App\Services;
 
-use App\Helpers\ResponseHelper;
-use App\Http\Requests\StoreProductRequest;
-use App\Models\Category;
+use App\Models\Branch;
 use App\Models\Product;
-use App\Models\User;
-use Illuminate\Http\Request;
+
 
 /**
  * Class ProductService.
@@ -58,13 +55,13 @@ class ProductService
             ];
         }
 
-        return  $updatedProduct;
+        return $updatedProduct;
     }
 
     public function indexProduct()
     {
-        $category_id = request()->input('category_id');
-        $result = Product::query()->where('category_id', $category_id)->paginate(10);
+        $branch_id = request()->input('branch_id');
+        $result = Product::query()->where('branch_id', $branch_id)->paginate(10);
         return $result;
     }
 
@@ -82,8 +79,23 @@ class ProductService
 
     public function getSalesmanProducts($request)
     {
-        $products = Category::findOrFail($request->category_id)->products()->get()->toArray();
-        return $products;
+        return Branch::findOrFail($request->branch_id)->products()->get()->toArray();
+    }
+
+    public function importProduct($product_id, $branch_id)
+    {
+        $product = Product::FindOrFail($product_id);
+        Product::query()->create([
+            'name' => $product->product_name,
+            'branch_id' => $branch_id,
+            'description' => $product->product_description,
+            'amount' => $product->product_amount,
+            'unit_price' => $product->product_unit_price,
+            'wholesale_price' => $product->product_wholesale_price,
+            'retail_price' => $product->retail_price,
+            'image' => $product->product_image,
+        ]);
+        return true;
     }
 
 }
