@@ -89,15 +89,15 @@ class AuthController extends Controller
                     }
                 }
             }
-           $token = $user->createToken('auth_token', ['*'], now()->addMinutes(10000))->plainTextToken;
-$expiresAt = $user->tokens()->latest()->first()->expires_at;
+            $token = $user->createToken('auth_token', ['*'], now()->addMinutes(10000))->plainTextToken;
+            $expiresAt = $user->tokens()->latest()->first()->expires_at;
 
-return ResponseHelper::success([
-    'user' => $user,
-    'access_token' => $token,
-    'token_type' => 'Bearer',
-    'expires_at' => $expiresAt,
-]);
+            return ResponseHelper::success([
+                'user' => $user,
+                'access_token' => $token,
+                'token_type' => 'Bearer',
+                'expires_at' => $expiresAt,
+            ]);
         });
     }
 
@@ -115,9 +115,11 @@ return ResponseHelper::success([
         $expiresAt = $user->tokens()->latest()->first()->expires_at;
 
         return ResponseHelper::success([
-            'user' => $user->with(['contacts', 'userDetails', 'userDetails.address',
-                        'userDetails.address.city',
-                        'userDetails.address.city.country'])->find($user->id),
+            'user' => $user->with([
+                'contacts', 'userDetails', 'userDetails.address',
+                'userDetails.address.city',
+                'userDetails.address.city.country'
+            ])->find($user->id),
             'access_token' => $token,
             'token_type' => 'Bearer',
             'expires_at' => $expiresAt,
@@ -134,7 +136,7 @@ return ResponseHelper::success([
         return ResponseHelper::error('You are not authorized.', 401);
     }
 
-    public function refresh()//TODO
+    public function refresh() //TODO
     {
         auth('sanctum')->user()->tokens()->delete();
         $token = auth('sanctum')->user()->createToken('auth_token')->plainTextToken;
@@ -152,5 +154,4 @@ return ResponseHelper::success([
         }
         return ResponseHelper::error('You are not authorized.', 401);
     }
-
 }

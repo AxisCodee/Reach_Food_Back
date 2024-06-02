@@ -3,7 +3,9 @@
 namespace App\Services;
 
 use App\Models\Trip;
+use App\Models\TripDates;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -29,10 +31,20 @@ class TripService
     public function createTrip($trip)
     {
         return DB::transaction(function () use ($trip) {
-            return Trip::query()->create([
+
+            $trip = Trip::query()->create([
                 'address_id' => $trip['address_id'],
-                'day_id' => $trip['day_id'],
+                'day' => $trip['day'],
                 'start_time' => $trip['start_time'],
+            ]);
+            $startDate = Carbon::parse($trip['day'])->next();
+
+                TripDates::create([
+                'trip_id' => $trip->id,
+                'address_id' => $trip['address_id'],
+                'start_time' => $trip['start_time'],
+                'start_date' => $startDate->format('Y-m-d'),
+
             ]);
         });
     }
@@ -60,11 +72,10 @@ class TripService
 
     public function getSalesmanTripsWeekly()
     {
-        $salesman = User::FindOrFail(4);//auth
-         return $salesman->trips()
+        $salesman = User::FindOrFail(4); //auth
+        return $salesman->trips()
             ->with(['day:id,name', 'address:id,city_id,area'])
             ->get()
             ->toArray();
     }
-
 }
