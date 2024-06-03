@@ -17,16 +17,20 @@ class AddressService
     }
 
     public function getCountries()
-    {
-        return Country::query()
-            ->whereHas('cities.branch', function ($query) {
-                $query->exists();
-            })
-            ->with(['cities.branch'])
-            ->get()
-            ->toArray();
-    }
-
+{
+    return Country::query()
+        ->with(['cities' => function ($query) {
+            $query->whereHas('branch');
+        }])
+        ->get()
+        ->map(function ($country) {
+            $country->cities = $country->cities->filter(function ($city) {
+                return $city->branch;
+            });
+            return $country;
+        })
+        ->toArray();
+}
     public function getCities($country)
     {
         return Country::query()->findOrFail($country)->cities->toArray();

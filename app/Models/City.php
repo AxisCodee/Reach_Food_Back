@@ -25,7 +25,7 @@ class City extends Model
 
     public function branch(): HasMany
     {
-        return $this->hasMany(Branch::class);
+        return $this->hasMany(Branch::class,'city_id');
     }
     public function admins(): HasMany
     {
