@@ -37,7 +37,7 @@ class AuthController extends Controller
                 'location' => $request->location,
             ]);
             $contacts = $request['phone_number'];
-            $this->userService->createUserContacts($contacts,$user->id);
+            $this->userService->createUserContacts($contacts, $user->id);
             if ($request->role == Roles::CUSTOMER->value) {
                 $user->update([
                     'customer_type' => $request->customer_type,
@@ -51,7 +51,7 @@ class AuthController extends Controller
                         //link with salesmen
                         $salesmen = $request['salesmen'];
                         if ($salesmen) {
-                           // $user->salesManager()->attach($salesmen);
+                            // $user->salesManager()->attach($salesmen);
                             $user->salesman()->attach($salesmen);
                         }
                     }
@@ -109,7 +109,7 @@ class AuthController extends Controller
         $expiresAt = $user->tokens()->latest()->first()->expires_at;
 
         return ResponseHelper::success([
-            'user' => $user->with(['contacts','address.city.country'])->find($user->id),
+            'user' => $user->with(['contacts', 'address.city.country'])->find($user->id),
             'access_token' => $token,
             'token_type' => 'Bearer',
             'expires_at' => $expiresAt,

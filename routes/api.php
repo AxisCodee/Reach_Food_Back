@@ -33,6 +33,11 @@ Route::prefix('user')->group(function () {
     Route::get('permissions', [PermissionController::class, 'index']);
 
 
+    Route::prefix('salesman')->group(function () {
+        Route::get('/customers', [UserController::class, 'getSalesmanCustomers']);
+    });
+
+
 });
 
 
@@ -58,6 +63,10 @@ Route::prefix('product')->group(function () {
     Route::post('updatePrice', [ProductController::class, 'updatePrice']);
 
     Route::post('/import', [ProductController::class, 'importProducts']);
+
+    Route::prefix('salesman')->group(function () {
+        Route::get('/index', [ProductController::class, 'salesmanProducts']);
+    });
 });
 
 
