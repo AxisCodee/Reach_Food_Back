@@ -6,6 +6,7 @@ use App\Helpers\ResponseHelper;
 use App\Http\Requests\CreateBranchRequest;
 use App\Http\Requests\UpdateBranchRequest;
 use App\Models\Branch;
+use App\Models\City;
 use App\Models\User;
 use App\Services\BranchService;
 use Illuminate\Http\Request;
@@ -83,5 +84,20 @@ class BranchController extends Controller
         return ResponseHelper::success('Branches deleted successfully.');
     }
 
+    public function branches()
+    {
+        $result = City::with([
+            'country',
+            'branch.users' => function ($query) {
+                $query->where('role', 'admin');
+            }
+        ])
+            ->whereHas('branch.users', function ($query) {
+                $query->where('role', 'admin');
+            })
+            ->get()
+            ->toArray();
+        return ResponseHelper::success($result);
+    }
 
 }

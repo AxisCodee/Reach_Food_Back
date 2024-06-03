@@ -18,14 +18,7 @@ class AddressService
 
     public function getCountries()
     {
-        return Country::query()
-            ->with([
-                'cities.branch.users' => function ($query) {
-                    $query->where('role', 'admin');
-                }
-            ])
-            ->get()
-            ->toArray();
+        return Country::query()->with(['cities.branch'])->get()->toArray();
 
     }
 
