@@ -69,13 +69,13 @@ class AuthController extends Controller
                             }
                         }
                         //TRIPS
-//                        $trips = $request['trips'];
-//                        if ($trips) {
-//                            foreach ($trips as $trip) {
-//                                $trip = app(TripService::class)->createTrip($trip);
-//                                $this->userService->linkTripWithSalesman($trip, $user->id);
-//                            }
-//                        }
+                       $trips = $request['trips'];
+                       if ($trips) {
+                           foreach ($trips as $trip) {
+                               $trip = app(TripService::class)->createTrip($trip);
+                               $this->userService->linkTripWithSalesman($trip, $user->id);
+                           }
+                       }
                         // link with categories
                         $branches = $request['branches'];
                         if ($branches) {
@@ -109,9 +109,8 @@ class AuthController extends Controller
         $expiresAt = $user->tokens()->latest()->first()->expires_at;
 
         return ResponseHelper::success([
-            'user' => $user->with(['contacts', 'userDetails', 'userDetails.address',
-                        'userDetails.address.city',
-                        'userDetails.address.city.country'])->find($user->id),
+            'user' => $user->with(['contacts',
+                        'address.city.country'])->find($user->id),
             'access_token' => $token,
             'token_type' => 'Bearer',
             'expires_at' => $expiresAt,

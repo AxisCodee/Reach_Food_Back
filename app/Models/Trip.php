@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Support\Facades\Date;
 
 class Trip extends Model
 {
@@ -27,7 +28,10 @@ class Trip extends Model
     {
         return $this->hasMany(Order::class);
     }
-
+    // public function date(): HasMany
+    // {
+    //     return $this->hasMany(TripDates::class);
+    // }
 
     public function dates(): HasMany
     {

@@ -28,6 +28,15 @@ class TripService
             ->find($request->trip_id);
     }
 
+
+    public function index($request)
+    {
+        return Trip::query()->where('branch_id',$request->branch_id)
+        ->where('day',$request->day)
+            ->with(['dates.order.customer','address','salesman'])
+            ->get()->toArray();
+    }
+
     public function createTrip($trip)
     {
         return DB::transaction(function () use ($trip) {
@@ -35,17 +44,18 @@ class TripService
             $trip = Trip::query()->create([
                 'address_id' => $trip['address_id'],
                 'day' => $trip['day'],
+                'branch_id' => $trip['branch_id'],
                 'start_time' => $trip['start_time'],
             ]);
-            $startDate = Carbon::parse($trip['day'])->next();
-
-                TripDates::create([
+            $startDate = Carbon::parse(now())->next($trip['day']);
+            TripDates::create([
                 'trip_id' => $trip->id,
                 'address_id' => $trip['address_id'],
                 'start_time' => $trip['start_time'],
                 'start_date' => $startDate->format('Y-m-d'),
 
             ]);
+            return $trip;
         });
     }
 

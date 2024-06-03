@@ -16,4 +16,9 @@ class TripDates extends Model
     {
         return $this->belongsTo(TripDates::class);
     }
+
+    public function order()
+    {
+        return $this->hasMany(Order::class,'trip_date_id');
+    }
 }

@@ -20,7 +20,7 @@ class TripController extends Controller
 
     public function index(Request $request)
     {
-        $trips = $this->tripService->getTrips($request);
+        $trips = $this->tripService->index($request);
         return ResponseHelper::success($trips);
     }
 

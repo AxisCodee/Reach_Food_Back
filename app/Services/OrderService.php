@@ -60,7 +60,7 @@ class OrderService
                 $total_price += $price;
 
             }
-            $customerAddress = UserDetail::where('user_id',$customer_id)->first();
+            $customerAddress = User::where('id',$customer->id)->first();
 
             $trip = TripDates::query()
             ->where('address_id', $customerAddress->address_id)

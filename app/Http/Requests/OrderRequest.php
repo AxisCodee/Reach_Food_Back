@@ -28,7 +28,7 @@ class OrderRequest extends FormRequest
             'delivery_date'=> 'date',
             'delivery_time'=> '',
             'total_price'=> '',
-            'category_id'=> '',
+            'branch_id'=> '',
 
         ];
     }

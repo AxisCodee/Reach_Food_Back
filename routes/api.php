@@ -4,6 +4,7 @@ use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TripController;
@@ -46,6 +47,13 @@ Route::prefix('branch')->group(function () {
 
 Route::prefix('address')->group(function () {
     Route::get('addresses/{id}', [AddressController::class, 'getAddresses']);
+    Route::get('cities/{id}', [AddressController::class, 'getCities']);
+    Route::get('countries', [AddressController::class, 'getCountries']);
+});
+
+
+Route::prefix('order')->group(function () {
+    Route::post('assign', [OrderController::class, 'assignOrder']);
     Route::get('cities/{id}', [AddressController::class, 'getCities']);
     Route::get('countries', [AddressController::class, 'getCountries']);
 });

@@ -18,6 +18,7 @@ return new class extends Migration
             $table->date('start_date')->nullable();
             $table->time('start_time')->nullable();
             $table->timestamps();
+            $table->unique(['trip_id','address_id','start_date']);
         });
     }
 
