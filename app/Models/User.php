@@ -29,7 +29,8 @@ class User extends Authenticatable
         'branch_id',
         'address_id',
         'location',
-        'image'
+        'image',
+        'city_id'
     ];
 
     /**
@@ -117,6 +118,11 @@ class User extends Authenticatable
     {
         return $this->belongsToMany(User::class, 'salesManager_salesman', 'salesManager_id', 'salesman_id');
 
+    }
+
+    public function city(): BelongsTo
+    {
+        return $this->belongsTo(City::class);
     }
 
 

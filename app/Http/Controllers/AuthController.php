@@ -38,6 +38,9 @@ class AuthController extends Controller
             ]);
             $contacts = $request['phone_number'];
             $this->userService->createUserContacts($contacts, $user->id);
+            if ($request->role == Roles::ADMIN->value) {
+                $user->update(['city_id' => $request->city_id]);
+            }
             if ($request->role == Roles::CUSTOMER->value) {
                 $user->update([
                     'customer_type' => $request->customer_type,

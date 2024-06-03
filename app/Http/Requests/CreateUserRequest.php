@@ -31,11 +31,12 @@ class CreateUserRequest extends FormRequest
             'customer_type' => 'in:shop,center',
             // user details
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'address_id' => 'required|exists:addresses,id',
+            'address_id' => 'exists:addresses,id',
             'location' => 'required|string|max:255',
             'phone_number' => 'required|array',
             'phone_number.*' => 'required|string|max:255',
             'branch_id' => 'exists:branches,id',
+            'city_id' => 'exists:cities,id',
 
             // salesman
             //'salesManager_id' => 'exists:users,id',
