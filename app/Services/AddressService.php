@@ -18,8 +18,13 @@ class AddressService
 
     public function getCountries()
     {
-        return Country::query()->with(['cities.branch'])->get()->toArray();
-
+        return Country::query()
+            ->whereHas('cities.branch', function ($query) {
+                $query->exists();
+            })
+            ->with(['cities.branch'])
+            ->get()
+            ->toArray();
     }
 
     public function getCities($country)

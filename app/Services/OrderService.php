@@ -65,8 +65,13 @@ class OrderService
             $trip = TripDates::query()
             ->where('address_id', $customerAddress->address_id)
             ->latest()->first();
-                OrderProduct::insert($orderProducts);
+            OrderProduct::insert($orderProducts);
+            if($trip != null){
                 Order::where('id',$result->id)->update(['total_price' => $total_price, 'trip_date_id' => $trip->id]);
+            }
+            if($trip == null){
+                Order::where('id',$result->id)->update(['total_price' => $total_price, 'trip_date_id' => null]);
+            }
 
             return $result;
          });
