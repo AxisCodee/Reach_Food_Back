@@ -35,7 +35,7 @@ class CreateUserRequest extends FormRequest
             'location' => 'required|string|max:255',
             'phone_number' => 'required|array',
             'phone_number.*' => 'required|string|max:255',
-
+            'branch_id' => 'exists:branches,id',
 
             // salesman
             //'salesManager_id' => 'exists:users,id',
@@ -45,7 +45,7 @@ class CreateUserRequest extends FormRequest
             'trips.*start_time' => ['required', 'date_format:H:i'],//
 
             'branches' => 'array',
-            'branches.*branch_id' => 'exists:categories,id',
+            'branches.*branch_id' => 'exists:branches,id',
             'branches.*salesManger_id' => 'exists:users,id',
             'permissions' => 'array',
             'permissions.*permission_id' => 'exists:permissions,id',
