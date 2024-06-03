@@ -27,4 +27,8 @@ class City extends Model
     {
         return $this->hasMany(Branch::class);
     }
+    public function admins(): HasMany
+    {
+        return $this->hasMany(User::class,'admin_id');
+    }
 }

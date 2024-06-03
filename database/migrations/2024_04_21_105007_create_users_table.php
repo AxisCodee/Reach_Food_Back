@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->string('password');
             $table->foreignId('branch_id')->nullable()->constrained('branches')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('address_id')->nullable()->constrained('addresses')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('city_id')->nullable()->constrained('cities')->cascadeOnDelete()->cascadeOnUpdate();
             $table->string('location')->nullable();
             $table->enum('role', ['customer', 'salesman', 'sales manager', 'admin', 'super admin'])->default('customer');
             $table->enum('customer_type', ['shop', 'center'])->nullable();

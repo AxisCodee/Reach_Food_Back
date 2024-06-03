@@ -34,6 +34,11 @@ Route::prefix('user')->group(function () {
     Route::get('permissions', [PermissionController::class, 'index']);
 
 
+    Route::prefix('salesman')->group(function () {
+        Route::get('/customers', [UserController::class, 'getSalesmanCustomers']);
+    });
+
+
 });
 
 
@@ -43,12 +48,15 @@ Route::prefix('branch')->group(function () {
     Route::get('show/{id}', [BranchController::class, 'show']);
     Route::post('/{id}', [BranchController::class, 'update']);
     Route::delete('/{id}', [BranchController::class, 'destroy']);
+    Route::get('/cities', [BranchController::class, 'branches']);
 });
 
 Route::prefix('address')->group(function () {
     Route::get('addresses/{id}', [AddressController::class, 'getAddresses']);
     Route::get('cities/{id}', [AddressController::class, 'getCities']);
     Route::get('countries', [AddressController::class, 'getCountries']);
+    Route::get('allCities', [AddressController::class, 'allCities']);
+
 });
 
 
@@ -66,6 +74,10 @@ Route::prefix('product')->group(function () {
     Route::post('updatePrice', [ProductController::class, 'updatePrice']);
 
     Route::post('/import', [ProductController::class, 'importProducts']);
+
+    Route::prefix('salesman')->group(function () {
+        Route::get('/index', [ProductController::class, 'salesmanProducts']);
+    });
 });
 
 
