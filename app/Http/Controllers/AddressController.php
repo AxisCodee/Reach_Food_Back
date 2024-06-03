@@ -57,4 +57,11 @@ class AddressController extends Controller
         return ResponseHelper::success($cities);
     }
 
+    public function allCities()
+    {
+        $cities = City::with('country')->get()->toArray();
+        return ResponseHelper::success($cities);
+    }
+
+
 }

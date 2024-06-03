@@ -54,6 +54,8 @@ Route::prefix('address')->group(function () {
     Route::get('addresses/{id}', [AddressController::class, 'getAddresses']);
     Route::get('cities/{id}', [AddressController::class, 'getCities']);
     Route::get('countries', [AddressController::class, 'getCountries']);
+    Route::get('allCities', [AddressController::class, 'allCities']);
+
 });
 
 Route::prefix('product')->group(function () {
