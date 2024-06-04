@@ -22,7 +22,8 @@ class OrderController extends Controller
 
     {
 
-        $result = $this->orderService->storeOrder($request);
+        $req=Request();
+        $result = $this->orderService->assignOrder( $request,auth('sanctum')->user()->id);
         return ResponseHelper::success($result, null, 'orders created successfully', 200);
     }
 
@@ -30,7 +31,7 @@ class OrderController extends Controller
 
     {
         $req=Request();
-        $result = $this->orderService->assignOrder($request,auth('sanctum')->user()->id);
+        $result = $this->orderService->assignOrder($request,$request->customer_id);
         return ResponseHelper::success($result, null, 'orders created successfully', 200);
     }
 

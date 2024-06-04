@@ -116,7 +116,7 @@ class UserService
     public function getUsersByType($request)
     {
         if ($request->role == Roles::CUSTOMER->value) {//By City
-            return User::query()->with(['contacts:id,user_id,phone_number', 'address.city'])
+            return User::query()->with(['contacts:id,user_id,phone_number', 'address.city.country'])
                 ->where('role', Roles::CUSTOMER->value)
                 ->whereHas('address', function ($query) use ($request) {
                     $query->where('city_id', $request->city_id);//TODO city Customers

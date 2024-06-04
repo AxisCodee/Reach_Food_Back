@@ -62,6 +62,9 @@ Route::prefix('address')->group(function () {
 
 Route::prefix('order')->group(function () {
     Route::post('assign', [OrderController::class, 'assignOrder']);
+    Route::post('store', [OrderController::class, 'store']);
+
+
     Route::get('cities/{id}', [AddressController::class, 'getCities']);
     Route::get('countries', [AddressController::class, 'getCountries']);
 });
