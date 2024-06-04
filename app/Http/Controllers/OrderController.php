@@ -4,17 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\OrderRequest;
+use App\Services\DateService;
 use App\Services\OrderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
-    private $orderService;
+    private $orderService,$dateService;
 
-    public function __construct(OrderService $orderService)
+    public function __construct(OrderService $orderService , DateService $dateService)
     {
         $this->orderService = $orderService;
+        $this->dateService = $dateService;
+
     }
 
 
@@ -23,7 +26,7 @@ class OrderController extends Controller
     {
 
         $req=Request();
-        $result = $this->orderService->assignOrder( $request,auth('sanctum')->user()->id);
+        $result = $this->orderService->assignOrder($request,auth('sanctum')->user()->id);
         return ResponseHelper::success($result, null, 'orders created successfully', 200);
     }
 
@@ -43,10 +46,12 @@ class OrderController extends Controller
         return ResponseHelper::success($result, null, 'orders update successfully', 200);
     }
 
-    public function index()
+    public function index(Request $request)
     {
+        $date = $request->date;
         $result = $this->orderService->indexOrder();
-        return ResponseHelper::success($result, null, 'orders returned successfully', 200);
+        $data = $this->dateService->filterDate($result,$date,'order_date');
+        return ResponseHelper::success($data->paginate(10), null, 'orders returned successfully', 200);
     }
 
     public function show($order)

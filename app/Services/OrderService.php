@@ -143,10 +143,10 @@ class OrderService
 
         if ($status) {
             $result = Order::query()->with('trip_date.trip.salesman', 'customer','trip_date.address')
-                ->where('branch_id', $branch_id)->where('status', $status)->paginate(10);
+                ->where('branch_id', $branch_id)->where('status', $status);
         } else {
             $result = Order::query()->with('trip_date.trip.salesman', 'customer','trip_date.address')
-                ->where('branch_id', $branch_id)->paginate(10);
+                ->where('branch_id', $branch_id);
         }
         return $result;
     }
