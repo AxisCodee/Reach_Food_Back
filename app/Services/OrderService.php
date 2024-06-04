@@ -38,6 +38,8 @@ class OrderService
 
         return DB::transaction(function () use ($req, $data, $request, $customer_id) {
             $totalPrice = 0;
+            $price = 0;
+
             $result = Order::query()->create($data);
             $orderProducts = [];
 
