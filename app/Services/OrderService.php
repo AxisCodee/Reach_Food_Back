@@ -54,7 +54,8 @@ class OrderService
                 $customer = User::findOrFail($customer_id);
                 if ($customer->customer_type == 'shop') {
                     $price = $product->retail_price * $quantity;
-                } else {
+                }
+                if ($customer->customer_type == 'center') {
                     $price = $product->wholesale_price * $quantity;
                 }
 
@@ -150,7 +151,7 @@ class OrderService
 
     public function showOrder($order)
     {
-        $result = Order::findOrFail($order);
+        $result = Order::with('products','customer','trip_date.trip.salesman','trip_date.trip.address')->findOrFail($order);
         return $result;
     }
 

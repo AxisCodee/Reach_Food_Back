@@ -52,7 +52,7 @@ class OrderController extends Controller
     public function show($order)
     {
         $result = $this->orderService->showOrder($order);
-        return ResponseHelper::success($result, null, 'orders returned successfully', 200);
+        return ResponseHelper::success($result, null, 'order returned successfully', 200);
     }
 
     public function destroy($order)

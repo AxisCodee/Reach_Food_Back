@@ -65,6 +65,7 @@ Route::prefix('order')->group(function () {
     Route::post('store', [OrderController::class, 'store']);
     Route::get('index', [OrderController::class, 'index']);
 
+    Route::get('show/{id}', [OrderController::class, 'show']);
 
     Route::get('cities/{id}', [AddressController::class, 'getCities']);
     Route::get('countries', [AddressController::class, 'getCountries']);
