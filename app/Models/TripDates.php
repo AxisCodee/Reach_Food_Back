@@ -14,11 +14,16 @@ class TripDates extends Model
 
     public function trip()
     {
-        return $this->belongsTo(TripDates::class);
+        return $this->belongsTo(Trip::class);
     }
 
     public function order()
     {
         return $this->hasMany(Order::class,'trip_date_id');
+    }
+
+    public function address()
+    {
+        return $this->belongsTo(Address::class);
     }
 }

@@ -23,11 +23,15 @@ class Order extends Model
         return $this->belongsTo(Trip::class);
     }
 
-    
+    public function trip_date(): BelongsTo
+    {
+        return $this->belongsTo(TripDates::class);
+    }
 
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class);
     }
+  
 
 }

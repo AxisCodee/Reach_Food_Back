@@ -135,8 +135,16 @@ class OrderService
 
     public function indexOrder()
     {
-        $category_id = request()->input('category_id');
-        $result = Order::query()->where('category_id', $category_id)->paginate(10);
+        $branch_id = request()->branch_id;
+        $status = request()->status;
+
+        if ($status) {
+            $result = Order::query()->with('trip_date.trip.salesman', 'customer','trip_date.address')
+                ->where('branch_id', $branch_id)->where('status', $status)->paginate(10);
+        } else {
+            $result = Order::query()->with('trip_date.trip.salesman', 'customer','trip_date.address')
+                ->where('branch_id', $branch_id)->paginate(10);
+        }
         return $result;
     }
 
