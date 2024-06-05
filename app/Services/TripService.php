@@ -19,7 +19,8 @@ class TripService
             ->with(['orders.customer'])
             ->where('day_id', $request->day_id)
             ->get();
-    }
+
+ }
 
     public function getTrip($request)
     {
@@ -27,7 +28,6 @@ class TripService
             ->with(['salesman:id,name', 'orders:id,delivery_date.customer'])
             ->find($request->trip_id);
     }
-
 
     public function index($request)
     {
