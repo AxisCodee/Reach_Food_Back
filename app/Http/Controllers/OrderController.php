@@ -11,9 +11,9 @@ use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
-    private $orderService,$dateService;
+    private $orderService, $dateService;
 
-    public function __construct(OrderService $orderService , DateService $dateService)
+    public function __construct(OrderService $orderService, DateService $dateService)
     {
         $this->orderService = $orderService;
         $this->dateService = $dateService;
@@ -22,19 +22,16 @@ class OrderController extends Controller
 
 
     public function store(OrderRequest $request)
-
     {
-
-        $req=Request();
-        $result = $this->orderService->assignOrder($request,auth('sanctum')->user()->id);
+        $req = Request();
+        $result = $this->orderService->assignOrder($request, auth('sanctum')->user()->id);
         return ResponseHelper::success($result, null, 'orders created successfully', 200);
     }
 
     public function assignOrder(OrderRequest $request)
-
     {
-        $req=Request();
-        $result = $this->orderService->assignOrder($request,$request->customer_id);
+        $req = Request();
+        $result = $this->orderService->assignOrder($request, $request->customer_id);
         return ResponseHelper::success($result, null, 'orders created successfully', 200);
     }
 
@@ -42,7 +39,7 @@ class OrderController extends Controller
 
     public function update(Request $request, $order)
     {
-        $result = $this->orderService->updateOrder($order,$request->customer_id);
+        $result = $this->orderService->updateOrder($order, $request->customer_id);
         return ResponseHelper::success($result, null, 'orders update successfully', 200);
     }
 
@@ -50,7 +47,7 @@ class OrderController extends Controller
     {
         $date = $request->date;
         $result = $this->orderService->indexOrder();
-        $data = $this->dateService->filterDate($result,$date,'order_date');
+        $data = $this->dateService->filterDate($result, $date, 'order_date');
         return ResponseHelper::success($data->paginate(10), null, 'orders returned successfully', 200);
     }
 

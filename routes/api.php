@@ -56,6 +56,7 @@ Route::prefix('address')->group(function () {
     Route::get('cities/{id}', [AddressController::class, 'getCities']);
     Route::get('countries', [AddressController::class, 'getCountries']);
     Route::get('allCities', [AddressController::class, 'allCities']);
+    Route::post('deleteBranches', [AddressController::class, 'deleteBranches']);
 
 });
 
