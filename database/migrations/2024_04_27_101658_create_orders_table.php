@@ -19,6 +19,7 @@ return new class extends Migration {
             $table->foreignId('branch_id')->constrained('branches')->cascadeOnDelete()->cascadeOnUpdate();
             $table->dateTime('order_date')->nullable();
             $table->date('delivery_date')->nullable();
+            $table->boolean('is_base')->default(1);
             $table->time('delivery_time')->nullable();
             $table->bigInteger('total_price')->nullable();
             $table->timestamps();

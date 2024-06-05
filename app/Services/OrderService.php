@@ -103,6 +103,7 @@ class OrderService
         }
 
          Order::where('order_id',$order->id)->update(['order_id'=>$result->id]);
+         Order::where('id',$result->id)->update(['is_base'=> 0]);
 
         return $result;
 
