@@ -64,6 +64,7 @@ Route::prefix('order')->group(function () {
     Route::post('assign', [OrderController::class, 'assignOrder']);
     Route::post('store', [OrderController::class, 'store']);
     Route::get('index', [OrderController::class, 'index']);
+    Route::post('update/{id}', [OrderController::class, 'update']);
 
     Route::get('show/{id}', [OrderController::class, 'show']);
 

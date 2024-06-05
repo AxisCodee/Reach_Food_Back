@@ -27,6 +27,15 @@ class Order extends Model
     {
         return $this->belongsTo(TripDates::class);
     }
+    public function order()
+    {
+        return $this->belongsTo(Order::class, 'order_id', 'id');
+    }
+
+    public function childOrders()
+    {
+        return $this->hasMany(Order::class, 'order_id', 'id');
+    }
 
     public function products(): BelongsToMany
     {

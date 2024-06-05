@@ -40,9 +40,9 @@ class OrderController extends Controller
 
 
 
-    public function update(Request $request, $order)
+    public function update(OrderRequest $request, $order)
     {
-        $result = $this->orderService->updateOrder($order,$request->customer_id);
+        $result = $this->orderService->updateOrder($request,$order,$request->customer_id);
         return ResponseHelper::success($result, null, 'orders update successfully', 200);
     }
 

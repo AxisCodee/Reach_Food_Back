@@ -31,6 +31,7 @@ class OrderService
     public function assignOrder($request, $customer_id)
     {
         $req = Request();
+      //
         $data = $request->validated();
         $data['status'] = 'accepted';
         $data['order_date'] = Carbon::now()->format('Y-m-d');
@@ -86,52 +87,70 @@ class OrderService
 
 
 
-    public function updateOrder($order, $customer_id)
+    public function updateOrder($request, $order, $customer_id)
     {
-        $total_price = 0;
-        $price = 0;
-        $req = Request();
+        $result = $this->assignOrder($request, $customer_id);
+        // dd($result->id);
 
-        $orderProducts = [];
-        return DB::transaction(function () use (&$price, $order, $req, $customer_id, &$total_price, &$orderProducts) {
-            foreach ($req->product_id as $key => $product_id) {
-                $product = Product::findOrFail($product_id);
-                $orderProducts[] = [
-                    'order_id' => $order,
-                    'product_id' => $product->id,
-                    'quantity' => $req->quantity[$key],
-                ];
+        $order = Order::where('id',$order)->first();
+        //  dd( $result->id);
 
-                $customer = User::findOrFail($customer_id);
-                if ($customer->customer_type == 'shop') {
-                    $price = $product->retail_price * $req->quantity[$key];
-                }
-                if ($customer->customer_type == 'center') {
-                    $price = $product->wholesale_price * $req->quantity[$key];
-                }
-                $total_price += $price;
-            }
+        if ($order->order_id == null) {
+            $order->update(['order_id' => $result->id]);
+        }
+        else  {
+            $order->update(['order_id' => $result->order_id]);
+        }
 
-            $orderId = OrderProduct::query();
-            $orderId->where('order_id', $order)->delete();
-            $orderId->insert($orderProducts);
+         Order::where('order_id',$order->id)->update(['order_id'=>$result->id]);
 
-            $order = Order::findOrFail($order);
+        return $result;
 
-            $customerAddress = UserDetail::where('user_id', $customer_id)->first();
 
-            $trip = Trip::query()
-                ->where('address_id', $customerAddress->address_id)
-                ->latest()->first();
+        // $total_price = 0;
+        // $price = 0;
+        // $req = Request();
 
-            $order->update([
-                'customer_id' => $customer_id,
-                'total_price' => $total_price,
-                'trip_date_id' => $trip->id
-            ]);
+        // $orderProducts = [];
+        // return DB::transaction(function () use (&$price, $order, $req, $customer_id, &$total_price, &$orderProducts) {
+        //     foreach ($req->product_id as $key => $product_id) {
+        //         $product = Product::findOrFail($product_id);
+        //         $orderProducts[] = [
+        //             'order_id' => $order,
+        //             'product_id' => $product->id,
+        //             'quantity' => $req->quantity[$key],
+        //         ];
 
-            return $order;
-        });
+        //         $customer = User::findOrFail($customer_id);
+        //         if ($customer->customer_type == 'shop') {
+        //             $price = $product->retail_price * $req->quantity[$key];
+        //         }
+        //         if ($customer->customer_type == 'center') {
+        //             $price = $product->wholesale_price * $req->quantity[$key];
+        //         }
+        //         $total_price += $price;
+        //     }
+
+        //     $orderId = OrderProduct::query();
+        //     $orderId->where('order_id', $order)->delete();
+        //     $orderId->insert($orderProducts);
+
+        //     $order = Order::findOrFail($order);
+
+        //     $customerAddress = UserDetail::where('user_id', $customer_id)->first();
+
+        //     $trip = Trip::query()
+        //         ->where('address_id', $customerAddress->address_id)
+        //         ->latest()->first();
+
+        //     $order->update([
+        //         'customer_id' => $customer_id,
+        //         'total_price' => $total_price,
+        //         'trip_date_id' => $trip->id
+        //     ]);
+
+        //     return $order;
+        // });
     }
 
 
@@ -142,18 +161,18 @@ class OrderService
         $status = request()->status;
 
         if ($status) {
-            $result = Order::query()->with('trip_date.trip.salesman', 'customer','trip_date.address')
-                ->where('branch_id', $branch_id)->where('status', $status);
+            $result = Order::query()->with('trip_date.trip.salesman', 'customer','trip_date.address','childOrders')
+                ->where('branch_id', $branch_id)->where('status', $status)->whereNull('order_id');
         } else {
-            $result = Order::query()->with('trip_date.trip.salesman', 'customer','trip_date.address')
-                ->where('branch_id', $branch_id);
+            $result = Order::query()->with('trip_date.trip.salesman', 'customer','trip_date.address','childOrders')
+                ->where('branch_id', $branch_id)->whereNull('order_id');
         }
         return $result;
     }
 
     public function showOrder($order)
     {
-        $result = Order::with('products','customer','trip_date.trip.salesman','trip_date.trip.address')->findOrFail($order);
+        $result = Order::whereNull('order_id')->with('products','customer','trip_date.trip.salesman','trip_date.trip.address','childOrders.products')->findOrFail($order);
         return $result;
     }
 
