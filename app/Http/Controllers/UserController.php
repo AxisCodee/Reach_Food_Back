@@ -59,7 +59,7 @@ class UserController extends Controller
     public function getSalesmanCustomers()
     {
         $salesman = User::findOrFail(auth('sanctum')->id());//auth
-        $customers = $salesman->with(['trips.orders.customer'])->get()->toArray();
+        $customers = $salesman->with(['trip.dates.orders.customer'])->get()->toArray();
         return ResponseHelper::success($customers);
     }
 
