@@ -6,9 +6,11 @@ use App\Helpers\ResponseHelper;
 use App\Models\Address;
 use App\Models\Branch;
 use App\Models\City;
+use App\Models\User;
 use App\Services\AddressService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class AddressController extends Controller
 {
@@ -63,5 +65,21 @@ class AddressController extends Controller
         return ResponseHelper::success($cities);
     }
 
+
+    public function deleteBranches(Request $request)
+    {
+        $user_name = auth('sanctum')->user()->user_name;
+        $user = User::where('user_name', $user_name)->first();
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return ResponseHelper::error('Invalid username or password.', 401);
+        }
+        $cities = $request['cities'];
+        City::whereIn('id', $cities)->with('branch')->get()->each(function ($city) {
+            $city->branch->each(function ($branch) {
+                $branch->delete();
+            });
+        });
+        return ResponseHelper::success('deleted');
+    }
 
 }
