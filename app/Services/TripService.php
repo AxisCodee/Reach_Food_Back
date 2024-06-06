@@ -20,7 +20,7 @@ class TripService
             ->where('day_id', $request->day_id)
             ->get();
 
- }
+    }
 
     public function getTrip($request)
     {
@@ -31,9 +31,9 @@ class TripService
 
     public function index($request)
     {
-        return Trip::query()->where('branch_id',$request->branch_id)
-        ->where('day',$request->day)
-            ->with(['dates.order.customer','address','salesman'])
+        return Trip::query()->where('branch_id', $request->branch_id)
+            ->where('day', $request->day)
+            ->with(['dates.order.customer', 'address', 'salesman'])
             ->get()->toArray();
     }
 
@@ -77,7 +77,7 @@ class TripService
     {
         $salesman = User::FindOrFail(auth('sanctum')->id());
         return $salesman->trips()
-            ->with(['address:id,city_id,area', 'dates' => function($query) {
+            ->with(['address:id,city_id,area', 'dates' => function ($query) {
                 $query->withCount('order');
             }])
             ->get()
@@ -86,9 +86,9 @@ class TripService
 
     public function getSalesmanTripsWeekly()
     {
-        $salesman = User::FindOrFail(4); //auth
+        $salesman = User::FindOrFail(auth('sanctum')->id()); //auth
         return $salesman->trips()
-            ->with(['day:id,name', 'address:id,city_id,area'])
+            ->with(['address:id,city_id,area', 'dates'])
             ->get()
             ->toArray();
     }
