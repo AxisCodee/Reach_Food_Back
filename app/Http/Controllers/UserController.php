@@ -59,11 +59,15 @@ class UserController extends Controller
     public function getSalesmanCustomers()
     {
         $salesman = User::findOrFail(auth('sanctum')->id());//auth
-        $customers = User::whereHas('trips.dates.order', function ($query) use ($salesman) {
-            $query->where('salesman_id', $salesman->id);
+        $customers = User::whereHas('roles', function($query) {
+            $query->where('name', 'customer');
         })
-            ->with(['customer'])
-            ->get()->toArray();
+            ->whereHas('trips.dates.order', function ($query) use ($salesman) {
+                $query->where('salesman_id', $salesman->id);
+            })
+            ->with(['trips.dates.order.customer'])
+            ->get()
+            ->toArray();
 
         return ResponseHelper::success($customers);
     }
