@@ -62,7 +62,7 @@ class UserController extends Controller
         $customers = User::whereHas('trips.dates.order', function ($query) use ($salesman) {
             $query->where('salesman_id', $salesman->id);
         })
-            ->with(['trips.dates.order.customer'])
+            ->with(['customer'])
             ->get()->toArray();
 
         return ResponseHelper::success($customers);
