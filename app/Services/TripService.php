@@ -76,7 +76,7 @@ class TripService
     public function getSalesmanTrips()
     {
         $salesman = User::FindOrFail(auth('sanctum')->id());
-        return $salesman->trips()->with(['day:id,name', 'address:id,city_id,area'])
+        return $salesman->trips()->with([ 'address:id,city_id,area'])
             ->withCount('orders')->get()->toArray();
     }
 
