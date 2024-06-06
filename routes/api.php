@@ -71,6 +71,8 @@ Route::prefix('order')->group(function () {
 
     Route::get('cities/{id}', [AddressController::class, 'getCities']);
     Route::get('countries', [AddressController::class, 'getCountries']);
+    Route::prefix('salesman')->group(function () {
+    Route::get('/myOrders', [OrderController::class, 'salesmanOrders']);});
 });
 
 Route::prefix('product')->group(function () {

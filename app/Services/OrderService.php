@@ -31,7 +31,7 @@ class OrderService
     public function assignOrder($request, $customer_id)
     {
         $req = Request();
-      //
+        //
         $data = $request->validated();
         $data['status'] = 'accepted';
         $data['order_date'] = Carbon::now()->format('Y-m-d');
@@ -86,24 +86,22 @@ class OrderService
     }
 
 
-
     public function updateOrder($request, $order, $customer_id)
     {
         $result = $this->assignOrder($request, $customer_id);
         // dd($result->id);
 
-        $order = Order::where('id',$order)->first();
+        $order = Order::where('id', $order)->first();
         //  dd( $result->id);
-        
+
         if ($order->order_id == null) {
             $order->update(['order_id' => $result->id]);
-        }
-        else  {
+        } else {
             $order->update(['order_id' => $result->order_id]);
         }
 
-         Order::where('order_id',$order->id)->update(['order_id'=>$result->id]);
-         Order::where('id',$result->id)->update(['is_base'=> 0]);
+        Order::where('order_id', $order->id)->update(['order_id' => $result->id]);
+        Order::where('id', $result->id)->update(['is_base' => 0]);
 
         return $result;
 
@@ -155,17 +153,15 @@ class OrderService
     }
 
 
-
     public function indexOrder()
     {
         $branch_id = request()->branch_id;
         $status = request()->status;
-
         if ($status) {
-            $result = Order::query()->with('trip_date.trip.salesman', 'customer','trip_date.address','childOrders')
+            $result = Order::query()->with('trip_date.trip.salesman', 'customer', 'trip_date.address', 'childOrders')
                 ->where('branch_id', $branch_id)->where('status', $status)->whereNull('order_id');
         } else {
-            $result = Order::query()->with('trip_date.trip.salesman', 'customer','trip_date.address','childOrders')
+            $result = Order::query()->with('trip_date.trip.salesman', 'customer', 'trip_date.address', 'childOrders')
                 ->where('branch_id', $branch_id)->whereNull('order_id');
         }
         return $result;
@@ -173,7 +169,7 @@ class OrderService
 
     public function showOrder($order)
     {
-        $result = Order::whereNull('order_id')->with('products','customer','trip_date.trip.salesman','trip_date.trip.address','childOrders.products')->findOrFail($order);
+        $result = Order::whereNull('order_id')->with('products', 'customer', 'trip_date.trip.salesman', 'trip_date.trip.address', 'childOrders.products')->findOrFail($order);
         return $result;
     }
 
@@ -182,4 +178,21 @@ class OrderService
         $result = Order::findOrFail($order)->delete();
         return $result;
     }
+
+    public function getSalesmanOrders($request)
+    {
+        $salesman = User::findOrFail(auth('sanctum')->id());//auth
+        $customers = User::whereHas('trips', function ($query) use ($salesman, $request) {
+            $query->whereHas('dates', function ($query) use ($request) {
+                $query->where('day', $request->input('day'));
+            })->where('salesman_id', $salesman->id);
+        })
+            ->with(['trips.dates' => function ($query) use ($request) {
+                $query->where('day', $request->input('day'));
+            }])
+            ->get()->toArray();
+        return $customers;
+    }
+
+
 }

@@ -64,7 +64,6 @@ class UserController extends Controller
         })
             ->with(['trips.dates.order.customer'])
             ->get()->toArray();
-
         return ResponseHelper::success($customers);
     }
 
