@@ -157,6 +157,7 @@ class OrderService
     {
         $branch_id = request()->branch_id;
         $status = request()->status;
+
         if ($status) {
             $result = Order::query()->with('trip_date.trip.salesman', 'customer', 'trip_date.address', 'childOrders')
                 ->where('branch_id', $branch_id)->where('status', $status)->whereNull('order_id');
@@ -182,17 +183,19 @@ class OrderService
     public function getSalesmanOrders($request)
     {
         $salesman = User::findOrFail(auth('sanctum')->id());//auth
-        $customers = User::whereHas('trips', function ($query) use ($salesman, $request) {
-            $query->whereHas('dates', function ($query) use ($request) {
-                $query->where('day', $request->input('day'));
-            })->where('salesman_id', $salesman->id);
+        $customers = User::whereHas('trips.dates.order', function ($query) use ($salesman) {
+            $query->where('salesman_id', $salesman->id);
         })
-            ->with(['trips.dates' => function ($query) use ($request) {
+            ->with(['trips' => function ($query) use ($request) {
                 $query->where('day', $request->input('day'));
             }])
             ->get()->toArray();
         return $customers;
+
+
+
     }
+
 
 
 }
