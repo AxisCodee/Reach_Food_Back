@@ -104,6 +104,10 @@ class UserService
         return User::query()->with(['contacts', 'address.city.country'])
             ->findOrFail($user);
     }
+    public function userAddress($request)
+    {
+        return User::query()->where('address_id',$request->address_id)->where('role','customer')->get()->toArray();
+    }
 
     public function linkTripWithSalesman($trip, $salesmanId)
     {

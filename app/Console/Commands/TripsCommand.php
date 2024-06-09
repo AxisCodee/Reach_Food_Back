@@ -28,24 +28,21 @@ class TripsCommand extends Command
      */
     public function handle()
     {
-        $trips=Trip::query()->get();
+        $trips = Trip::query()->get();
 
-        if($trips){
-        foreach ($trips as $trip)
-        {
-            if($trip->day === Carbon::now()->format('l') ){
+        if ($trips) {
+            foreach ($trips as $trip) {
+                if ($trip->day === Carbon::now()->format('l')) {
 
-                $trip_date=TripDates::query();
+                    $trip_date = TripDates::query();
 
-                $trip_date->create([
-                    'trip_id'=>$trip->id,
-                    'start_time'=>$trip->start_time,
-                    'start_date' => Carbon::now()->addDays(7)->format('Y-m-d')
-                ]);
+                    $trip_date->create([
+                        'trip_id' => $trip->id,
+                        'start_time' => $trip->start_time,
+                        'start_date' => Carbon::now()->addDays(7)->format('Y-m-d')
+                    ]);
+                }
             }
-
-
         }
-    }
     }
 }

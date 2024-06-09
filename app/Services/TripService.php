@@ -55,6 +55,7 @@ class TripService
                 'start_date' => $startDate->format('Y-m-d'),
 
             ]);
+            
             return $trip;
         });
     }

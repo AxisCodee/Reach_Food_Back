@@ -31,7 +31,6 @@ class OrderService
     public function assignOrder($request, $customer_id)
     {
         $req = Request();
-      //
         $data = $request->validated();
         $data['status'] = 'accepted';
         $data['order_date'] = Carbon::now()->format('Y-m-d');
@@ -77,7 +76,7 @@ class OrderService
                 Order::where('id', $result->id)
                     ->update(['total_price' => $totalPrice, 'trip_date_id' => $trip->id]);
             } else {
-                Order::where('id', $result->id)
+                    Order::where('id', $result->id)
                     ->update(['total_price' => $totalPrice, 'trip_date_id' => null]);
             }
 
@@ -94,7 +93,7 @@ class OrderService
 
         $order = Order::where('id',$order)->first();
         //  dd( $result->id);
-        
+
         if ($order->order_id == null) {
             $order->update(['order_id' => $result->id]);
         }
