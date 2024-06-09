@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Models\CustomerTime;
 use App\Models\Trip;
 use App\Models\TripDates;
 use App\Models\User;
@@ -40,23 +41,30 @@ class TripService
     public function createTrip($trip)
     {
         return DB::transaction(function () use ($trip) {
-
-            $trip = Trip::query()->create([
+            $trips = Trip::create([
                 'address_id' => $trip['address_id'],
                 'day' => $trip['day'],
                 'branch_id' => $trip['branch_id'],
                 'start_time' => $trip['start_time'],
             ]);
+
             $startDate = Carbon::parse(now())->next($trip['day']);
             TripDates::create([
                 'trip_id' => $trip->id,
                 'address_id' => $trip['address_id'],
                 'start_time' => $trip['start_time'],
                 'start_date' => $startDate->format('Y-m-d'),
-
             ]);
-            
-            return $trip;
+            foreach ($trip->customerTimes as $customer) {
+                CustomerTime::create([
+                    'customer_id' => $customer['customer_id'],
+                    'trip_id' => $trips->id,
+                    'arrival_time' => $customer['time'],
+                ]);
+
+            }
+
+            return $trips;
         });
     }
 
