@@ -24,10 +24,10 @@ class Trip extends Model
         return $this->belongsTo(Address::class);
     }
 
-    public function orders(): HasMany
-    {
-        return $this->hasMany(Order::class);
-    }
+//    public function orders(): HasMany
+//    {
+//        return $this->hasMany(Order::class);
+//    }
     // public function date(): HasMany
     // {
     //     return $this->hasMany(TripDates::class);

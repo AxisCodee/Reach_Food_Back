@@ -17,9 +17,7 @@ class OrderController extends Controller
     {
         $this->orderService = $orderService;
         $this->dateService = $dateService;
-
     }
-
 
     public function store(OrderRequest $request)
     {
@@ -36,10 +34,9 @@ class OrderController extends Controller
     }
 
 
-
     public function update(OrderRequest $request, $order)
     {
-        $result = $this->orderService->updateOrder($request,$order,$request->customer_id);
+        $result = $this->orderService->updateOrder($request, $order, $request->customer_id);
         return ResponseHelper::success($result, null, 'orders update successfully', 200);
     }
 
@@ -69,6 +66,11 @@ class OrderController extends Controller
         return ResponseHelper::success($result, null, 'orders deleted successfully', 200);
     }
 
+//salesman
 
-
+    public function salesmanOrders(Request $request)
+    {
+        $result = $this->orderService->getSalesmanOrders($request);
+        return ResponseHelper::success($result);
+    }
 }
