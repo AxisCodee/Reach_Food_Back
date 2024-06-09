@@ -29,6 +29,11 @@ class UserController extends Controller
         $result = $this->userService->show($user);
         return ResponseHelper::success($result);
     }
+    public function userAddress(Request $request)
+    {
+        $result = $this->userService->userAddress($request);
+        return ResponseHelper::success($result);
+    }
 
     public function destroy($user)
     {

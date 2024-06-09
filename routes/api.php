@@ -33,6 +33,9 @@ Route::prefix('user')->group(function () {
         ->only('index');
     Route::post('update/{id}', [UserController::class, 'update']);
     Route::get('permissions', [PermissionController::class, 'index']);
+    Route::get('address', [UserController::class, 'userAddress']);
+
+
     Route::prefix('salesman')->group(function () {
         Route::get('/customers', [UserController::class, 'getSalesmanCustomers']);
     });
