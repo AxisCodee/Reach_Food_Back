@@ -29,6 +29,6 @@ class TripDates extends Model
 
     public function tripTrace()
     {
-        return $this->hasOne(TripTrace::class,'trip_dates_id');
+        return $this->hasOne(TripTrace::class,'trip_date_id');
     }
 }
