@@ -55,11 +55,11 @@ class TripService
                 'start_time' => $trip['start_time'],
                 'start_date' => $startDate->format('Y-m-d'),
             ]);
-            foreach ($trip->customerTimes as $customer) {
+            foreach ($trip->customerTimes as $customerId => $customerTime) {
                 CustomerTime::create([
-                    'customer_id' => $customer['customer_id'],
+                    'customer_id' => $customerId,
                     'trip_id' => $trips->id,
-                    'arrival_time' => $customer['time'],
+                    'arrival_time' => $customerTime,
                 ]);
 
             }
