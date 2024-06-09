@@ -59,7 +59,7 @@ class TripService
                 CustomerTime::create([
                     'customer_id' => $customerId,
                     'trip_id' => $trips->id,
-                    'arrival_time' => $customerTime,
+                    'arrival_time' => $customerTime['time'],
                 ]);
 
             }
