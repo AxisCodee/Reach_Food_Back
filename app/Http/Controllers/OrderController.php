@@ -3,11 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
-use App\Http\Requests\OrderRequest;
+use App\Http\Requests\Order\IndexOrderRequest;
+use App\Http\Requests\Order\OrderRequest;
 use App\Services\DateService;
 use App\Services\OrderService;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -40,11 +40,11 @@ class OrderController extends Controller
         return ResponseHelper::success($result, null, 'orders update successfully', 200);
     }
 
-    public function index(Request $request)
+    public function index(IndexOrderRequest $request)
     {
-        $date = $request->date;
-        $result = $this->orderService->indexOrder();
-        $data = $this->dateService->filterDate($result, $date, 'order_date');
+        $data = $request->validated();
+        $result = $this->orderService->indexOrder($data);
+        $data = $this->dateService->filterDate($result, $data['date'] ?? false, 'order_date');
         return ResponseHelper::success($data->paginate(10), null, 'orders returned successfully', 200);
     }
 

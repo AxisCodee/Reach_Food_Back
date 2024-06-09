@@ -10,6 +10,7 @@ use App\Models\TripDates;
 use App\Models\User;
 use App\Models\UserDetail;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -154,19 +155,20 @@ class OrderService
     }
 
 
-    public function indexOrder()
+    public function indexOrder(array $data)
     {
-        $branch_id = request()->branch_id;
-        $status = request()->status;
-
-        if ($status) {
-            $result = Order::query()->with('trip_date.trip.salesman', 'customer.contacts', 'trip_date.address', 'childOrders')
-                ->where('branch_id', $branch_id)->where('status', $status)->whereNull('order_id');
-        } else {
-            $result = Order::query()->with('trip_date.trip.salesman', 'customer.contacts', 'trip_date.address', 'childOrders')
-                ->where('branch_id', $branch_id)->whereNull('order_id');
-        }
-        return $result;
+        return Order::query()
+            ->with('trip_date.trip.salesman', 'customer.contacts', 'trip_date.address', 'childOrders')
+            ->where('branch_id', $data['branch_id'])
+            ->when($data['status'] ?? false, function (Builder $query) {
+                $query->where('status', request()->status);
+            })
+            ->whereNull('order_id')
+            ->when($data['is_archived'] ?? null, function (Builder $query) {
+                $query->whereDate('order_date', '<', Carbon::now()->format('Y-m-d'));
+            }, function (Builder $query) {
+                $query->whereDate('order_date', '>=', Carbon::now()->format('Y-m-d'));
+            });
     }
 
     public function showOrder($order)
@@ -194,9 +196,7 @@ class OrderService
         return $customers;
 
 
-
     }
-
 
 
 }
