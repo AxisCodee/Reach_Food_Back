@@ -160,10 +160,10 @@ class OrderService
         $status = request()->status;
 
         if ($status) {
-            $result = Order::query()->with('trip_date.trip.salesman', 'customer', 'trip_date.address', 'childOrders')
+            $result = Order::query()->with('trip_date.trip.salesman', 'customer.contacts', 'trip_date.address', 'childOrders')
                 ->where('branch_id', $branch_id)->where('status', $status)->whereNull('order_id');
         } else {
-            $result = Order::query()->with('trip_date.trip.salesman', 'customer', 'trip_date.address', 'childOrders')
+            $result = Order::query()->with('trip_date.trip.salesman', 'customer.contacts', 'trip_date.address', 'childOrders')
                 ->where('branch_id', $branch_id)->whereNull('order_id');
         }
         return $result;
@@ -171,7 +171,7 @@ class OrderService
 
     public function showOrder($order)
     {
-        $result = Order::whereNull('order_id')->with('products', 'customer', 'trip_date.trip.salesman', 'trip_date.trip.address', 'childOrders.products')->findOrFail($order);
+        $result = Order::whereNull('order_id')->with('products', 'customer.contacts', 'trip_date.trip.salesman', 'trip_date.trip.address', 'childOrders.products')->findOrFail($order);
         return $result;
     }
 
