@@ -5,7 +5,6 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\CreateTripRequest;
 use App\Http\Requests\UpdateTripRequest;
-use App\Models\Day;
 use App\Services\TripService;
 use Illuminate\Http\Request;
 
