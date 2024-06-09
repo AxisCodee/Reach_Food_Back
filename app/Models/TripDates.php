@@ -19,7 +19,7 @@ class TripDates extends Model
 
     public function order()
     {
-        return $this->hasMany(Order::class, 'trip_dates_id');
+        return $this->hasMany(Order::class, 'trip_date_id');
     }
 
     public function address()
@@ -29,6 +29,6 @@ class TripDates extends Model
 
     public function tripTrace()
     {
-        return $this->hasOne(TripTrace::class,'trip_date_id');
+        return $this->hasOne(TripTrace::class,'trip_dates_id');
     }
 }
