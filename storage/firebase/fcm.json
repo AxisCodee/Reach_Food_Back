@@ -1,0 +1,13 @@
+{
+    "type": "service_account",
+    "project_id": "rich-food-notification",
+    "private_key_id": "1a4a25522de0ee8b0aa1cf51ed4c8797fd6f4f91",
+    "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC+rw+FAd6Liba7\nMkE0Gghf1jhkaAQsp/xQlcC1YarDUgZmHe7HPgZk7emd0/jTWnzk6ZM4pcl4wZ3T\nIeNjHuUQekH5iJjp+vPRBLhLzI3aMIy1XPnVrAef9KuhNdYRZwNHZZFs5JcdodjF\nybMVjPdcSIZpOTsmtajX6ea6dVWBWHoUcWZexZ5TIyvVqkupExOiaBgomvfbNyfQ\n9qKecjFEpQFitechXpwI938i8p/EYJNywrdwEzOG0MbwPulNNHbQtYBcqYFAz5r6\nFXpPeNvBz/EZRG5earqew+xsWyN/MZ2bZAcLmLbLZpGYzqqyQBcVm2KlTQEvlB46\nt4yLp/PbAgMBAAECggEAW/fhO1yIcrKsMKNvcWqw6VBQCJVmlgc7mb5woMsHaodQ\nUMZVGUHgIaPiDl5jX8UAAgRqHmNPxe9UaLWqj28iOg1NbsYkQo3oNMLbBKwXKspJ\nw1uhoB4F229NrEZkBiayHShuuJ+UBxW9kL/UoStJTvgn4+5XijcJxYGp5/qZj/VA\nWbc/O6fIezM19r7vFPrufImgpnOLMi+cVLtyGyWwyFTu6Mx8FiH25yWtPekhyPGO\nv+9mtTnAm6Hivj8IJ0q1DcHdoPEtEkmXQa77fgcW5shnDUHgdmgjAyxFCKStbPEZ\nbPGqKVCJDfQVSGJRYj5puz1tbq7i85/HqFqtqH8UAQKBgQDhPdbajh1FeQL1dc1K\naT1mCRHS3fBVDS4KdqqsYtpUU0+KtCCl4GPGkNr5JVfjDpRItiy9jWhTUnc3Nj8o\nog0UkS1hVJEEDDXNwXzpi1CgJmbx/0DLSrTbySdppkA0RyOCTORD/3jDpZ0Sf78P\n05RxCMh2UMDH5v+/rKaInQ4CAQKBgQDYuSByWDnYAX9TQ4iyNEcAyaV4B/AJ7lod\nw1NqCPXNryCNGA116IO0u3c8l9aGsIGx5a/UtMRXHDw5VXoAz0jQQKh7RbCYdGg5\nN+4OgrZ924sYLcKSfwI5Wp5IZ8VYFl4GM01SG4gPFcY7DgRn7k+tU2WfTNfSiTYg\nqV+ZdjI92wKBgAWlkjxacbtrJDrZIDNsXgCv24WI0Nyg/vV+MhsuQ0D38beNeoAO\nFxJEUWkLmZ90nx0PjCGYaPQlzh1RO9Yd8ewBE70r7JLIZ5Tn8+S6/GN3cv9AIfS2\nw7/61AUfCN8GpYo/uT1HK1TkUwLCtxyDdmY7DSOCNMMONH0uq+Ii5dYBAoGAZFFN\nM6CjJdmLln8sR1DrjPHKJkWGVxJ9pElF009SeGMYLjd0A6AdVwtvphyisLYDUtV/\nDnaea7QmLGPklXtduQg09NrNY8R+ef3ps83Nq3R0bjzAVA92eBX6LonaT2wLGdOl\ndtxHnrP1jmBuqa0mNJTl9Vccj9fztiqwldigaQECgYEAoAw+f5Nvyj5ctgpdTVEt\nK/GuG7TGYPs1zcLmas2JCdkGsQbHAD5ZTWNMi1i3S7Pej/h/u94TRzMNMf8IUKYD\nQk+4vWGA8YWpGTXinbIeoWDkyGBkZ/LY5ECMVOxX8GJvyLddo6RZN5cE0utQW87C\nAnYhOngmfVkdTdsHerqt7TQ=\n-----END PRIVATE KEY-----\n",
+    "client_email": "firebase-adminsdk-tgdg7@rich-food-notification.iam.gserviceaccount.com",
+    "client_id": "111458787270506530463",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-tgdg7%40rich-food-notification.iam.gserviceaccount.com",
+    "universe_domain": "googleapis.com"
+}
