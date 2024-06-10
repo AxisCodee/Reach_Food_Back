@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\Order\IndexOrderRequest;
 use App\Http\Requests\Order\OrderRequest;
+use App\Models\Order;
 use App\Services\DateService;
 use App\Services\OrderService;
 use Illuminate\Http\Request;
@@ -72,5 +73,17 @@ class OrderController extends Controller
     {
         $result = $this->orderService->getSalesmanOrders($request);
         return ResponseHelper::success($result);
+    }
+
+
+    public function updateStatus($action, $id){
+        $order = Order::query()->findOrFail($id);
+        if($order['order_id']){
+           return ResponseHelper::error('Can not modify this order');
+        }
+
+        return ResponseHelper::success(
+            $this->orderService->updateStatus($order, $action)
+        );
     }
 }
