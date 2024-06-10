@@ -7,6 +7,7 @@ use App\Helpers\ResponseHelper;
 use App\Http\Requests\CreateUserRequest;
 use App\Models\User;
 use App\Models\UserPermission;
+use App\Services\DeviceTokensService;
 use App\Services\FileService;
 use App\Services\TripService;
 use App\Services\UserService;
@@ -72,13 +73,13 @@ class AuthController extends Controller
                             }
                         }
                         //TRIPS
-                       $trips = $request['trips'];
-                       if ($trips) {
-                           foreach ($trips as $trip) {
-                               $trip = app(TripService::class)->createTrip($trip);
-                               $this->userService->linkTripWithSalesman($trip, $user->id);
-                           }
-                       }
+                        $trips = $request['trips'];
+                        if ($trips) {
+                            foreach ($trips as $trip) {
+                                $trip = app(TripService::class)->createTrip($trip);
+                                $this->userService->linkTripWithSalesman($trip, $user->id);
+                            }
+                        }
                         // link with categories
                         $branches = $request['branches'];
                         if ($branches) {
@@ -98,22 +99,25 @@ class AuthController extends Controller
         });
     }
 
-    public function login(Request $request)
+    public function login(Request $request, DeviceTokensService $deviceTokensService)
     {
         $request->validate([
             'user_name' => 'required|string|max:255|exists:users',
             'password' => 'required|string',
+            'token' => 'required|string'
         ]);
         $user = User::where('user_name', $request->user_name)->first();
         if (!$user || !Hash::check($request->password, $user->password)) {
             return ResponseHelper::error('Invalid username or password.', 401);
         }
-        $token = $user->createToken('auth_token', ['*'], now()->addMinutes(10000))->plainTextToken;
+        $token = $user->createToken('auth_token', ['*'], now()->addMinutes(10000));
+        $deviceTokensService->create($token->accessToken['id'], $request->token);
+
         $expiresAt = $user->tokens()->latest()->first()->expires_at;
 
         return ResponseHelper::success([
             'user' => $user->with(['contacts', 'address.city.country'])->find($user->id),
-            'access_token' => $token,
+            'access_token' => $token->plainTextToken,
             'token_type' => 'Bearer',
             'expires_at' => $expiresAt,
         ]);
@@ -123,19 +127,21 @@ class AuthController extends Controller
     {
         $user = auth('sanctum')->user();
         if ($user) {
-            $user->tokens()->delete();
+            $user->currentAccessToken()->delete();
             return ResponseHelper::success('Logged out successfully.');
         }
         return ResponseHelper::error('You are not authorized.', 401);
     }
 
-    public function refresh() //TODO
+    public function refresh(DeviceTokensService $deviceTokensService) //TODO
     {
-        auth('sanctum')->user()->tokens()->delete();
-        $token = auth('sanctum')->user()->createToken('auth_token')->plainTextToken;
+        $prevToken = auth('sanctum')->user()->currentAccessToken();
+        $token = auth('sanctum')->user()->createToken('auth_token');
+        $deviceTokensService->update($prevToken->id,$token->accessToken['id']);
+        $prevToken->delete();
         return ResponseHelper::success([
             'user' => auth('sanctum')->user(),
-            'token' => $token,
+            'token' => $token->plainTextToken,
         ]);
     }
 
