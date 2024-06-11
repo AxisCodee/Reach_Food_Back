@@ -118,7 +118,7 @@ class AuthController extends Controller
         return ResponseHelper::success([
             'user' => $user->with(['contacts', 'address.city.country'])->find($user->id),
             //'access_token' => $token->plainTextToken,
-            'token' => $token,
+            'access_token' => $token,
             'token_type' => 'Bearer',
             //'expires_at' => $expiresAt,
         ]);
@@ -142,7 +142,7 @@ class AuthController extends Controller
         $prevToken->delete();
         return ResponseHelper::success([
             'user' => auth('sanctum')->user(),
-            'token' => $token->plainTextToken,
+            'access_token' => $token->plainTextToken,
         ]);
     }
 
