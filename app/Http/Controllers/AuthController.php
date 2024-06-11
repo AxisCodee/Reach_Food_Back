@@ -104,20 +104,20 @@ class AuthController extends Controller
         $request->validate([
             'user_name' => 'required|string|max:255|exists:users',
             'password' => 'required|string',
-            'token' => 'required|string'
+            'token' => 'string'
         ]);
         $user = User::where('user_name', $request->user_name)->first();
         if (!$user || !Hash::check($request->password, $user->password)) {
             return ResponseHelper::error('Invalid username or password.', 401);
         }
-        $token = $user->createToken('auth_token', ['*'], now()->addMinutes(10000));
-        $deviceTokensService->create($token->accessToken['id'], $request->token);
+//        $token = $user->createToken('auth_token', ['*'], now()->addMinutes(10000));
+//        $deviceTokensService->create($token->accessToken['id'], $request->token);
 
         $expiresAt = $user->tokens()->latest()->first()->expires_at;
 
         return ResponseHelper::success([
             'user' => $user->with(['contacts', 'address.city.country'])->find($user->id),
-            'access_token' => $token->plainTextToken,
+            //'access_token' => $token->plainTextToken,
             'token_type' => 'Bearer',
             'expires_at' => $expiresAt,
         ]);
