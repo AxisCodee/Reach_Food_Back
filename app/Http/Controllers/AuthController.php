@@ -113,13 +113,13 @@ class AuthController extends Controller
 //        $token = $user->createToken('auth_token', ['*'], now()->addMinutes(10000));
 //        $deviceTokensService->create($token->accessToken['id'], $request->token);
 
-        $expiresAt = $user->tokens()->latest()->first()->expires_at;
+        //$expiresAt = $user->tokens()->latest()->first()->expires_at;
 
         return ResponseHelper::success([
             'user' => $user->with(['contacts', 'address.city.country'])->find($user->id),
             //'access_token' => $token->plainTextToken,
             'token_type' => 'Bearer',
-            'expires_at' => $expiresAt,
+            //'expires_at' => $expiresAt,
         ]);
     }
 
