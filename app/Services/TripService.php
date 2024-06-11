@@ -47,7 +47,6 @@ class TripService
                 'branch_id' => $trip['branch_id'],
                 'start_time' => $trip['start_time'],
             ]);
-
             $startDate = Carbon::parse(now())->next($trip['day']);
             TripDates::create([
                 'trip_id' => $trip->id,
@@ -55,15 +54,14 @@ class TripService
                 'start_time' => $trip['start_time'],
                 'start_date' => $startDate->format('Y-m-d'),
             ]);
+
             foreach ($trip->customerTimes as $customerId => $customerTime) {
                 CustomerTime::create([
                     'customer_id' => $customerId,
                     'trip_id' => $trips->id,
                     'arrival_time' => $customerTime['time'],
                 ]);
-
             }
-
             return $trips;
         });
     }

@@ -28,7 +28,12 @@ class CreateTripRequest extends FormRequest
             'day' => ['required', 'string'],
             'start_time' => ['required', 'date_format:H:i'],
             'salesman_id' => ['exists:users,id'],
-            'branch_id' => 'exists:branches,id'
+            'branch_id' => 'exists:branches,id',
+
+            //
+            'customerTimes' => 'array',
+            //'customerTimes.*' => 'exists:users,id',
+            'customerTimes.*time' => 'date_format:H:i',
         ];
     }
 

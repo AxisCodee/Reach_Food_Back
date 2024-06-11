@@ -7,7 +7,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class CustomerTime extends Model
 {
-    protected $guarded=[];
-
+    protected $guarded = [];
     use HasFactory;
 }
