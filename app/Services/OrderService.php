@@ -199,4 +199,20 @@ class OrderService
     }
 
 
+    private array $actions = [
+        'cancel' => 'canceled',
+        'deliver' => 'delivered'
+    ];
+
+    public function updateStatus($order, $action){
+
+        $status = $this->actions[$action];
+        $order->update([
+            'status' => $status,
+            'delivery_date' => $status == 'delivered' ? Carbon::now()->toDate() : null,
+            'delivery_time' =>  $status == 'delivered' ? Carbon::now()->toTimeString() : null,
+        ]);
+        return $order;
+    }
+
 }

@@ -7,6 +7,7 @@ use App\Models\Trip;
 use App\Models\TripDates;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
 /**
@@ -33,7 +34,9 @@ class TripService
     public function index($request)
     {
         return Trip::query()->where('branch_id', $request->branch_id)
-            ->where('day', $request->day)
+            ->when($request->day, function (Builder $query) use ($request) {
+                $query->where('day', $request->day);
+            })
             ->with(['dates.order.customer', 'address', 'salesman'])
             ->get()->toArray();
     }
