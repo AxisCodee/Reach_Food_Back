@@ -110,14 +110,15 @@ class AuthController extends Controller
         if (!$user || !Hash::check($request->password, $user->password)) {
             return ResponseHelper::error('Invalid username or password.', 401);
         }
-//        $token = $user->createToken('auth_token', ['*'], now()->addMinutes(10000));
+        //        $token = $user->createToken('auth_token', ['*'], now()->addMinutes(10000));
 //        $deviceTokensService->create($token->accessToken['id'], $request->token);
 
         //$expiresAt = $user->tokens()->latest()->first()->expires_at;
-
+        $token = $user->createToken('auth_token')->plainTextToken;
         return ResponseHelper::success([
             'user' => $user->with(['contacts', 'address.city.country'])->find($user->id),
             //'access_token' => $token->plainTextToken,
+            'token' => $token,
             'token_type' => 'Bearer',
             //'expires_at' => $expiresAt,
         ]);
@@ -127,7 +128,7 @@ class AuthController extends Controller
     {
         $user = auth('sanctum')->user();
         if ($user) {
-            $user->currentAccessToken()->delete();
+           // $user->currentAccessToken()->delete();
             return ResponseHelper::success('Logged out successfully.');
         }
         return ResponseHelper::error('You are not authorized.', 401);
@@ -137,7 +138,7 @@ class AuthController extends Controller
     {
         $prevToken = auth('sanctum')->user()->currentAccessToken();
         $token = auth('sanctum')->user()->createToken('auth_token');
-        $deviceTokensService->update($prevToken->id,$token->accessToken['id']);
+        $deviceTokensService->update($prevToken->id, $token->accessToken['id']);
         $prevToken->delete();
         return ResponseHelper::success([
             'user' => auth('sanctum')->user(),
@@ -147,7 +148,7 @@ class AuthController extends Controller
 
     public function me()
     {
-        $user = Auth::user();
+        $user = auth('sanctum')->user();
         if ($user) {
             return ResponseHelper::success([auth('sanctum')->user()]);
         }
