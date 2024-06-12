@@ -10,6 +10,11 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TripController;
 use App\Http\Controllers\TripTraceController;
 use App\Http\Controllers\UserController;
+use App\Models\Branch;
+use App\Models\Notification;
+use App\Models\Order;
+use App\Models\Trip;
+use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -113,3 +118,22 @@ Route::prefix('tracing')->group(function () {
 
 /////
 Route::post('importFromJson', [AddressController::class, 'importFromJson']);
+
+
+Route::get('/test', function (){
+    $notification = Notification::query()->create([
+        'action_type' => 'add',
+        'actionable_id' => 1,
+        'actionable_type' => Branch::class,
+        'user_id'  => 1
+    ]);
+
+//    $notification = Notification::query()->find(2);
+
+    $ser = new NotificationService($notification);
+
+    return [
+        'title' => $ser->getTitle(),
+        'content' => $ser->getContent(),
+    ];
+});

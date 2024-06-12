@@ -51,6 +51,7 @@ class CreateUserRequest extends FormRequest
             'permissions' => 'array',
             'permissions.*permission_id' => 'exists:permissions,id',
             'permissions.*status' => 'in:true,false',
+
             // sales manager
             'salesmen' => 'array',
             'salesmen.*' => 'exists:users,id'
