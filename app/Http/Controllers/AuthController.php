@@ -9,9 +9,11 @@ use App\Models\User;
 use App\Models\UserPermission;
 use App\Services\DeviceTokensService;
 use App\Services\FileService;
+use App\Services\RegistrationService;
 use App\Services\TripService;
 use App\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -26,79 +28,92 @@ class AuthController extends Controller
 
     public function register(CreateUserRequest $request)
     {
-        return DB::transaction(function () use ($request) {
-            $user = User::create([
-                'name' => $request->name,
-                'user_name' => $request->user_name,
-                'password' => Hash::make($request['password']),
-                'role' => $request->role,
-                'image' => app(FileService::class)->upload($request, 'image'),
-                'address_id' => $request->address_id,
-                'location' => $request->location,
-            ]);
+//        return DB::transaction(function () use ($request) {
+//            $user = User::create([
+//                'name' => $request->name,
+//                'user_name' => $request->user_name,
+//                'password' => Hash::make($request['password']),
+//                'role' => $request->role,
+//                'image' => app(FileService::class)->upload($request, 'image'),
+//                'address_id' => $request->address_id,
+//                'location' => $request->location,
+//            ]);
+//            $contacts = $request['phone_number'];
+//            $this->userService->createUserContacts($contacts, $user->id);
+//            if ($request->role == Roles::ADMIN->value) {
+//                $user->update(['city_id' => $request->city_id]);
+//            }
+//            if ($request->role == Roles::CUSTOMER->value) {
+//                $user->update([
+//                    'customer_type' => $request->customer_type,
+//                ]);
+//            } else {
+//                if ($request->role != Roles::SUPER_ADMIN->value) {
+//                    if ($request->role == Roles::SALES_MANAGER->value) {
+//                        $user->update([//link with category(branch)
+//                            'branch_id' => $request->input('branch_id')
+//                        ]);
+//                        //link with salesmen
+//                        $salesmen = $request['salesmen'];
+//                        if ($salesmen) {
+//                            // $user->salesManager()->attach($salesmen);
+//                            $user->salesman()->attach($salesmen);
+//                        }
+//                    }
+//                    if ($request->role == Roles::SALESMAN->value) {
+//                        //assign permissions
+//                        $permissions = $request['permissions'];
+//                        if ($permissions) {
+//                            foreach ($permissions as $index => $permission) {
+//                                $status = $permission['status'];
+//                                UserPermission::create([
+//                                    'permission_id' => $index + 1,
+//                                    'user_id' => $user->id,
+//                                    'status' => $status
+//                                ]);
+//                            }
+//                        }
+//                        //TRIPS
+//                       $trips = $request['trips'];
+//                       if ($trips) {
+//                           foreach ($trips as $trip) {
+//                               $trip = app(TripService::class)->createTrip($trip);
+//                               $this->userService->linkTripWithSalesman($trip, $user->id);
+//                           }
+//                       }
+//                        // link with categories
+//                        $branches = $request['branches'];
+//                        if ($branches) {
+//                            foreach ($branches as $branch) {
+//                                $user->salesManager()->attach($branch['salesManager_id']);
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            $token = $user->createToken('auth_token')->plainTextToken;
+//            return ResponseHelper::success([
+//                'user' => $user,
+//                'access_token' => $token,
+//                'token_type' => 'Bearer',
+//            ]);
+//        });
+
+        $user = DB::transaction(function () use ($request) {
+            $user = (new RegistrationService())->createUser($request);
             $contacts = $request['phone_number'];
             $this->userService->createUserContacts($contacts, $user->id);
-            if ($request->role == Roles::ADMIN->value) {
-                $user->update(['city_id' => $request->city_id]);
-            }
-            if ($request->role == Roles::CUSTOMER->value) {
-                $user->update([
-                    'customer_type' => $request->customer_type,
-                ]);
-            } else {
-                if ($request->role != Roles::SUPER_ADMIN->value) {
-                    if ($request->role == Roles::SALES_MANAGER->value) {
-                        $user->update([//link with category(branch)
-                            'branch_id' => $request->input('branch_id')
-                        ]);
-                        //link with salesmen
-                        $salesmen = $request['salesmen'];
-                        if ($salesmen) {
-                            // $user->salesManager()->attach($salesmen);
-                            $user->salesman()->attach($salesmen);
-                        }
-                    }
-                    if ($request->role == Roles::SALESMAN->value) {
-                        //assign permissions
-                        $permissions = $request['permissions'];
-                        if ($permissions) {
-                            foreach ($permissions as $index => $permission) {
-                                $status = $permission['status'];
-                                UserPermission::create([
-                                    'permission_id' => $index + 1,
-                                    'user_id' => $user->id,
-                                    'status' => $status
-                                ]);
-                            }
-                        }
-                        //TRIPS
-                        $trips = $request['trips'];
-                        if ($trips) {
-                            foreach ($trips as $trip) {
-                                $trip = app(TripService::class)->createTrip($trip);
-                                $this->userService->linkTripWithSalesman($trip, $user->id);
-                            }
-                        }
-                        // link with categories
-                        $branches = $request['branches'];
-                        if ($branches) {
-                            foreach ($branches as $branch) {
-                                $user->salesManager()->attach($branch['salesManager_id']);
-                            }
-                        }
-                    }
-                }
-            }
-            $token = $user->createToken('auth_token')->plainTextToken;
-            return ResponseHelper::success([
-                'user' => $user,
-                'access_token' => $token,
-                'token_type' => 'Bearer',
-            ]);
+            return $user;
         });
+        $token = $user->createToken('auth_token')->plainTextToken;
+        return ResponseHelper::success([
+            'user' => $user,
+            'access_token' => $token,
+            'token_type' => 'Bearer',
+        ]);
     }
 
-    public function login(Request $request, DeviceTokensService $deviceTokensService)
+    public function login(Request $request)
     {
         $request->validate([
             'user_name' => 'required|string|max:255|exists:users',
