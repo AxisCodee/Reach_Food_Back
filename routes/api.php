@@ -46,7 +46,7 @@ Route::prefix('branch')->group(function () {
         ->only('store', 'index');
     Route::get('show/{id}', [BranchController::class, 'show']);
     Route::post('/{id}', [BranchController::class, 'update']);
-    Route::delete('/{id}', [BranchController::class, 'destroy']);
+    Route::delete('/delete', [BranchController::class, 'delete']);
     Route::get('/cities', [BranchController::class, 'branches']);
 });
 

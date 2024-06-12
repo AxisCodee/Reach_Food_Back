@@ -3,6 +3,9 @@
 namespace App\Services;
 
 use App\Models\Branch;
+use App\Models\City;
+use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 /**
  * Class BranchService.
@@ -32,27 +35,50 @@ class BranchService
             ->findOrFail($id);
     }
 
-    public function createBranch($branch)
+    public function createBranch($branch, $city_id)
     {
         return Branch::create([
-                'name' => $branch->name,
-                'city_id' => $branch->city_id,
+                'name' => $branch,
+                'city_id' => $city_id,
             ]
         );
     }
 
-    public function updateBranch($branch)
+//    public function updateBranch($branch)
+//    {
+//        return Branch::findOrFail($branch)
+//            ->update([
+//                'name' => $branch->name,
+//                'city_id' => $branch->city_id,
+//            ]);
+//    }
+
+    public function updateBranch($branch, $request)
     {
-        return Branch::findOrFail($branch)
-            ->update([
-                'name' => $branch->name,
-                'city_id' => $branch->city_id,
+        return DB::transaction(function () use ($branch, $request) {
+            $branch->update([
+                'name' => $request['name'],
+                'city_id' => $request['city_id']
             ]);
+            $oldSalesManager = $branch->users()
+                ->where('role', 'sales manager')
+                ->where('branch_id', $branch->id)->first();
+            $oldSalesManager->update(['branch_id' => null]);
+            $newSalesManager = User::findOrFail($request->salesManager_id);
+            $newSalesManager->update(['branch_id' => $branch->id]);
+        });
     }
 
-    public function deleteBranch($branch)
+
+    public function deleteBranches($request)
     {
-        return Branch::findOrFail($branch)->delete();
+        $cities = $request['cities'];
+        City::whereIn('id', $cities)->with('branch')->get()->each(function ($city) {
+            $city->branch->each(function ($branch) {
+                $branch->delete();
+            });
+        });
+        return true;
     }
 
 }

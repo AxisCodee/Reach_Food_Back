@@ -16,6 +16,7 @@ return new class extends Migration {
             $table->foreignId('city_id')->nullable()->constrained('cities')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
             $table->index('city_id');
+            $table->unique(['city_id', 'name']);
         });
     }
 

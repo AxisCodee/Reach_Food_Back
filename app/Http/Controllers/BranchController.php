@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\CreateBranchRequest;
+use App\Http\Requests\DeleteBranchesRrequest;
 use App\Http\Requests\UpdateBranchRequest;
 use App\Models\Branch;
 use App\Models\City;
@@ -11,6 +12,7 @@ use App\Models\User;
 use App\Services\BranchService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class BranchController extends Controller
 {
@@ -30,12 +32,15 @@ class BranchController extends Controller
     public function store(CreateBranchRequest $request)
     {
         return DB::transaction(function () use ($request) {
-            $branch = $this->branchService->createBranch($request);
+            $branches = $request['branches'];
+            foreach ($branches as $branch) {
+                $this->branchService->createBranch($branch, $request->city_id);
+            }
             if ($request->salesManager_id) {
                 $salesManager = User::findOrFail($request->salesManager_id);
-                $salesManager->update(['branch_id' => $branch->id]);
+                $salesManager->update(['city_id' => $request->city_id]);
             }
-            return ResponseHelper::success($branch);
+            return ResponseHelper::success('Branched added successfully');
         });
     }
 
@@ -47,41 +52,24 @@ class BranchController extends Controller
 
     public function update($id, UpdateBranchRequest $request)
     {
-        return DB::transaction(function () use ($id, $request) {
-            $branch = Branch::findOrFail($id);
-            $branch->update([
-                'name' => $request['name'],
-                'city_id' => $request['city_id']
-            ]);
-            $oldSalesManager = $branch->users()
-                ->where('role', 'sales manager')
-                ->where('branch_id', $branch->id)->first();
-            $oldSalesManager->update(['branch_id' => null]);
-            $newSalesManager = User::findOrFail($request->salesManager_id);
-            $newSalesManager->update(['branch_id' => $branch->id]);
-            return ResponseHelper::success($branch);
-        });
+        $branch = Branch::findOrFail($id);
+        $result = $this->branchService->updateBranch($branch, $request);
+        return ResponseHelper::success('Branch updated successfully');
+
     }
 
-    public function destroy($branch)
+    public function delete(DeleteBranchesRrequest $request)
     {
-        User::query()->where('branch_id', $branch)->update([
-            'branch_id' => null
-        ]);
-        $result = $this->branchService->deleteBranch($branch);
+        $user_name = auth('sanctum')->user()->user_name;
+        $user = User::where('user_name', $user_name)->first();
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return ResponseHelper::error('Invalid username or password.', 401);
+        }
+        $result = $this->branchService->deleteBranches($request);
         if ($result) {
-            return ResponseHelper::success($result);
+            return ResponseHelper::success('deleted');
         }
-        return ResponseHelper::error('Branch not deleted.');
-    }
-
-    public function deleteBranches(Request $request)//
-    {
-        $branches = $request['branches'];
-        foreach ($branches as $branch) {
-            $this->branchService->deleteBranch($branch);
-        }
-        return ResponseHelper::success('Branches deleted successfully.');
+        return ResponseHelper::error('Something went wrong.', 500);
     }
 
     public function branches()
@@ -100,6 +88,5 @@ class BranchController extends Controller
         return ResponseHelper::success($result);
     }
 
-   
 
 }

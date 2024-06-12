@@ -29,6 +29,7 @@ class UserController extends Controller
         $result = $this->userService->show($user);
         return ResponseHelper::success($result);
     }
+
     public function userAddress(Request $request)
     {
         $result = $this->userService->userAddress($request);
@@ -64,11 +65,7 @@ class UserController extends Controller
     public function getSalesmanCustomers()
     {
         $salesman = User::findOrFail(auth('sanctum')->id());//auth
-        $customers = User::whereHas('trips.dates.order', function ($query) use ($salesman) {
-            $query->where('salesman_id', $salesman->id);
-        })
-            ->with(['trips.dates.order.customer'])
-            ->get()->toArray();
+        $customers = $this->userService->getSalesmanCustomers($salesman);
         return ResponseHelper::success($customers);
     }
 

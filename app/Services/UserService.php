@@ -96,7 +96,6 @@ class UserService
             $user->salesman()->detach();
             $user->salesman()->attach($salesmen);
         }
-
     }
 
     public function show($user)
@@ -104,9 +103,11 @@ class UserService
         return User::query()->with(['contacts', 'address.city.country'])
             ->findOrFail($user);
     }
+
     public function userAddress($request)
     {
-        return User::query()->where('address_id',$request->address_id)->where('role','customer')->get()->toArray();
+        return User::query()->where('address_id', $request->address_id)
+            ->where('role', 'customer')->get()->toArray();
     }
 
     public function linkTripWithSalesman($trip, $salesmanId)
@@ -115,7 +116,6 @@ class UserService
             'salesman_id' => $salesmanId
         ]);
     }
-
 
     public function getUsersByType($request)
     {
@@ -146,7 +146,14 @@ class UserService
                 })
                 ->get()->toArray();
         }
+    }
 
+    public function getSalesmanCustomers($salesman)
+    {
+        return User::whereHas('trips.dates.order', function ($query) use ($salesman) {
+            $query->where('salesman_id', $salesman->id);
+        })->with(['trips.dates.order.customer'])
+            ->get()->toArray();
     }
 
 }

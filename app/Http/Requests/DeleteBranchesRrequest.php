@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateBranchRequest extends FormRequest
+class DeleteBranchesRrequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +22,9 @@ class CreateBranchRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'branches' => 'required|array',
-            'branches.*' => 'required|string',
-            'city_id' => 'required|exists:cities,id',
-            'salesManager_id' => 'exists:users,id',
+            'cities' => 'required|array',
+            'cities.*' => 'required|exists:cities,id',
+            'password' => 'required',
         ];
     }
 }
