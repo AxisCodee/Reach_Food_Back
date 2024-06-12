@@ -30,7 +30,7 @@ Route::get('me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 
 Route::prefix('user')->group(function () {
     Route::apiResource('users', UserController::class)
-        ->only('index');
+        ->only('index', 'destroy');
     Route::post('update/{id}', [UserController::class, 'update']);
     Route::get('permissions', [PermissionController::class, 'index']);
     Route::get('address', [UserController::class, 'userAddress']);
@@ -66,7 +66,7 @@ Route::prefix('order')->group(function () {
     Route::post('update/{id}', [OrderController::class, 'update']);
     Route::get('show/{id}', [OrderController::class, 'show']);
     Route::post('{action}/{id}', [OrderController::class, 'updateStatus'])
-    ->whereIn('action', ['cancel', 'deliver']);
+        ->whereIn('action', ['cancel', 'deliver']);
     Route::get('cities/{id}', [AddressController::class, 'getCities']);
     Route::get('countries', [AddressController::class, 'getCountries']);
     Route::prefix('salesman')->group(function () {
