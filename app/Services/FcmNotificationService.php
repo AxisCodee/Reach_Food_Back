@@ -2,9 +2,10 @@
 
 namespace App\Services;
 
+use App\Models\Notification;
 use Kreait\Firebase\Contract\Messaging;
 use Kreait\Firebase\Messaging\CloudMessage;
-use Kreait\Firebase\Messaging\Notification;
+use Kreait\Firebase\Messaging\Notification as FcmNotification;
 use Kreait\Firebase\Factory;
 
 class FcmNotificationService
@@ -20,11 +21,21 @@ class FcmNotificationService
 
     public function sendNotification($deviceToken, $title, $body): array
     {
-        $notification = Notification::create($title, $body);
-
+        $notification = FcmNotification::create($title, $body);
         $message = CloudMessage::withTarget('token', $deviceToken)
             ->withNotification($notification);
-
         return $this->messaging->send($message);
+    }
+
+
+    public function createNotification($data)
+    {
+        $notification = Notification::create([
+                'type' => $data['type'],
+                'user_id' => $data['user_id'],
+            ]
+        );
+
+        return $notification;
     }
 }

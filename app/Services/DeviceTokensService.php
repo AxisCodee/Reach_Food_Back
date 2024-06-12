@@ -10,9 +10,9 @@ class DeviceTokensService
     {
         DB::table('device_tokens')
             ->insert([
-            'access_token_id' => $accessTokenId,
-            'token' => $token,
-        ]);
+                'access_token_id' => $accessTokenId,
+                'token' => $token,
+            ]);
     }
 
     public function update(int $prevAccessTokenId, int $newAccessTokenId): void
