@@ -96,7 +96,7 @@ Route::prefix('feedback')->group(function () {
 
 Route::prefix('trip')->group(function () {
     Route::controller(TripController::class)->group(function () {
-        Route::apiResource('trips', TripController::class)->only('store', 'index');
+        Route::apiResource('trips', TripController::class)->only('store', 'index','destroy');
         Route::prefix('salesman')->group(function () {
             Route::get('/index/daily', [TripController::class, 'salesmanTripsDaily']);
             Route::get('/index/weekly', [TripController::class, 'salesmanTripsWeekly']);
