@@ -12,9 +12,9 @@ return new class extends Migration {
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-            $table->enum('action_type', ['اضافة', 'حذف', 'تعديل','بدء رحلة','تغيير سعر','تغيير موعد'])->nullable();
-            $table->string('actionable_type')->nullable();
-            $table->string('actionable_id')->nullable();
+            $table->enum('action_type', ['add', 'delete', 'update','start_trip','change_price','change_date'])->nullable();
+            $table->nullableMorphs('actionable');
+            //who do this action
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
