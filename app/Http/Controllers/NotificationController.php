@@ -11,7 +11,7 @@ class NotificationController extends Controller
     {
     }
 
-    public function send(Request $request)
+    public function send(Request $request)//Test
     {
         $request->validate([
             'device_token' => 'required',

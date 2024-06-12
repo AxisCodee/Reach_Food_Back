@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphOne;
 
 class TripDates extends Model
 {
@@ -29,6 +30,11 @@ class TripDates extends Model
 
     public function tripTrace()
     {
-        return $this->hasOne(TripTrace::class,'trip_date_id');
+        return $this->hasOne(TripTrace::class, 'trip_date_id');
+    }
+
+    public function notification(): MorphOne
+    {
+        return $this->morphOne(Notification::class, 'notificationable');
     }
 }
