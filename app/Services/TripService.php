@@ -76,11 +76,9 @@ class TripService
         });
     }
 
-    public function deleteTrip($request)
+    public function deleteTrip(Trip $trip)
     {
-        return DB::transaction(function () use ($request) {
-            return Trip::query()->find($request->trip_id)->delete();
-        });
+        $trip->delete();
     }
 
     public function getSalesmanTrips()

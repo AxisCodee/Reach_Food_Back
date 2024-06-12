@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\CreateTripRequest;
 use App\Http\Requests\UpdateTripRequest;
+use App\Models\Trip;
 use App\Services\TripService;
+use Exception;
 use Illuminate\Http\Request;
 
 class TripController extends Controller
@@ -45,13 +47,14 @@ class TripController extends Controller
         return ResponseHelper::error('Failed to update trip');
     }
 
-    public function delete(Request $request)
+    public function destroy(Trip $trip)
     {
-        $result = $this->tripService->deleteTrip($request);
-        if ($result) {
+        try {
+            $this->tripService->deleteTrip($trip);
             return ResponseHelper::success('Trip deleted successfully');
+        } catch (Exception) {
+            return ResponseHelper::error('Failed to delete trip');
         }
-        return ResponseHelper::error('Failed to delete trip');
     }
 
 
