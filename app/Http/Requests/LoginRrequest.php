@@ -24,7 +24,7 @@ class LoginRrequest extends FormRequest
         return [
             'user_name' => 'required|string|max:255|exists:users',
             'password' => 'required|string',
-            'token' => 'string'
+            'device_token' => 'string'
         ];
     }
 }
