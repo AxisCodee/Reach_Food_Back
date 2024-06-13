@@ -44,8 +44,10 @@ class OrderService
             $order = Order::query()->create($data);
             $orderProducts = [];
             $customer = User::findOrFail($customer_id);
-            foreach ($req->input('product') as $productData) {
-                $product = Product::findOrFail($productData['product_id']);
+//dd($req->input('product_id'));
+            foreach ($req->input('product_id') as $productData) {
+//dd($productData);
+                $product = Product::findOrFail($productData);
                 $quantity = $productData['quantity'];
 
                 $orderProducts[] = [
@@ -82,9 +84,9 @@ class OrderService
 //            }
 
             $order->update([
-                    'total_price' => $totalPrice,
-                    'trip_date_id' => $trip?->id
-                ]);
+                'total_price' => $totalPrice,
+                'trip_date_id' => $trip?->id
+            ]);
 
             return $order;
         });
@@ -207,13 +209,14 @@ class OrderService
         'deliver' => 'delivered'
     ];
 
-    public function updateStatus($order, $action){
+    public function updateStatus($order, $action)
+    {
 
         $status = $this->actions[$action];
         $order->update([
             'status' => $status,
             'delivery_date' => $status == 'delivered' ? Carbon::now()->toDate() : null,
-            'delivery_time' =>  $status == 'delivered' ? Carbon::now()->toTimeString() : null,
+            'delivery_time' => $status == 'delivered' ? Carbon::now()->toTimeString() : null,
         ]);
         return $order;
     }

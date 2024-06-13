@@ -10,7 +10,6 @@ use App\Models\Branch;
 use App\Models\City;
 use App\Models\User;
 use App\Services\BranchService;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
