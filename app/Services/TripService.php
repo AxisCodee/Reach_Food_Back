@@ -87,10 +87,8 @@ class TripService
         return $salesman->trips()
             ->with(['address:id,city_id,area', 'dates' => function ($query) {
                 $query->withCount('order');
-            }])->paginate(10)
-            ->get()
-
-            ->toArray();//
+            }])
+            ->paginate(10); // 10 is the number of items per page
     }
 
     public function getSalesmanTripsWeekly()
