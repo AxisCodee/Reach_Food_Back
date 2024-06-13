@@ -47,7 +47,7 @@ class TripService
             $trips = Trip::create([
                 'address_id' => $trip['address_id'],
                 'day' => $trip['day'],
-                'branch_id' => $trip['branch_id'],
+                'branch_id' => $trip['branch_id'],//??
                 'start_time' => $trip['start_time'],
             ]);
             $startDate = Carbon::parse(now())->next($trip['day']);

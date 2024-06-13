@@ -161,7 +161,7 @@ class OrderService
     public function indexOrder(array $data)
     {
         return Order::query()
-            ->with('trip_date.trip.salesman', 'customer.contacts', 'trip_date.address', 'childOrders')
+            ->with(['trip_date.trip.salesman', 'customer.contacts', 'trip_date.address', 'childOrders'])
             ->where('branch_id', $data['branch_id'])
             ->when($data['status'] ?? false, function (Builder $query) {
                 $query->where('status', request()->status);
