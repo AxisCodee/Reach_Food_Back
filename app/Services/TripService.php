@@ -87,9 +87,9 @@ class TripService
         return $salesman->trips()
             ->with(['address:id,city_id,area', 'dates' => function ($query) {
                 $query->withCount('order');
-            }])
+            }])->paginate(10)
             ->get()
-            ->paginate(10)
+
             ->toArray();//
     }
 
