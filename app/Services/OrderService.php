@@ -44,10 +44,8 @@ class OrderService
             $order = Order::query()->create($data);
             $orderProducts = [];
             $customer = User::findOrFail($customer_id);
-//dd($req->input('product_id'));
-            foreach ($req->input('product_id') as $productData) {
-//dd($productData);
-                $product = Product::findOrFail($productData);
+            foreach ($req->input('product') as $productData) {
+                $product = Product::findOrFail($productData['product_id']);
                 $quantity = $productData['quantity'];
 
                 $orderProducts[] = [
@@ -84,9 +82,9 @@ class OrderService
 //            }
 
             $order->update([
-                'total_price' => $totalPrice,
-                'trip_date_id' => $trip?->id
-            ]);
+                    'total_price' => $totalPrice,
+                    'trip_date_id' => $trip?->id
+                ]);
 
             return $order;
         });
@@ -96,8 +94,10 @@ class OrderService
     public function updateOrder($request, $order, $customer_id)
     {
         $result = $this->assignOrder($request, $customer_id);
+        // dd($result->id);
 
         $order = Order::where('id', $order)->first();
+        //  dd( $result->id);
 
         if ($order->order_id == null) {
             $order->update(['order_id' => $result->id]);
@@ -109,6 +109,52 @@ class OrderService
         Order::where('id', $result->id)->update(['is_base' => 0]);
 
         return $result;
+
+
+        // $total_price = 0;
+        // $price = 0;
+        // $req = Request();
+
+        // $orderProducts = [];
+        // return DB::transaction(function () use (&$price, $order, $req, $customer_id, &$total_price, &$orderProducts) {
+        //     foreach ($req->product_id as $key => $product_id) {
+        //         $product = Product::findOrFail($product_id);
+        //         $orderProducts[] = [
+        //             'order_id' => $order,
+        //             'product_id' => $product->id,
+        //             'quantity' => $req->quantity[$key],
+        //         ];
+
+        //         $customer = User::findOrFail($customer_id);
+        //         if ($customer->customer_type == 'shop') {
+        //             $price = $product->retail_price * $req->quantity[$key];
+        //         }
+        //         if ($customer->customer_type == 'center') {
+        //             $price = $product->wholesale_price * $req->quantity[$key];
+        //         }
+        //         $total_price += $price;
+        //     }
+
+        //     $orderId = OrderProduct::query();
+        //     $orderId->where('order_id', $order)->delete();
+        //     $orderId->insert($orderProducts);
+
+        //     $order = Order::findOrFail($order);
+
+        //     $customerAddress = UserDetail::where('user_id', $customer_id)->first();
+
+        //     $trip = Trip::query()
+        //         ->where('address_id', $customerAddress->address_id)
+        //         ->latest()->first();
+
+        //     $order->update([
+        //         'customer_id' => $customer_id,
+        //         'total_price' => $total_price,
+        //         'trip_date_id' => $trip->id
+        //     ]);
+
+        //     return $order;
+        // });
     }
 
 
@@ -161,14 +207,13 @@ class OrderService
         'deliver' => 'delivered'
     ];
 
-    public function updateStatus($order, $action)
-    {
+    public function updateStatus($order, $action){
 
         $status = $this->actions[$action];
         $order->update([
             'status' => $status,
             'delivery_date' => $status == 'delivered' ? Carbon::now()->toDate() : null,
-            'delivery_time' => $status == 'delivered' ? Carbon::now()->toTimeString() : null,
+            'delivery_time' =>  $status == 'delivered' ? Carbon::now()->toTimeString() : null,
         ]);
         return $order;
     }
