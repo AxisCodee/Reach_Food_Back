@@ -98,7 +98,6 @@ class TripService
         $salesman = User::FindOrFail(auth('sanctum')->id()); //auth
         return $salesman->trips()
             ->with(['address:id,city_id,area', 'dates'])
-            ->get()
             ->paginate(10)
             ->toArray();
     }
