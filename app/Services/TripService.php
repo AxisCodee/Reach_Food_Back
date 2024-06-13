@@ -89,7 +89,8 @@ class TripService
                 $query->withCount('order');
             }])
             ->get()
-            ->toArray();
+            ->paginate(10)
+            ->toArray();//
     }
 
     public function getSalesmanTripsWeekly()
