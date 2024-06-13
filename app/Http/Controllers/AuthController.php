@@ -45,11 +45,7 @@ class AuthController extends Controller
 
     public function login(LoginRrequest $request)
     {
-//        $request->validate([
-//            'user_name' => 'required|string|max:255|exists:users',
-//            'password' => 'required|string',
-//            'token' => 'string'
-//        ]);
+
         $user = User::where('user_name', $request->user_name)->first();
         if (!$user || !Hash::check($request->password, $user->password)) {
             return ResponseHelper::error('Invalid username or password.', 401);
