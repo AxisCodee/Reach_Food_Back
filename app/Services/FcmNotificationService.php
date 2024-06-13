@@ -4,6 +4,8 @@ namespace App\Services;
 
 use App\Models\Notification;
 use Kreait\Firebase\Contract\Messaging;
+use Kreait\Firebase\Exception\FirebaseException;
+use Kreait\Firebase\Exception\MessagingException;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification as FcmNotification;
 use Kreait\Firebase\Factory;
@@ -19,11 +21,16 @@ class FcmNotificationService
     }
 
 
-    public function sendNotification($deviceToken, $title, $body): array
+    /**
+     * @throws MessagingException
+     * @throws FirebaseException
+     */
+    public function sendNotification(string $deviceToken, string $title, string $body): array
     {
         $notification = FcmNotification::create($title, $body);
         $message = CloudMessage::withTarget('token', $deviceToken)
-            ->withNotification($notification);
+            ->withNotification($notification)
+            ->withDefaultSounds();
         return $this->messaging->send($message);
     }
 
@@ -37,5 +44,14 @@ class FcmNotificationService
         );
 
         return $notification;
+    }
+
+    public function sendMulticast(array $deviceTokens, string $title, string $body)
+    {
+        $notification = FcmNotification::create($title, $body);
+        $message = CloudMessage::new()
+            ->withNotification($notification)
+            ->withDefaultSounds();
+        $this->messaging->sendMulticast($message, $deviceTokens);
     }
 }

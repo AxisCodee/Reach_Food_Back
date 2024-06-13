@@ -22,11 +22,11 @@ class DeviceTokensService
             ->update(['access_token_id' => $newAccessTokenId]);
     }
 
-    public function get(int $userId): array
+    public function get(array $userIds): array
     {
         return DB::table('personal_access_tokens')
             ->select('device_tokens.token')
-            ->where('tokenable_id', $userId)
+            ->whereIn('tokenable_id', $userIds)
             ->join('device_tokens', 'device_tokens.access_token_id', '=', 'device_tokens.id')
             ->pluck('token')
             ->toArray();
