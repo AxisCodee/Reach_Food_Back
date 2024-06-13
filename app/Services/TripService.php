@@ -89,7 +89,7 @@ class TripService
                 $query->withCount('order');
             }])
             ->paginate(10)
-            ->toArray(); // 10 is the number of items per page
+            ->toArray();
 
     }
 
@@ -99,6 +99,7 @@ class TripService
         return $salesman->trips()
             ->with(['address:id,city_id,area', 'dates'])
             ->get()
+            ->paginate(10)
             ->toArray();
     }
 }
