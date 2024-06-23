@@ -123,14 +123,14 @@ Route::post('importFromJson', [AddressController::class, 'importFromJson']);
 
 
 Route::get('/test', function (){
-    $notification = Notification::query()->create([
-        'action_type' => 'trace',
-        'actionable_id' => 7,
-        'actionable_type' => CustomerTime::class,
-        'user_id'  => 1
-    ]);
+//    $notification = Notification::query()->create([
+//        'action_type' => 'trace',
+//        'actionable_id' => 7,
+//        'actionable_type' => CustomerTime::class,
+//        'user_id'  => 1
+//    ]);
 
-//    $notification = Notification::query()->find(2);
+    $notification = Notification::query()->find(36);
 
     $ser = new NotificationService($notification);
 

@@ -39,5 +39,8 @@ class Trip extends Model
     }
 
 
+    public function customerTimes(): HasMany{
+        return $this->hasMany(CustomerTime::class, 'trip_id');
+    }
 
 }
