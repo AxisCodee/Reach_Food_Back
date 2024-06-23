@@ -27,7 +27,6 @@ class UpdateUserRequest extends FormRequest
             'name' => 'string|max:255',
             'user_name' => 'string|max:255',
             'password' => 'string',
-            'role' => 'in:super admin,admin,customer,salesman,sales manager',
             'customer_type' => 'in:shop,center',
             'image' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048',
             'address_id' => 'exists:addresses,id',
