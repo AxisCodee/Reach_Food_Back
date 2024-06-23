@@ -12,8 +12,6 @@ use App\Http\Controllers\TripTraceController;
 use App\Http\Controllers\UserController;
 use App\Models\Branch;
 use App\Models\Notification;
-use App\Models\Order;
-use App\Models\Trip;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;

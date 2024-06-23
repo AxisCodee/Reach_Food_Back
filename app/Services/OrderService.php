@@ -82,9 +82,9 @@ class OrderService
 //            }
 
             $order->update([
-                    'total_price' => $totalPrice,
-                    'trip_date_id' => $trip?->id
-                ]);
+                'total_price' => $totalPrice,
+                'trip_date_id' => $trip?->id
+            ]);
 
             return $order;
         });
@@ -161,7 +161,8 @@ class OrderService
     public function indexOrder(array $data)
     {
         return Order::query()
-            ->with('trip_date.trip.salesman', 'customer.contacts', 'trip_date.address', 'childOrders')
+            ->with(['customer.contacts', 'trip_date.address', 'childOrders'])
+            ->with('trip_date.trip.salesman')
             ->where('branch_id', $data['branch_id'])
             ->when($data['status'] ?? false, function (Builder $query) {
                 $query->where('status', request()->status);
@@ -207,13 +208,14 @@ class OrderService
         'deliver' => 'delivered'
     ];
 
-    public function updateStatus($order, $action){
+    public function updateStatus($order, $action)
+    {
 
         $status = $this->actions[$action];
         $order->update([
             'status' => $status,
             'delivery_date' => $status == 'delivered' ? Carbon::now()->toDate() : null,
-            'delivery_time' =>  $status == 'delivered' ? Carbon::now()->toTimeString() : null,
+            'delivery_time' => $status == 'delivered' ? Carbon::now()->toTimeString() : null,
         ]);
         return $order;
     }

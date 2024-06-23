@@ -47,7 +47,7 @@ class TripService
             $trips = Trip::create([
                 'address_id' => $trip['address_id'],
                 'day' => $trip['day'],
-                'branch_id' => $trip['branch_id'],
+                'branch_id' => $trip['branch_id'],//??
                 'start_time' => $trip['start_time'],
             ]);
             $startDate = Carbon::parse(now())->next($trip['day']);
@@ -88,8 +88,9 @@ class TripService
             ->with(['address:id,city_id,area', 'dates' => function ($query) {
                 $query->withCount('order');
             }])
-            ->get()
+            ->paginate(10)
             ->toArray();
+
     }
 
     public function getSalesmanTripsWeekly()
@@ -97,7 +98,7 @@ class TripService
         $salesman = User::FindOrFail(auth('sanctum')->id()); //auth
         return $salesman->trips()
             ->with(['address:id,city_id,area', 'dates'])
-            ->get()
+            ->paginate(10)
             ->toArray();
     }
 }
