@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\Order\IndexOrderRequest;
 use App\Http\Requests\Order\OrderRequest;
+use App\Http\Requests\Order\UpdateArchivedOrderRequest;
 use App\Models\Order;
 use App\Services\DateService;
 use App\Services\OrderService;
@@ -76,14 +77,10 @@ class OrderController extends Controller
     }
 
 
-    public function updateStatus($action, $id){
+    public function updateStatus(UpdateArchivedOrderRequest $request, $id){
         $order = Order::query()->findOrFail($id);
-        if($order['order_id']){
-           return ResponseHelper::error('Can not modify this order');
-        }
-
         return ResponseHelper::success(
-            $this->orderService->updateStatus($order, $action)
+            $this->orderService->updateStatus($order, $request->validated())
         );
     }
 }
