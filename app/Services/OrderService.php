@@ -108,6 +108,8 @@ class OrderService
         Order::where('order_id', $order->id)->update(['order_id' => $result->id]);
         Order::where('id', $result->id)->update(['is_base' => 0]);
 
+
+
         return $result;
 
 
@@ -183,8 +185,7 @@ class OrderService
 
     public function deleteOrder($order)
     {
-        $result = Order::findOrFail($order)->delete();
-        return $result;
+        return Order::findOrFail($order)->delete();
     }
 
     public function getSalesmanOrders($request)
@@ -202,20 +203,12 @@ class OrderService
 
     }
 
-
-    private array $actions = [
-        'cancel' => 'canceled',
-        'deliver' => 'delivered'
-    ];
-
-    public function updateStatus($order, $action)
+    public function updateStatus($order, $data)
     {
-
-        $status = $this->actions[$action];
         $order->update([
-            'status' => $status,
-            'delivery_date' => $status == 'delivered' ? Carbon::now()->toDate() : null,
-            'delivery_time' => $status == 'delivered' ? Carbon::now()->toTimeString() : null,
+            'status' => $data['action'],
+            'delivery_date' => $data['delivery_date']??$order['delivery_date'],
+            'delivery_time' => $data['delivery_time']??$order['delivery_time'],
         ]);
         return $order;
     }
