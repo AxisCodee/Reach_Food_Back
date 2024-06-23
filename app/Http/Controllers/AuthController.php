@@ -49,7 +49,7 @@ class AuthController extends Controller
         //$token = $user->createToken('auth_token')->plainTextToken;
         return ResponseHelper::success([
             'user' => $user->with(['contacts', 'address.city.country'])->find($user->id),
-            'access_token' => $token,
+            'access_token' => $token->plainTextToken,
             'token_type' => 'Bearer',
             'expires_at' => $expiresAt,
         ]);
