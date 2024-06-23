@@ -110,7 +110,7 @@ class UserService
             ->where('role', 'customer')->get()->toArray();
     }
 
-    public function linkTripWithSalesman($trip, $salesmanId)
+    public function linkTripWithSalesman($trip, $salesmanId)//not used
     {
         return $trip->update([
             'salesman_id' => $salesmanId
@@ -150,10 +150,15 @@ class UserService
 
     public function getSalesmanCustomers($salesman)
     {
-        return User::whereHas('trips.dates.order', function ($query) use ($salesman) {
-            $query->where('salesman_id', $salesman->id);
-        })->with(['trips.dates.order.customer'])
-            ->get()->toArray();
+        return User::query()
+            ->with('contacts:id,user_id,phone_number', 'address:id,city_id,area')
+            ->whereIn('id', function ($query) use ($salesman) {
+                $query->select('customer_times.customer_id')
+                    ->from('customer_times')
+                    ->join('trips', 'customer_times.trip_id', '=', 'trips.id')
+                    ->where('trips.salesman_id', $salesman->id);
+            })->get()
+            ->toArray();
     }
 
 }
