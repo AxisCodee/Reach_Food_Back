@@ -80,6 +80,7 @@ class RegistrationService
         $trips = $request['trips'];
         if ($trips) {
             foreach ($trips as $trip) {
+                $trip['branch_id'] = $request->input('branch_id');
                 $trip = app(TripService::class)->createTrip($trip);
                 $trip->update(['salesman_id' => $request->salesman_id]);
             }
