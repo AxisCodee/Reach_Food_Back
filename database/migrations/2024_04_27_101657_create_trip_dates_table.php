@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreignId('address_id')->constrained('addresses')->cascadeOnDelete()->cascadeOnUpdate();
             $table->date('start_date')->nullable();
             $table->time('start_time')->nullable();
+            $table->unsignedInteger('delay')->default(0);
             $table->timestamps();
             $table->unique(['trip_id','address_id','start_date']);
         });

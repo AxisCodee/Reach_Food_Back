@@ -7,6 +7,7 @@ use App\Models\Notification;
 use App\Models\Order;
 use App\Models\Trip;
 use App\Models\User;
+use Carbon\Carbon;
 
 class NotificationService
 {
@@ -66,37 +67,50 @@ class NotificationService
             return 'تم تعديل قائمة الأسعار';
         }
 
-        if($this->notification['action_type'] == 'change_date'){
-            return 'تم تغيير الوقت الوصول المتوقع للساعة'; // todo add hour
+        if ($this->notification['action_type'] == 'cancel'){
+            return  "{$this->actionable['customer']['name']} للزبون  {$this->actionable['id']}  بإلغاء الطلب  {$this->user['name']} قام ";
         }
 
-        if($this->notification['action_type'] == 'start_trip'){
-            return " الرحلة n\ وقت الوصول المتوقع " . $this->user['name'] . 'بدأ '; // todo add hour
+        if($this->notification['action_type'] == 'trace'){
+            $time = Carbon::make($this->actionable['arrival_time']);
+            $trace = $this->actionable['trip']->dates()
+                ->where('start_date', '=', Carbon::today()
+                ->toDateString())
+                ->first();
+            logger($trace);
+            $delay = $trace['delay'];
+            $time->addMinutes($delay);
+
+            $time = $time->format('H:i');
+            if($trace['tripTrace']['status'] == 'start')
+                return "$time  الرحلة وقت الوصول المتوقع  {$this->user['name']} بدأ "; // todo add hour
+            else
+                return $time . ' تم تغيير الوقت الوصول المتوقع للساعة  '; // todo add hour
         }
+
 
         if($this->user['role'] == 'salesman' || $this->user['role'] == 'customer'){
             $complete = $this->notification['action_type'] == 'delete' ?
                 ' طلب' :
                 ' على طلب' ;
             $complete .= $this->user['role'] == 'customer' ? 'ه' : 'ك';
-            return $this->actionable['id'] .  $complete  . ' رقم ' . ' ' . $this->user['name'] . ' ' . $this->translateAction[$this->notification['action_type']];
+            return "{$this->translateAction[$this->notification['action_type']]} {$this->user['name']} $complete رقم {$this->actionable['id']}";
         }
 
         $action = $this->translateAction[$this->notification['action_type']];
         $type = $this->translate[$this->types[$this->notification['actionable_type']]];
         $type = ($this->notification['action_type'] == 'update' ? 'على ' : '') . $type;
-        $complete = '';
         if($this->types[$this->notification['actionable_type']] == 'order'){
-            $complete =  ' الرقم ' . $this->actionable['id'];
+            $complete =  " الرقم$this->actionable['id']";
         }
         else if($this->types[$this->notification['actionable_type']] == 'trip'){
-            $complete =  'الرقم ' . $this->actionable['id']  . ' اليوم ' . $this->translate[$this->actionable['day']] ;
+            $complete =  " الرقم {$this->actionable['id']} اليوم {$this->translate[$this->actionable['day']]}" ;
         }
         else {
             $complete = $this->actionable['name'];
         }
 
-        return  ' ' . $type . ' ' . $complete . ' ' . $this->user['name'] . ' ' . $action;
+        return  "$action {$this->user['name']}  $complete $type";
     }
 
     public function getTitle(): string{

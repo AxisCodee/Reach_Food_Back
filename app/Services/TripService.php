@@ -49,6 +49,7 @@ class TripService
                 'day' => $trip['day'],
                 'branch_id' => $trip['branch_id'],//??
                 'start_time' => $trip['start_time'],
+                'end_time' => $trip['end_time'],
             ]);
             $startDate = Carbon::parse(now())->next($trip['day']);
              TripDates::create([
@@ -59,9 +60,13 @@ class TripService
             ]);
 
             if(isset($trip['customerTimes'])){
-                foreach ($trip['customerTimes'] as $customerTime) {
+                foreach ($trip['customerTimes'] as $id => $customerTime) {
+                    if($customerTime['time'] < $trips['start_time']
+                    || $customerTime['time'] > $trips['end_time']){
+                        throw new \Exception('وقت الزبون خاطئ');
+                    }
                     CustomerTime::create([
-                        'customer_id' => $customerTime['customer_id'],
+                        'customer_id' => $id,
                         'trip_id' => $trips->id,
                         'arrival_time' => $customerTime['time'],
                     ]);

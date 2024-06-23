@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\Roles;
 use App\Models\User;
 use App\Models\UserPermission;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 
@@ -79,10 +80,26 @@ class RegistrationService
         //TRIPS
         $trips = $request['trips'];
         if ($trips) {
+            for($i = 0; $i < count($trips); $i++){
+                for($j = 0; $j < count($trips); $j++){
+                    $time1 = Carbon::make($trips[$i]['start_time'])->toDateTime();
+                    $time2 = Carbon::make($trips[$i]['end_time'])->toDateTime();
+                    $time3 = Carbon::make($trips[$j]['start_time'])->toDateTime();
+                    $time4 = Carbon::make($trips[$j]['end_time'])->toDateTime();
+                    if($time1 > $time3
+                        && $time1 < $time4){
+                        throw new \Exception('الاوقات متضاربة');
+                    }
+                    if($time2 > $time3
+                        && $time2 < $time4){
+                        throw new \Exception('الاوقات متضاربة');
+                    }
+                }
+            }
             foreach ($trips as $trip) {
                 $trip['branch_id'] = $request->input('branch_id');
                 $trip = app(TripService::class)->createTrip($trip);
-                $trip->update(['salesman_id' => $request->salesman_id]);
+                $trip->update(['salesman_id' => $this->user->id]);
             }
         }
         // link with categories

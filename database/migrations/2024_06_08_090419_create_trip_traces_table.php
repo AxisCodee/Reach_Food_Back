@@ -13,7 +13,7 @@ return new class extends Migration {
         Schema::create('trip_traces', function (Blueprint $table) {
             $table->id();
             $table->time('duration')->nullable();
-            $table->enum('status', ['start', 'pause', 'resume', 'stop'])->default('start');
+            $table->enum('status', ['start', 'pause', 'resume', 'stop'])->nullable();
             $table->foreignId('trip_date_id')->unique()->constrained('trip_dates')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });

@@ -44,7 +44,7 @@ class CreateUserRequest extends FormRequest
             'trips.*address_id' => ['required', 'exists:addresses,id'],
             'trips.*day_id' => ['required', 'exists:days,id'],
             'trips.*start_time' => ['required', 'date_format:H:i'],//
-
+            'trips.*end_time' => ['required', 'date_format:H:i', 'after:trips.*start_time'],//
             'branches' => 'array',
             'branches.*branch_id' => 'exists:branches,id',
             'branches.*salesManger_id' => 'exists:users,id',
