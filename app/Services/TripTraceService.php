@@ -25,14 +25,32 @@ class TripTraceService
 
     public function updateTripTrace($request)
     {
-        return TripTrace::updateOrCreate(
-            ['trip_date_id' => $request->trip_date_id],
+
+        if($request->status == 'resume'){
+
+            $trace = TripTrace::query()
+                ->where('trip_date_id', '=', $request->trip_date_id)
+                ->first();
+            $trace->update(
+                [
+                    'status' => $request->status,
+                ]
+            );
+            $delay = Carbon::make('0:0:0')->diffInMinutes($request->duration);
+            $trace['tripDate']->increment('delay', $delay);
+            return $trace;
+        }
+
+        $trace = TripTrace::query()
+            ->where('trip_date_id', '=', $request->trip_date_id)
+            ->first();
+        $trace->update(
             [
                 'duration' => $request->duration,
                 'status' => $request->status,
             ]
         );
-
+        return $trace;
     }
 
 

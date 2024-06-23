@@ -91,13 +91,17 @@ class TripService
     public function getSalesmanTrips()
     {
         $salesman = User::FindOrFail(auth('sanctum')->id());
+        $date = Carbon::today();
+        if(request()->day){
+            $date = Carbon::now()->next(request()->day);
+        }
         return $salesman->trips()
-            ->with(['address:id,city_id,area', 'dates' => function ($query) {
-                $query->withCount('order');
+            ->with(['address:id,city_id,area', 'dates' => function ($query) use ($date){
+                $query->withCount('order')->whereDate('start_date', '=', $date);
             }])
+            ->where('day', '=', $date->dayName)
             ->paginate(10)
             ->toArray();
-
     }
 
     public function getSalesmanTripsWeekly()
