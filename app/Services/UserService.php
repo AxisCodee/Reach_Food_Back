@@ -110,7 +110,7 @@ class UserService
             ->where('role', 'customer')->get()->toArray();
     }
 
-    public function linkTripWithSalesman($trip, $salesmanId)
+    public function linkTripWithSalesman($trip, $salesmanId)//not used
     {
         return $trip->update([
             'salesman_id' => $salesmanId

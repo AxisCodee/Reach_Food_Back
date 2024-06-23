@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Models\TripDates;
 use App\Models\TripTrace;
+use Illuminate\Support\Carbon;
 
 /**
  * Class TripTraceService.
@@ -12,11 +13,12 @@ class TripTraceService
 {
     public function getTripTraces($request)
     {
+        $time = $request->start_date ?? Carbon::now()->format('Y-m-d');
         return TripDates::with(['trip.salesman'])
             ->whereHas('tripTrace', function ($query) use ($request) {
-                $query->where([]);
+                $query->whereNotNull('status');
             })
-            ->whereDate('start_date', $request->start_date)
+            ->whereDate('start_date', $time)
             ->get()
             ->toArray();
     }
