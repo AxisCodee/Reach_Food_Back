@@ -2,19 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\Enums\Roles;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\LoginRrequest;
 use App\Models\User;
-use App\Models\UserPermission;
 use App\Services\DeviceTokensService;
-use App\Services\FileService;
 use App\Services\RegistrationService;
-use App\Services\TripService;
 use App\Services\UserService;
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -55,7 +49,7 @@ class AuthController extends Controller
         //$token = $user->createToken('auth_token')->plainTextToken;
         return ResponseHelper::success([
             'user' => $user->with(['contacts', 'address.city.country'])->find($user->id),
-            'access_token' => $token,
+            'access_token' => $token->plainTextToken,
             'token_type' => 'Bearer',
             'expires_at' => $expiresAt,
         ]);

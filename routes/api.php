@@ -11,7 +11,11 @@ use App\Http\Controllers\TripController;
 use App\Http\Controllers\TripTraceController;
 use App\Http\Controllers\UserController;
 use App\Models\Branch;
+use App\Models\CustomerTime;
 use App\Models\Notification;
+use App\Models\Order;
+use App\Models\Trip;
+use App\Models\TripTrace;
 use App\Services\NotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -120,9 +124,9 @@ Route::post('importFromJson', [AddressController::class, 'importFromJson']);
 
 Route::get('/test', function (){
     $notification = Notification::query()->create([
-        'action_type' => 'add',
-        'actionable_id' => 1,
-        'actionable_type' => Branch::class,
+        'action_type' => 'trace',
+        'actionable_id' => 7,
+        'actionable_type' => CustomerTime::class,
         'user_id'  => 1
     ]);
 

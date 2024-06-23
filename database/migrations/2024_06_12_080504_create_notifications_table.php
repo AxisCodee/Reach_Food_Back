@@ -12,7 +12,7 @@ return new class extends Migration {
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-            $table->enum('action_type', ['add', 'delete', 'update','start_trip','change_price','change_date'])->nullable();
+            $table->enum('action_type', ['add', 'delete', 'update','start_trip','trace', 'cancel'])->nullable();
             $table->nullableMorphs('actionable');
             //who do this action
             $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
