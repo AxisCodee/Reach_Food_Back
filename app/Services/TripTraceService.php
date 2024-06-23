@@ -13,12 +13,12 @@ class TripTraceService
 {
     public function getTripTraces($request)
     {
-        $time = $request->start_date ?? Carbon::now()->format('Y-m-d');
-        return TripDates::with(['trip.salesman'])
+        $date = $request->start_date ?? Carbon::today();
+        return TripDates::with(['trip.salesman', 'tripTrace'])
             ->whereHas('tripTrace', function ($query) use ($request) {
                 $query->whereNotNull('status');
             })
-            ->whereDate('start_date', $time)
+            ->whereDate('start_date', '=', $date)
             ->get()
             ->toArray();
     }
