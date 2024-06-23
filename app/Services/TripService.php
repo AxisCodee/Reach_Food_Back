@@ -58,12 +58,14 @@ class TripService
                 'start_date' => $startDate->format('Y-m-d'),
             ]);
 
-            foreach ($trip->customerTimes as $customerId => $customerTime) {
-                CustomerTime::create([
-                    'customer_id' => $customerId,
-                    'trip_id' => $trips->id,
-                    'arrival_time' => $customerTime['time'],
-                ]);
+            if(isset($trip['customerTimes'])){
+                foreach ($trip['customerTimes'] as $customerTime) {
+                    CustomerTime::create([
+                        'customer_id' => $customerTime['customer_id'],
+                        'trip_id' => $trips->id,
+                        'arrival_time' => $customerTime['time'],
+                    ]);
+                }
             }
             return $trips;
         });

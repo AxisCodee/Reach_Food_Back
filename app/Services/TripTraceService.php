@@ -12,9 +12,13 @@ class TripTraceService
 {
     public function getTripTraces($request)
     {
-        return TripDates::with(['trip.salesman', 'tripTrace'])
+        return TripDates::with(['trip.salesman'])
+            ->whereHas('tripTrace', function ($query) use ($request) {
+                $query->where([]);
+            })
             ->whereDate('start_date', $request->start_date)
-            ->get()->toArray();
+            ->get()
+            ->toArray();
     }
 
     public function updateTripTrace($request)
