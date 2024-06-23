@@ -72,8 +72,8 @@ Route::prefix('order')->group(function () {
     Route::get('index', [OrderController::class, 'index']);
     Route::post('update/{id}', [OrderController::class, 'update']);
     Route::get('show/{id}', [OrderController::class, 'show']);
-    Route::post('{action}/{id}', [OrderController::class, 'updateStatus'])
-        ->whereIn('action', ['cancel', 'deliver']);
+    Route::delete('/{id}', [OrderController::class, 'destroy']);
+    Route::put('archived/{id}', [OrderController::class, 'updateStatus']);
     Route::get('cities/{id}', [AddressController::class, 'getCities']);
     Route::get('countries', [AddressController::class, 'getCountries']);
     Route::prefix('salesman')->group(function () {
