@@ -83,9 +83,10 @@ class NotificationService
 
             $time = $time->format('H:i');
             if($trace['tripTrace']['status'] == 'start')
-                return "$time  الرحلة وقت الوصول المتوقع  {$this->user['name']} بدأ "; // todo add hour
+//                return "$time  الرحلة وقت الوصول المتوقع  {$this->user['name']} بدأ "; // todo add hour
+                return " بدأ {$this->user['name']} الرحلة وقت الوصول المتوقع $time"; // todo add hour
             else
-                return $time . ' تم تغيير الوقت الوصول المتوقع للساعة  '; // todo add hour
+                return  ' تم تغيير الوقت الوصول المتوقع للساعة  '. $time ; // todo add hour
         }
 
 
@@ -114,6 +115,9 @@ class NotificationService
     }
 
     public function getTitle(): string{
+        if($this->notification['action_type'] == 'change_price'){
+            return 'اسم التطبيق';
+        }
         return $this->user['name'];
     }
 
