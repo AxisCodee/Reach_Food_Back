@@ -9,3 +9,5 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote')->hourly();
 
 Schedule::command('create:trips')->everyFifteenSeconds()->withoutOverlapping();
+
+Schedule::command('app:send-notification')->everyFifteenSeconds()->withoutOverlapping();

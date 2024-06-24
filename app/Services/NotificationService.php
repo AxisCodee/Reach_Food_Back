@@ -63,6 +63,12 @@ class NotificationService
 
     public function getContent(): string
     {
+
+        if($this->notification['action_type'] == 'start_trip'){
+            $address = $this->actionable['trip']['address']['city']['name'];
+            return "حان موعد رحلة $address ";
+        }
+
         if ($this->notification['action_type'] == 'change_price'){
             return 'تم تعديل قائمة الأسعار';
         }
@@ -115,10 +121,11 @@ class NotificationService
     }
 
     public function getTitle(): string{
-        if($this->notification['action_type'] == 'change_price'){
+        if($this->notification['action_type'] == 'change_price' || $this->notification['action_type'] == 'start_trip'){
             return 'اسم التطبيق';
         }
         return $this->user['name'];
     }
+
 
 }
