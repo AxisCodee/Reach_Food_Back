@@ -37,18 +37,20 @@ class AuthController extends Controller
         ]);
     }
 
-    public function login(LoginRrequest $request)
+    public function login(LoginRrequest $request, DeviceTokensService $deviceTokensService)
     {
         $user = User::where('user_name', $request->user_name)->first();
         if (!$user || !Hash::check($request->password, $user->password)) {
             return ResponseHelper::error('Invalid username or password.', 401);
         }
         $token = $user->createToken('auth_token', ['*'], now()->addMinutes(10000));
-//        $deviceTokensService->create($token->accessToken['id'], $request->token);
+        if ($request['device_token']) {
+            $deviceTokensService->create($token->accessToken['id'], $request['device_token']);
+        }
         $expiresAt = $user->tokens()->latest()->first()->expires_at;
-        //$token = $user->createToken('auth_token')->plainTextToken;
+
         return ResponseHelper::success([
-            'user' => $user->with(['contacts', 'address.city.country'])->find($user->id),
+            'user' => $user->with(['contacts', 'address.city.country', 'branch.city'])->find($user->id),
             'access_token' => $token->plainTextToken,
             'token_type' => 'Bearer',
             'expires_at' => $expiresAt,
