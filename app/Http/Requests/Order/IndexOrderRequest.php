@@ -27,7 +27,8 @@ class IndexOrderRequest extends FormRequest
             'branch_id' => ['required', 'integer', 'exists:branches,id'],
             'status' => [Rule::enum(Status::class)],
             'is_archived' => ['boolean'],
-            'date' => ['date']
+            'products'=>['boolean'],
+            'date' => ['date'],
         ];
     }
 }

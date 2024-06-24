@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Enums\NotificationActions;
+use App\Events\SendMulticastNotification;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
@@ -95,7 +97,7 @@ class OrderService
     {
         $result = $this->assignOrder($request, $customer_id);
         // dd($result->id);
-
+        logger($result);
         $order = Order::where('id', $order)->first();
         //  dd( $result->id);
 
@@ -108,6 +110,12 @@ class OrderService
         Order::where('order_id', $order->id)->update(['order_id' => $result->id]);
         Order::where('id', $result->id)->update(['is_base' => 0]);
 
+        event(new SendMulticastNotification(
+            $customer_id,
+            [$order->trip_date->trip->salesman->id],
+            NotificationActions::UPDATE->value,
+            $order
+        ));
 
 
         return $result;
@@ -163,8 +171,10 @@ class OrderService
     public function indexOrder(array $data)
     {
         return Order::query()
-            ->with(['customer.contacts', 'trip_date.address', 'childOrders'])
-            ->with('trip_date.trip.salesman')
+            ->with(['customer.contacts', 'trip_date.address', 'childOrders', 'trip_date.trip.salesman'])
+            ->when($data['products'] ?? false, function (Builder $query) {
+                $query->with('products');
+            })
             ->where('branch_id', $data['branch_id'])
             ->when($data['status'] ?? false, function (Builder $query) {
                 $query->where('status', request()->status);
@@ -185,7 +195,14 @@ class OrderService
 
     public function deleteOrder($order)
     {
-        return Order::findOrFail($order)->delete();
+        $order = Order::findOrFail($order);
+        event(new SendMulticastNotification(
+            19,//todo make auth
+            [$order->trip_date->trip->salesman->id],
+            NotificationActions::DELETE->value,
+            $order
+        ));
+        return $order->delete();
     }
 
     public function getSalesmanOrders($request)
@@ -207,8 +224,8 @@ class OrderService
     {
         $order->update([
             'status' => $data['action'],
-            'delivery_date' => $data['delivery_date']??$order['delivery_date'],
-            'delivery_time' => $data['delivery_time']??$order['delivery_time'],
+            'delivery_date' => $data['delivery_date'] ?? $order['delivery_date'],
+            'delivery_time' => $data['delivery_time'] ?? $order['delivery_time'],
         ]);
         return $order;
     }
