@@ -34,7 +34,7 @@ class TripController extends Controller
     public function store(CreateTripRequest $request)
     {
         $trip = $this->tripService->createTrip($request);
-        $trip->update(['salesman_id' => $request->salesman_id]);
+
         return ResponseHelper::success($trip);
     }
 

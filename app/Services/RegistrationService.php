@@ -98,8 +98,8 @@ class RegistrationService
             }
             foreach ($trips as $trip) {
                 $trip['branch_id'] = $request->input('branch_id');
-                $trip = app(TripService::class)->createTrip($trip);
-                $trip->update(['salesman_id' => $this->user->id]);
+                $trip['salesman_id'] = $this->user->id;
+                app(TripService::class)->createTrip($trip);
             }
         }
         // link with categories
