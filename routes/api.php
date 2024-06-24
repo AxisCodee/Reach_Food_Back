@@ -4,6 +4,7 @@ use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BranchController;
 use App\Http\Controllers\FeedbackController;
+use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductController;
@@ -121,21 +122,5 @@ Route::prefix('tracing')->group(function () {
 /////
 Route::post('importFromJson', [AddressController::class, 'importFromJson']);
 
+Route::get('notifications', [NotificationController::class, 'index']);
 
-Route::get('/test', function (){
-//    $notification = Notification::query()->create([
-//        'action_type' => 'trace',
-//        'actionable_id' => 7,
-//        'actionable_type' => CustomerTime::class,
-//        'user_id'  => 1
-//    ]);
-
-    $notification = Notification::query()->find(36);
-
-    $ser = new NotificationService($notification);
-
-    return [
-        'title' => $ser->getTitle(),
-        'content' => $ser->getContent(),
-    ];
-});

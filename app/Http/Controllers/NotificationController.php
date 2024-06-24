@@ -2,7 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Roles;
+use App\Helpers\ResponseHelper;
+use App\Http\Resources\Notifications\DashboardNotifications;
+use App\Http\Resources\Notifications\MobileNotifications;
 use App\Services\FcmNotificationService;
+use Google\Service\Iam\Role;
 use Illuminate\Http\Request;
 
 class NotificationController extends Controller
@@ -26,5 +31,23 @@ class NotificationController extends Controller
         );
 
         return response()->json(['message' => 'Notification sent successfully.']);
+    }
+
+    public function index()
+    {
+        $user = auth()->user();
+
+        $notifications = $user['notifications'];
+
+        if($user['role'] == Roles::SALESMAN->value || $user['role'] == Roles::CUSTOMER->value){
+            return ResponseHelper::success(
+                MobileNotifications::collection($notifications)
+            );
+        }
+        else{
+            return ResponseHelper::success(
+                DashboardNotifications::collection($notifications)
+            );
+        }
     }
 }
