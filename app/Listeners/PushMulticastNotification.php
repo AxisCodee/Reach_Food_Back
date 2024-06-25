@@ -44,14 +44,7 @@ class PushMulticastNotification implements ShouldQueue
                 'user_id' => $event->userId,
             ];
 
-            $notification = Notification::query();
-            $notification = $event->firstOrCreate ?
-                $notification->updateOrCreate($data,['updated_at' => now()]) :
-                $notification->create($data);
-
-            $notification->users()->syncWithoutDetaching($event->ownerIds);
-
-            $notificationService = new NotificationService($notification);
+            $notificationService = NotificationService::make($data, $event->firstOrCreate, $event->ownerIds);
 
             $title = $notificationService->getTitle();
             $body = $notificationService->getContent();
