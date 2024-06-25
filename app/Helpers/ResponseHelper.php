@@ -16,7 +16,7 @@ class ResponseHelper
             'message' => $message,
             'data' => $data,
         );
-        
+
         if ($service == 1) {
             return $response;
         }
