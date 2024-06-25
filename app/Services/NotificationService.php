@@ -125,5 +125,16 @@ class NotificationService
         return $this->user['name'];
     }
 
+    public static function make($data, bool $firstOrCreate, array $ownerIds): NotificationService
+    {
+        $notification = Notification::query();
+        $notification = $firstOrCreate ?
+            $notification->updateOrCreate($data,['updated_at' => now()]) :
+            $notification->create($data);
+
+        $notification->users()->syncWithoutDetaching($ownerIds);
+
+        return new NotificationService($notification);
+    }
 
 }
