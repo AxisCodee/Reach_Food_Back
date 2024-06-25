@@ -10,9 +10,6 @@ class TripDatesController extends Controller
 {
     public function show(TripDates $tripDate)
     {
-        return ResponseHelper::success($tripDate->load(['order' => [
-            'customer',
-            'products'
-        ]])->toArray());
+        return ResponseHelper::success($tripDate->order()->with(['customer', 'products'])->paginate(10));
     }
 }
