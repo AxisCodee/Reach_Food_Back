@@ -8,11 +8,11 @@ use Illuminate\Http\Request;
 
 class TripDatesController extends Controller
 {
-    public function show(TripDates $tripDates)
+    public function show(TripDates $tripDate)
     {
-        return ResponseHelper::success($tripDates->load(['order'=>[
+        return ResponseHelper::success($tripDate->load(['order' => [
             'customer',
             'products'
-        ]]));
+        ]])->toArray());
     }
 }
