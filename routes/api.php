@@ -9,6 +9,7 @@ use App\Http\Controllers\OrderController;
 use App\Http\Controllers\PermissionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TripController;
+use App\Http\Controllers\TripDatesController;
 use App\Http\Controllers\TripTraceController;
 use App\Http\Controllers\UserController;
 use App\Models\Branch;
@@ -109,6 +110,7 @@ Route::prefix('trip')->group(function () {
             Route::get('/index/daily', [TripController::class, 'salesmanTripsDaily']);
             Route::get('/index/weekly', [TripController::class, 'salesmanTripsWeekly']);
         });
+        Route::get('/trip-dates/{tripDate}',[TripDatesController::class,'show']);
     });
 });
 
@@ -123,4 +125,3 @@ Route::prefix('tracing')->group(function () {
 Route::post('importFromJson', [AddressController::class, 'importFromJson']);
 
 Route::get('notifications', [NotificationController::class, 'index']);
-
