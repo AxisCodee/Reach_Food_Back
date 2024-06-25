@@ -2,8 +2,12 @@
 
 namespace App\Services;
 
+use App\Enums\NotificationActions;
+use App\Enums\Roles;
+use App\Events\SendMulticastNotification;
 use App\Models\Branch;
 use App\Models\Product;
+use App\Models\User;
 
 
 /**
@@ -22,20 +26,20 @@ class ProductService
     }
 
     public function updateProduct($request, $product)
-{
-    $data = $request->validated();
+    {
+        $data = $request->validated();
 
-    if ($request->hasFile('image')) {
-        $imagePath = app(FileService::class)->upload($request, 'image');
-        $data['image'] = $imagePath;
-    } else {
-        $existingProduct = Product::findOrFail($product);
-        $data['image'] = $existingProduct->image;
+        if ($request->hasFile('image')) {
+            $imagePath = app(FileService::class)->upload($request, 'image');
+            $data['image'] = $imagePath;
+        } else {
+            $existingProduct = Product::findOrFail($product);
+            $data['image'] = $existingProduct->image;
+        }
+
+        $result = Product::findOrFail($product)->update($data);
+        return $result;
     }
-
-    $result = Product::findOrFail($product)->update($data);
-    return $result;
-}
 
     public function updatePrice($request)
     {
@@ -54,6 +58,12 @@ class ProductService
                 'wholesale_price' => $product['wholesale_price']
             ];
         }
+
+        event(new SendMulticastNotification(
+            4,//todo auth id
+            User::query()->whereIn('role', [Roles::CUSTOMER->value, Roles::SALESMAN->value])->pluck('id')->toArray(),
+            NotificationActions::CHANGE_PRICE->value,
+        ));
 
         return $updatedProduct;
     }

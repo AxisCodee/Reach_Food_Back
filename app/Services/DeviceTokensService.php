@@ -27,7 +27,7 @@ class DeviceTokensService
         return DB::table('personal_access_tokens')
             ->select('device_tokens.token')
             ->whereIn('tokenable_id', $userIds)
-            ->join('device_tokens', 'device_tokens.access_token_id', '=', 'device_tokens.id')
+            ->join('device_tokens', 'device_tokens.access_token_id', '=', 'personal_access_tokens.id')
             ->pluck('token')
             ->toArray();
     }

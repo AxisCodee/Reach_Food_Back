@@ -9,5 +9,6 @@ enum NotificationActions: string
     case DELETE = 'delete';
     case START_TRIP = 'start_trip';
     case CHANGE_PRICE = 'change_price';
-    case CHANGE_TIME = 'change_time';
+    case CHANGE_DATE = 'change_date';
+    case TRACE = 'trace';
 }

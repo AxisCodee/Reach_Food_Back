@@ -176,10 +176,11 @@ class OrderService
                 $query->with('products');
             })
             ->where('branch_id', $data['branch_id'])
+            ->whereNull('order_id')
+            ->when($data['user_id'])
             ->when($data['status'] ?? false, function (Builder $query) {
                 $query->where('status', request()->status);
             })
-            ->whereNull('order_id')
             ->when($data['is_archived'] ?? null, function (Builder $query) {
                 $query->whereDate('order_date', '<', Carbon::now()->format('Y-m-d'));
             }, function (Builder $query) {
@@ -216,8 +217,6 @@ class OrderService
             }])
             ->get()->toArray();
         return $customers;
-
-
     }
 
     public function updateStatus($order, $data)

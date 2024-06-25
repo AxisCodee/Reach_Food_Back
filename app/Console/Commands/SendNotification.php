@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Enums\NotificationActions;
+use App\Events\SendMulticastNotification;
 use App\Models\Trip;
 use App\Models\TripDates;
 use Carbon\Carbon;
@@ -37,7 +39,13 @@ class SendNotification extends Command
             ->with(['trip.salesman', 'trip.address.city'])
             ->get();
         foreach ($trips as $trip) {
-
+            event(new SendMulticastNotification(
+                null,//todo make auth
+                [$trip->trip->salesman->id],
+                NotificationActions::START_TRIP->value,
+                $trip,
+                true
+            ));
         }
     }
 }

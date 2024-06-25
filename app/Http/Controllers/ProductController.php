@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\StoreProductRequest;
+use App\Models\Product;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
 

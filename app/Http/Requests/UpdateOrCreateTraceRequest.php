@@ -22,7 +22,7 @@ class UpdateOrCreateTraceRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'trip_date_id' => 'required|exists:trips,id',
+            'trip_date_id' => 'required|exists:trip_dates,id',
             'duration' => 'date_format:H:i:s',
             'status' => 'required|in:start,pause,resume,stop'
         ];

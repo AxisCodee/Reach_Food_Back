@@ -34,16 +34,10 @@ class UserService
 
     public function updateUser(Request $request, $user_id)
     {
-        return DB::transaction(function () use ($request, $user_id) {
+        $data = $request->only(['name', 'user_name', 'password', 'branch_id', 'address_id', 'location']);
+        return DB::transaction(function () use ($data, $request, $user_id) {
             $user = User::query()->findOrFail($user_id);
-            $user->update([
-                'name' => $request->name,
-                'user_name' => $request->user_name,
-                'password' => Hash::make($request['password']),
-                'branch_id' => $request->branch_id,
-                'address_id' => $request->address_id,
-                'location' => $request->location,
-            ]);
+            $user->update($data);
             if ($request->hasFile('image')) {
                 $user->update([
                     'image' => $this->fileService

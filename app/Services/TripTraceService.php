@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Enums\NotificationActions;
+use App\Events\SendMulticastNotification;
 use App\Models\CustomerTime;
 use App\Models\Notification;
 use App\Models\TripDates;
@@ -51,16 +53,17 @@ class TripTraceService
                 ]
             );
         }
-        if ( $request->status == 'resume' || $request->status == 'start') {
+        if ($request->status == 'resume' || $request->status == 'start') {
             $customers = $trace['tripDate']['trip']['customerTimes'];
             foreach ($customers as $customer) {
-                Notification::query()
-                    ->firstOrCreate([
-                        'action_type' => 'trace',
-                        'actionable_id' => $customer->id,
-                        'actionable_type' => CustomerTime::class,
-                        'user_id' => 1
-                    ]);
+
+                event(new SendMulticastNotification(
+                   20,//todo make auth for authentication user
+                    [$customer->customer->id],
+                    NotificationActions::TRACE->value,
+                    $customer,
+                    true
+                ));
             }
             unset($trace['tripDate']);
         }

@@ -39,6 +39,7 @@ class UserController extends Controller
     public function destroy($user)
     {
         $result = User::findOrFail($user)->delete();
+
         if ($result) {
             return ResponseHelper::success('User deleted successfully.');
         }

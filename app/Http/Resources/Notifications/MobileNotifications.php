@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Notifications;
 
+use App\Models\Notification;
 use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -16,12 +17,12 @@ class MobileNotifications extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $service = new NotificationService($this);
+        $service = new NotificationService($this->resource);
         return [
             'title' => $service->getTitle(),
             'content' => $service->getContent(),
-            'date' => Carbon::make($this['created_at'])->diffInMinutes(),
-            'location' => $this['user']['location']
+            'date' => Carbon::make($this['updated_at'])->diffForHumans(),
+            'location' => $this['user']?->location
         ];
     }
 }

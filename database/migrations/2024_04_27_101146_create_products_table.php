@@ -21,6 +21,7 @@ return new class extends Migration {
             $table->bigInteger('retail_price')->default(0);
             $table->text('image')->nullable();
             $table->integer('status')->nullable();
+            $table->softDeletes();
             $table->timestamps();
             $table->index('branch_id');
         });

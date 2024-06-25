@@ -7,6 +7,7 @@ use Illuminate\Broadcasting\InteractsWithSockets;
 use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Events\Dispatchable;
 use Illuminate\Queue\SerializesModels;
 
@@ -18,22 +19,11 @@ class SendMulticastNotification
      * Create a new event instance.
      */
     public function __construct(
-        public readonly int    $userId,
+        public readonly ?int    $userId,
         public readonly array  $ownerIds,
         public readonly string $action,
-        public                 $actionModel)
+        public                 $actionModel = null,
+        public readonly bool   $firstOrCreate = false)
     {
-    }
-
-    /**
-     * Get the channels the event should broadcast on.
-     *
-     * @return array<int, \Illuminate\Broadcasting\Channel>
-     */
-    public function broadcastOn(): array
-    {
-        return [
-            new PrivateChannel('channel-name'),
-        ];
     }
 }

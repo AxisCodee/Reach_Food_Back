@@ -16,7 +16,7 @@ class DashboardNotifications extends JsonResource
      */
     public function toArray(Request $request): array
     {
-        $service = new NotificationService($this);
+        $service = new NotificationService($this->resource);
         return [
             'user' => $this['user'],
             'type' => $service->getType(),
