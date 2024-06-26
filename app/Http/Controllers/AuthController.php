@@ -82,9 +82,10 @@ class AuthController extends Controller
 
     public function me()
     {
-        $user = auth('sanctum')->user();
-        if ($user->role == Roles::SALESMAN)
+        $user = User::find(4);
+        if ($user->role == Roles::SALESMAN->value) {
             $user->load('branch.city');
+        }
         if ($user) {
             return ResponseHelper::success([
                 $user
