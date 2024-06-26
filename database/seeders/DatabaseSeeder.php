@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\User;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\UsersPassword;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
 
@@ -22,6 +23,15 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
+        $ids = User::pluck('id')->toArray();
+        $arr=[];
+        foreach ($ids as $id) {
+            $arr[]=[
+                'user_id'=>$id,
+                'password'=>'password'
+            ];
+        }
+        UsersPassword::insert($arr);
 //        event(new SendMulticastNotification(9,[4],NotificationActions::UPDATE->value,Order::find(1)));
 //        $this->call([
 //            CountrySeeder::class,
