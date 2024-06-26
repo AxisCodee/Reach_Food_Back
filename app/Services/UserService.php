@@ -6,6 +6,7 @@ use App\Enums\Roles;
 use App\Models\Contact;
 use App\Models\User;
 use App\Models\UserPermission;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -44,6 +45,15 @@ class UserService
                         ->update($user->image, $request, 'image'),
                 ]);
             }
+
+            if ($user->role != Roles::SUPER_ADMIN->value) {
+                if ($request->has('password')) {
+                    $user->userPassword->update([
+                        'password' => $request['password'],
+                    ]);
+                }
+            }
+
             $contacts = $request['phone_number'];
             if ($contacts) {
                 $user->contacts()->delete();
@@ -114,7 +124,8 @@ class UserService
     public function getUsersByType($request)
     {
         if ($request->role == Roles::CUSTOMER->value) {//By City
-            return User::query()->with(['contacts:id,user_id,phone_number', 'address.city.country'])
+            return User::query()
+                ->with(['contacts:id,user_id,phone_number', 'address.city.country', 'userPassword:user_id,password'])
                 ->where('role', Roles::CUSTOMER->value)
                 ->whereHas('address', function ($query) use ($request) {
                     $query->where('city_id', $request->city_id);//TODO city Customers
@@ -122,18 +133,38 @@ class UserService
                 ->get()->toArray();
         }
         if ($request->role == Roles::ADMIN->value) {
-            return User::query()->with(['contacts:id,user_id,phone_number', 'address.city.country'])
+            $canShowPassword = auth()->user()->role == Roles::SUPER_ADMIN->value;
+            return User::query()
+                ->with(['contacts:id,user_id,phone_number', 'address.city.country'])
+                ->when($canShowPassword, function (Builder $query) {
+                    $query->with('userPassword:user_id,password');
+                })
                 ->where('role', Roles::ADMIN->value)
                 ->get()->toArray();
         }
         //By Branch
         if ($request->role == Roles::SALES_MANAGER->value) {
-            return User::query()->with(['contacts:id,user_id,phone_number', 'address.city.country'])
+            $canShowPassword =
+                auth()->user()->role == Roles::SUPER_ADMIN->value ||
+                auth()->user()->role == Roles::ADMIN;
+            return User::query()
+                ->with(['contacts:id,user_id,phone_number', 'address.city.country'])
+                ->when($canShowPassword, function (Builder $query) {
+                    $query->with('userPassword:user_id,password');
+                })
                 ->where('role', Roles::SALES_MANAGER->value)
                 ->where('branch_id', $request->branch_id)
                 ->get()->toArray();
         } else {//Salesman
-            return User::query()->with(['contacts:id,user_id,phone_number', 'address.city.country'])
+            $canShowPassword =
+                auth()->user()->role == Roles::SUPER_ADMIN->value ||
+                auth()->user()->role == Roles::ADMIN->value ||
+                auth()->user()->role == Roles::SALES_MANAGER->value;
+            return User::query()
+                ->with(['contacts:id,user_id,phone_number', 'address.city.country'])
+                ->when($canShowPassword, function (Builder $query) {
+                    $query->with('userPassword:user_id,password');
+                })
                 ->where('role', Roles::SALESMAN->value)
                 ->whereHas('salesManager', function ($query) use ($request) {
                     $query->where('branch_id', $request->branch_id);

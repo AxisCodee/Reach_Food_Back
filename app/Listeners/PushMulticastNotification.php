@@ -17,7 +17,7 @@ use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\Notification as FirebaseNotification;
 
 
-class PushMulticastNotification implements ShouldQueue
+class PushMulticastNotification
 {
 
     protected Messaging $messaging;

@@ -41,7 +41,7 @@ Route::get('me', [AuthController::class, 'me'])->middleware('auth:sanctum');
 
 Route::prefix('user')->group(function () {
     Route::apiResource('users', UserController::class)
-        ->only('index', 'destroy');
+        ->only('index', 'destroy')->middleware('auth:sanctum');
     Route::post('update/{id}', [UserController::class, 'update']);
     Route::post('restore/{id}', [UserController::class, 'restore']);
     Route::get('permissions', [PermissionController::class, 'index']);

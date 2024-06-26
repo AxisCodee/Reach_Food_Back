@@ -177,7 +177,6 @@ class OrderService
             })
             ->where('branch_id', $data['branch_id'])
             ->whereNull('order_id')
-            ->when($data['user_id'])
             ->when($data['status'] ?? false, function (Builder $query) {
                 $query->where('status', request()->status);
             })

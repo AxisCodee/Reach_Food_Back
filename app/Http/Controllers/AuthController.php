@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Roles;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\LoginRrequest;
@@ -47,7 +48,7 @@ class AuthController extends Controller
         if ($request['device_token']) {
             $deviceTokensService->create($token->accessToken['id'], $request['device_token']);
         }
-        $expiresAt = $user->tokens()->latest()->first()->expires_at;
+        $expiresAt = $token->accessToken['expires_at'];
 
         return ResponseHelper::success([
             'user' => $user->with(['contacts', 'address.city.country', 'branch.city'])->find($user->id),
@@ -81,9 +82,14 @@ class AuthController extends Controller
 
     public function me()
     {
-        $user = auth('sanctum')->user();
+        $user = auth()->user();
+        if ($user->role == Roles::SALESMAN->value) {
+            $user->load('branch.city');
+        }
         if ($user) {
-            return ResponseHelper::success([auth('sanctum')->user()]);
+            return ResponseHelper::success([
+                $user
+            ]);
         }
         return ResponseHelper::error('You are not authorized.', 401);
     }

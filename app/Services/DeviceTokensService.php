@@ -19,7 +19,7 @@ class DeviceTokensService
     {
         DB::table('device_tokens')
             ->where('access_token_id', $prevAccessTokenId)
-            ->update(['access_token_id' => $newAccessTokenId]);
+            ?->update(['access_token_id' => $newAccessTokenId]);
     }
 
     public function get(array $userIds): array
