@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Enums\Roles;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\LoginRrequest;
@@ -82,8 +83,12 @@ class AuthController extends Controller
     public function me()
     {
         $user = auth('sanctum')->user();
+        if ($user->role == Roles::SALESMAN)
+            $user->load('branch.city');
         if ($user) {
-            return ResponseHelper::success([auth('sanctum')->user()]);
+            return ResponseHelper::success([
+                $user
+            ]);
         }
         return ResponseHelper::error('You are not authorized.', 401);
     }
