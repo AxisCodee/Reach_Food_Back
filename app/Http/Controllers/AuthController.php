@@ -82,7 +82,7 @@ class AuthController extends Controller
 
     public function me()
     {
-        $user = User::find(4);
+        $user = auth()->user();
         if ($user->role == Roles::SALESMAN->value) {
             $user->load('branch.city');
         }
