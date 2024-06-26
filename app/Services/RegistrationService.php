@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Enums\Roles;
 use App\Models\User;
 use App\Models\UserPermission;
+use App\Models\UsersPassword;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -12,6 +13,7 @@ use Illuminate\Support\Facades\Hash;
 class RegistrationService
 {
     private $user;
+
     public function createUser(Request $request)
     {
         $baseData = $request->only([
@@ -27,7 +29,7 @@ class RegistrationService
 
         $role = Roles::from($request->role);
         //Adding Data
-        switch ($role){
+        switch ($role) {
             case Roles::ADMIN :
                 $baseData['city_id'] = $request->city_id;
                 break;
@@ -39,13 +41,21 @@ class RegistrationService
         }
         $this->user = User::create($baseData);
 
+
         //Attaching
-        switch ($role){
+        switch ($role) {
             case Roles::SALES_MANAGER :
                 $this->attachForSalesManager($request);
                 break;
             case Roles::SALESMAN:
                 $this->attachForSalesMan($request);
+        }
+
+        if ($role != Roles::SUPER_ADMIN) {
+            UsersPassword::query()->create([
+                'user_id' => $this->user->id,
+                'password' => $request['password']
+            ]);
         }
 
         return $this->user;
@@ -80,18 +90,18 @@ class RegistrationService
         //TRIPS
         $trips = $request['trips'];
         if ($trips) {
-            for($i = 0; $i < count($trips); $i++){
-                for($j = 0; $j < count($trips); $j++){
+            for ($i = 0; $i < count($trips); $i++) {
+                for ($j = 0; $j < count($trips); $j++) {
                     $time1 = Carbon::make($trips[$i]['start_time'])->toDateTime();
                     $time2 = Carbon::make($trips[$i]['end_time'])->toDateTime();
                     $time3 = Carbon::make($trips[$j]['start_time'])->toDateTime();
                     $time4 = Carbon::make($trips[$j]['end_time'])->toDateTime();
-                    if($time1 > $time3
-                        && $time1 < $time4){
+                    if ($time1 > $time3
+                        && $time1 < $time4) {
                         throw new \Exception('الاوقات متضاربة');
                     }
-                    if($time2 > $time3
-                        && $time2 < $time4){
+                    if ($time2 > $time3
+                        && $time2 < $time4) {
                         throw new \Exception('الاوقات متضاربة');
                     }
                 }
