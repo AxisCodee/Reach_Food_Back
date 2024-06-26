@@ -8,6 +8,7 @@ use App\Models\CustomerTime;
 use App\Models\Notification;
 use App\Models\TripDates;
 use App\Models\TripTrace;
+use App\Models\User;
 use Illuminate\Support\Carbon;
 
 /**
@@ -71,4 +72,110 @@ class TripTraceService
     }
 
 
+    public function currentTrip(User $salesman)
+    {
+        return $salesman->todayTripsDates()
+            ->whereHas('tripTrace', function ($query) {
+                $query->whereNotNull('status');
+            })
+            ->with('tripTrace')
+            ->orderBy('start_time', 'desc')
+            ->first();
+    }
+
+    public function next(User $salesman)
+    {
+        return $salesman->todayTripsDates()
+            ->whereHas('tripTrace', function ($query) {
+                $query->whereNull('status');
+            })
+            ->with('tripTrace')
+            ->orderBy('start_time')
+            ->first();
+    }
+
+    public function startTrip(TripDates $tripDate): void
+    {
+        $trace = $tripDate['tripTrace'];
+        $trace['status'] = 'start';
+        $trace->save();
+        $delay = Carbon::now()->diffInMinutes($tripDate['start_time']);
+        if($delay < 0) $delay = 0;
+        $tripDate['delay'] = $delay;
+        $this->pushNotification($tripDate);
+    }
+
+    private function pushNotification(TripDates $trip): void
+    {
+        $customers = $trip['trip']['customerTimes'];
+        foreach ($customers as $customer) {
+            event(new SendMulticastNotification(
+                4,//todo make auth for authentication user
+                [$customer->customer->id],
+                NotificationActions::TRACE->value,
+                $customer,
+                true
+            ));
+        }
+    }
+
+    public function stopTrip(TripDates $tripDate): void
+    {
+
+        $trace = $tripDate['tripTrace'];
+
+        if($trace['status'] == 'stop')
+            return;
+
+        $trace['status'] = 'stop';
+        $trace['duration'] = request()->input('duration');
+        $trace->save();
+    }
+
+    public function nextTrip(User $salesman): void
+    {
+        $current = $this->currentTrip($salesman);
+        $next = $this->next($salesman);
+        if($current){
+            $this->stopTrip($current);
+        }
+        if($next){
+            $this->startTrip($next);
+        }else{
+            throw new \Exception('No trip to go');
+        }
+    }
+
+    public function pauseTrip(User $salesman): void
+    {
+        $current = $this->currentTrip($salesman);
+        if($current){
+            $trace = $current['tripTrace'];
+            $trace['status'] = 'pause';
+            $trace->save();
+        }
+    }
+
+    public function resumeTrip(User $salesman): void
+    {
+        $current = $this->currentTrip($salesman);
+        if($current){
+            $trace = $current['tripTrace'];
+            $trace['status'] = 'resume';
+            $delay = Carbon::make('0:0:0')->diffInMinutes(request('duration'));
+            $trace->save();
+            $current['delay'] = $delay;
+            $current->save();
+            $this->pushNotification($current);
+        }
+    }
+
+
+    public function endTrip(User $salesman): void
+    {
+        $trips = $salesman->todayTripsDates;
+        foreach ($trips as $trip) {
+            $this->stopTrip($trip);
+        }
+    }
 }

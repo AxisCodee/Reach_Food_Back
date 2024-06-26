@@ -3,10 +3,12 @@
 namespace App\Models;
 
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
@@ -85,6 +87,14 @@ class User extends Authenticatable
     public function trips(): HasMany
     {
         return $this->hasMany(Trip::class, 'salesman_id');
+    }
+
+    public function todayTripsDates(): HasManyThrough
+    {
+        return $this
+            ->hasManyThrough(TripDates::class, Trip::class, 'salesman_id')
+            ->whereDate('start_date', '=', Carbon::today());
+
     }
 
     public function feedbacks(): HasMany

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\UpdateOrCreateTraceRequest;
+use App\Models\User;
 use App\Services\TripTraceService;
 use Illuminate\Http\Request;
 
@@ -31,6 +32,19 @@ class TripTraceController extends Controller
     {
         $result = $this->tripTraceService->updateTripTrace($request);
         return ResponseHelper::success($result);
+    }
+
+
+    public function tracing($action)
+    {
+        $user = User::query()->find(4);//todo add auth id
+        $functionName = $action . 'Trip';
+        try {
+           $this->tripTraceService->$functionName($user);
+        }catch (\Exception $exception){
+            return ResponseHelper::error($exception->getMessage());
+        }
+        return ResponseHelper::success('updated data');
     }
 
     public function destroy()

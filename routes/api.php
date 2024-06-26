@@ -19,7 +19,9 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\Trip;
 use App\Models\TripTrace;
+use App\Models\User;
 use App\Services\NotificationService;
+use App\Services\TripTraceService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route;
@@ -125,7 +127,9 @@ Route::prefix('trip')->group(function () {
 Route::prefix('tracing')->group(function () {
     Route::controller(TripTraceController::class)->group(function () {
         Route::get('index', [TripTraceController::class, 'index']);
-        Route::post('update', [TripTraceController::class, 'updateOrCreate']);
+//        Route::post('update', [TripTraceController::class, 'updateOrCreate']);
+        Route::post('{action}', [TripTraceController::class, 'tracing'])
+        ->whereIn('action', ['next', 'pause', 'resume', 'end']);
     });
 });
 
@@ -139,5 +143,11 @@ Route::prefix('notifications')->group(function (){
 });
 
 Route::get('/test', function (){
-    return Carbon::now()->addMinutes(10)->diffInMinutes(Carbon::now());
+    $user = User::query()->find(4);
+    $ser = new TripTraceService();
+    return [
+        'current' => $ser->currentTrip($user),
+        'next' => $ser->next($user),
+        'all' => $user->todayTripsDates
+    ];
 });
