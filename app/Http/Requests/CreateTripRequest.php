@@ -33,7 +33,7 @@ class CreateTripRequest extends FormRequest
 
             //
             'customerTimes' => 'array',
-            //'customerTimes.*' => 'exists:users,id',
+            'customerTimes.*' => 'exists:users,id',
             'customerTimes.*time' => 'date_format:H:i',
         ];
     }

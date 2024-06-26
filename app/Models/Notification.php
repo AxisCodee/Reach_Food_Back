@@ -26,6 +26,6 @@ class Notification extends Model
 
     public function actionable(): MorphTo
     {
-        return $this->morphTo('actionable');
+        return $this->morphTo('actionable')->withTrashed();
     }
 }

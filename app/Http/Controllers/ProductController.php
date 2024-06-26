@@ -49,6 +49,16 @@ class ProductController extends Controller
         return ResponseHelper::success($result, null, 'products deleted successfully', 200);
     }
 
+    public function restore($id)
+    {
+        $p = Product::onlyTrashed()->where('id', $id)->first();
+        if($p){
+            $p->restore();
+            return ResponseHelper::success($p, null, 'products restore successfully', 200);
+        }
+        return ResponseHelper::error(null, 'products not found', 404);
+    }
+
     public function updatePrice(Request $request)
     {
         $this->productService->updatePrice($request);

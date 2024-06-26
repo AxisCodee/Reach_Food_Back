@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\CreateBranchRequest;
 use App\Http\Requests\DeleteBranchesRrequest;
+use App\Http\Requests\DeleteBranchRequest;
 use App\Http\Requests\UpdateBranchRequest;
 use App\Models\Branch;
 use App\Models\City;
 use App\Models\User;
 use App\Services\BranchService;
+use http\Env\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -69,6 +71,27 @@ class BranchController extends Controller
             return ResponseHelper::success('deleted');
         }
         return ResponseHelper::error('Something went wrong.', 500);
+    }
+
+    public function deleteBranch(DeleteBranchRequest $request,$id)
+    {
+        $user_name = auth('sanctum')->user()->user_name;
+        $user = User::where('user_name', $user_name)->first();
+        if (!$user || !Hash::check($request->password, $user->password)) {
+            return ResponseHelper::error('Invalid username or password.', 401);
+        }
+        Branch::query()->findOrFail($id)?->delete();
+        return ResponseHelper::success('deleted');
+    }
+
+    public function restore($id)
+    {
+        $b = Branch::onlyTrashed()->firstWhere('id', $id);
+        if($b){
+            $b->restore();
+            return ResponseHelper::success('restored');
+        }
+        return ResponseHelper::error('Not Found.', 404);
     }
 
     public function branches()

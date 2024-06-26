@@ -46,6 +46,16 @@ class UserController extends Controller
         return ResponseHelper::error('User not found.');
     }
 
+    public function restore($id)
+    {
+        $u = User::onlyTrashed()->findOrFail($id);
+        if($u){
+            $u->restore();
+            return ResponseHelper::success('User restored successfully.');
+        }
+        return ResponseHelper::error('User not found.');
+    }
+
 
     public function update(UpdateUserRequest $request, $user_id)
     {

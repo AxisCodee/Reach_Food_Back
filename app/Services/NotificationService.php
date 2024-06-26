@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Branch;
 use App\Models\Notification;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\Trip;
 use App\Models\User;
 use Carbon\Carbon;
@@ -20,6 +21,7 @@ class NotificationService
         User::class => 'user',
         Trip::class => 'trip',
         Order::class => 'order',
+        Product::class => 'product',
     ];
 
     private array $translate = [
@@ -30,6 +32,7 @@ class NotificationService
         'user' => 'المستخدم',
         'trip' => 'الرحلة',
         'order' => 'الطلب',
+        'product' => 'منتج',
         'Sunday' => 'الأحد',
         'Monday' => 'الاثنين',
         'Tuesday' => 'الثلاثاء',

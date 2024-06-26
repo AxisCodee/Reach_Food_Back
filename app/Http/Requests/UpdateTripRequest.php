@@ -22,13 +22,16 @@ class UpdateTripRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'address_id' => ['exists:addresses,id'],
-            'day_id' => ['exists:days,id'],
-            'start_time' => ['date_format:H:i'],
+            'address_id' => ['required', 'exists:addresses,id'],
+            'day' => ['required', 'string'],
+            'start_time' => ['required', 'date_format:H:i'],
+            'end_time' => ['required', 'date_format:H:i', 'after:start_time'],
             'salesman_id' => ['exists:users,id'],
-            'orders' => ['array'],
-            'orders.*.order_id' => ['exists:orders,id'],
-            'orders.*.delivery_time' => ['date_format:H:i'],
+            'branch_id' => 'exists:branches,id',
+            //
+            'customerTimes' => 'array',
+            'customerTimes.*' => 'exists:users,id',
+            'customerTimes.*time' => 'date_format:H:i',
         ];
     }
 }

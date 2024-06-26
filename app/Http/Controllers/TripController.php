@@ -38,11 +38,11 @@ class TripController extends Controller
         return ResponseHelper::success($trip);
     }
 
-    public function edit(UpdateTripRequest $request)
+    public function edit(UpdateTripRequest $request, $id)
     {
-        $result = $this->tripService->updateTrip($request);
+        $result = $this->tripService->updateTrip($request->validated(), Trip::query()->findOrFail($id));
         if ($result) {
-            return ResponseHelper::success('Trip updated successfully');
+            return ResponseHelper::success($result, '200');
         }
         return ResponseHelper::error('Failed to update trip');
     }
@@ -69,6 +69,19 @@ class TripController extends Controller
     {
         $trips = $this->tripService->getSalesmanTripsWeekly();
         return ResponseHelper::success($trips);
+    }
+
+    public function restore($id)
+    {
+        $t = Trip::onlyTrashed()->where('id', $id)->first();
+        if($t){
+            if($this->tripService->conflicts($t)){
+                return ResponseHelper::error('Failed to restore trip because conflicts');
+            }
+            $t->restore();
+            return ResponseHelper::success($t, 200);
+        }
+        return ResponseHelper::error('Failed to restore trip');
     }
 
 }

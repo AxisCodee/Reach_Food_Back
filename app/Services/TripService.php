@@ -41,26 +41,32 @@ class TripService
             ->get()->toArray();
     }
 
+
+    public function conflicts($trip): bool
+    {
+        return Trip::query()
+            ->where('day', $trip['day'])
+            ->where(function (Builder $q) use ($trip) {
+                return $q
+                    ->where(function (Builder $q) use ($trip) {
+                        return $q
+                            ->whereTime('start_time', '<=', $trip['start_time'])
+                            ->WhereTime('end_time', '>', $trip['start_time']);
+                    })
+                    ->orWhere(function (Builder $q) use ($trip) {
+                        return $q
+                            ->whereTime('start_time', '<', $trip['end_time'])
+                            ->WhereTime('end_time', '>=', $trip['end_time']);
+                    });
+            })
+            ->where('salesman_id', $trip['salesman_id'])
+            ->exists();
+    }
+
     public function createTrip($trip)
     {
         return DB::transaction(function () use ($trip) {
-            $conflicts = Trip::query()
-                ->where('day', $trip->day)
-                ->where(function (Builder $q) use ($trip) {
-                    return $q
-                        ->where(function (Builder $q) use ($trip) {
-                            return $q
-                                ->whereTime('start_time', '<=', $trip['start_time'])
-                                ->WhereTime('end_time', '>', $trip['start_time']);
-                        })
-                        ->orWhere(function (Builder $q) use ($trip) {
-                            return $q
-                                ->whereTime('start_time', '<', $trip['end_time'])
-                                ->WhereTime('end_time', '>=', $trip['end_time']);
-                        });
-                })
-                ->where('salesman_id', $trip['salesman_id'])
-                ->exists();
+            $conflicts = $this->conflicts($trip);
 
             if($conflicts){
                 throw new \Exception('الاوقات متضاربة');
@@ -98,10 +104,18 @@ class TripService
         });
     }
 
-    public function updateTrip($request)
+    public function updateTrip($data, $trip)
     {
-        return DB::transaction(function () use ($request) {
-            return Trip::query()->find($request->trip_id)->update($request);
+        return DB::transaction(function () use ($data, $trip) {
+            $trip->delete();
+            try{
+                $new = $this->createTrip($data);
+                $trip->forceDelete();
+                return $new;
+            }catch (\Exception $exception){
+                $trip->restore();
+                throw $exception;
+            }
         });
     }
 

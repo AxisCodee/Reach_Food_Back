@@ -23,14 +23,14 @@ class DatabaseSeeder extends Seeder
     {
 
 //        event(new SendMulticastNotification(9,[4],NotificationActions::UPDATE->value,Order::find(1)));
-//        $this->call([
-//            CountrySeeder::class,
-//            CitySeeder::class,
-//            AddressSeeder::class,
-//            PermissionSeeder::class,
-//            BranchSeeder::class,
-//            UserSeeder::class,
-//            // Add other seeders here if necessary
-//        ]);
+        $this->call([
+            CountrySeeder::class,
+            CitySeeder::class,
+            AddressSeeder::class,
+            PermissionSeeder::class,
+            BranchSeeder::class,
+            UserSeeder::class,
+            // Add other seeders here if necessary
+        ]);
     }
 }

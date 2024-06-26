@@ -17,6 +17,7 @@ return new class extends Migration {
             $table->timestamps();
             $table->index('city_id');
             $table->unique(['city_id', 'name']);
+            $table->softDeletes();
         });
     }
 
