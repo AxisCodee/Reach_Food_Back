@@ -58,6 +58,9 @@ class NotificationService
 
     public function getType(): string
     {
+        if($this->notification['action_type'] == 'late'){
+            return "عدم خروج مندوب في رحلة بعد مرور ساعة من موعد انطلاقها";
+        }
         return
             $this->translate[$this->notification['action_type']]
             . ' ' .
@@ -78,6 +81,12 @@ class NotificationService
 
         if ($this->notification['action_type'] == 'cancel') {
             return "{$this->actionable['customer']['name']} للزبون  {$this->actionable['id']}  بإلغاء الطلب  {$this->user['name']} قام ";
+        }
+
+        if($this->notification['action_type'] == 'late'){
+            $salesmanName = $this->actionable['trip']['salesman']['name'];
+            $tripId = $this->actionable['id'];
+            return "لم يخرج المندوب $salesmanName في الرحلة $tripId بعد ";
         }
 
         if ($this->notification['action_type'] == 'trace') {

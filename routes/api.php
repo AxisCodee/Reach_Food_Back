@@ -143,11 +143,11 @@ Route::prefix('notifications')->group(function (){
 });
 
 Route::get('/test', function (){
-    $user = User::query()->find(4);
-    $ser = new TripTraceService();
+    $ser = new NotificationService(Notification::query()->find(41));
+
     return [
-        'current' => $ser->currentTrip($user),
-        'next' => $ser->next($user),
-        'all' => $user->todayTripsDates
+        'title' => $ser->getTitle(),
+        'type' => $ser->getType(),
+        'content' => $ser->getContent(),
     ];
 });

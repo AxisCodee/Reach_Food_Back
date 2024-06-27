@@ -16,10 +16,14 @@ class BranchService
 
     public function getBranches()
     {
+        $cityId = request('city_id');
         return Branch::query()
             ->with(['city.country'])
             ->with('users', function ($query) {
                 $query->where('role', 'sales manager');
+            })
+            ->when('city_id', function ($query) use ($cityId) {
+                return $query->where('city_id', $cityId);
             })
             ->get()
             ->toArray();

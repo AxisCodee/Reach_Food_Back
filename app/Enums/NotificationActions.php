@@ -11,4 +11,6 @@ enum NotificationActions: string
     case CHANGE_PRICE = 'change_price';
     case CHANGE_DATE = 'change_date';
     case TRACE = 'trace';
+
+    case LATE = 'late';
 }

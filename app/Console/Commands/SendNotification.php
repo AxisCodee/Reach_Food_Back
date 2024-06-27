@@ -6,6 +6,7 @@ use App\Enums\NotificationActions;
 use App\Events\SendMulticastNotification;
 use App\Models\Trip;
 use App\Models\TripDates;
+use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 
@@ -35,7 +36,7 @@ class SendNotification extends Command
             ->whereHas('tripTrace', function ($query) {
                 $query->whereNull('status');
             })
-            ->whereTime('start_time', '<=', Carbon::now()->toTimeString())
+            ->whereTime('start_time', '<=', Carbon::now())
             ->with(['trip.salesman', 'trip.address.city'])
             ->get();
         foreach ($trips as $trip) {
@@ -46,6 +47,15 @@ class SendNotification extends Command
                 $trip,
                 true
             ));
+            $time = Carbon::now()->subHour()->toTimeString();
+            if($trip['start_time'] < $time){
+                NotificationService::make([
+                    'user_id' => $trip->trip->salesman->id,
+                    'action_type' => NotificationActions::LATE->value,
+                    'actionable_type' => TripDates::class,
+                    'actionable_id' => $trip['id'],
+                ], true, []);
+            }
         }
     }
 }
