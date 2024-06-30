@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Actions\GetUpperRoleUserIdsAction;
+use App\Enums\NotificationActions;
 use App\Models\Branch;
 use App\Models\City;
 use App\Models\User;
@@ -22,11 +24,21 @@ class BranchService
             ->with('users', function ($query) {
                 $query->where('role', 'sales manager');
             })
-            ->when('city_id', function ($query) use ($cityId) {
+            ->when($cityId, function ($query) use ($cityId) {
                 return $query->where('city_id', $cityId);
             })
             ->get()
             ->toArray();
+    }
+
+    public function getBranchesForSalesman()
+    {
+        $branchesId = auth()->user()->salesManager()?->pluck('branch_id')->toArray();
+        $branchesId[] = auth()->user()->branch_id;
+        return Branch::query()
+            ->with(['city'])
+            ->whereIn('id', $branchesId)
+            ->get();
     }
 
     public function showBranch($id)
@@ -79,6 +91,15 @@ class BranchService
         $cities = $request['cities'];
         City::whereIn('id', $cities)->with('branch')->get()->each(function ($city) {
             $city->branch->each(function ($branch) {
+                $data = [
+                    'action_type' => NotificationActions::DELETE->value,
+                    'actionable_id' => $branch->id,
+                    'actionable_type' => Branch::class,
+                    'user_id' => auth()->id(),
+                ];
+                $ownerIds = GetUpperRoleUserIdsAction::handle(auth()->user());
+                $ownerIds[] = auth()->id();
+                NotificationService::make($data, 0, $ownerIds);
                 $branch->delete();
             });
         });

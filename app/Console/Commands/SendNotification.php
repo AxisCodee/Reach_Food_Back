@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Actions\GetUpperRoleUserIdsAction;
 use App\Enums\NotificationActions;
 use App\Events\SendMulticastNotification;
 use App\Models\Trip;
@@ -48,13 +49,14 @@ class SendNotification extends Command
                 true
             ));
             $time = Carbon::now()->subHour()->toTimeString();
-            if($trip['start_time'] < $time){
+            if ($trip['start_time'] < $time) {
+                $ownerIds = GetUpperRoleUserIdsAction::handle($trip->trip->salesman);
                 NotificationService::make([
                     'user_id' => $trip->trip->salesman->id,
                     'action_type' => NotificationActions::LATE->value,
                     'actionable_type' => TripDates::class,
                     'actionable_id' => $trip['id'],
-                ], true, []);
+                ], true, $ownerIds);
             }
         }
     }

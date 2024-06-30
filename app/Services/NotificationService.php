@@ -28,6 +28,7 @@ class NotificationService
         'delete' => 'حذف',
         'update' => 'تعديل',
         'add' => 'إضافة',
+        'cancel' => 'إلغاء',
         'branch' => 'الفرع',
         'user' => 'المستخدم',
         'trip' => 'الرحلة',
@@ -107,7 +108,7 @@ class NotificationService
         }
 
 
-        if ($this->user['role'] == 'salesman' || $this->user['role'] == 'customer') {
+        if (($this->user['role'] == 'salesman'|| $this->user['role'] == 'customer') && $this->notification['actionable_type'] == Order::class) {
             $complete = $this->notification['action_type'] == 'delete' ?
                 ' طلب' :
                 ' على طلب';

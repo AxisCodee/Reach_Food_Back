@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Actions\GetUpperRoleUserIdsAction;
+use App\Enums\NotificationActions;
 use App\Enums\Roles;
 use App\Models\Contact;
 use App\Models\User;
@@ -184,6 +186,21 @@ class UserService
                     ->where('trips.salesman_id', $salesman->id);
             })->get()
             ->toArray();
+    }
+
+    public function destroy($userId): ?bool
+    {
+        $user = User::findOrFail($userId);
+        $data = [
+            'action_type' => NotificationActions::DELETE->value,
+            'actionable_id' => $user->id,
+            'actionable_type' => User::class,
+            'user_id' => auth()->id(),
+        ];
+        $ownerIds = GetUpperRoleUserIdsAction::handle(auth()->user());
+
+        NotificationService::make($data, 0, $ownerIds);
+        return $user->delete();
     }
 
 }

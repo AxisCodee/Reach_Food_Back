@@ -23,13 +23,12 @@ class OrderRequest extends FormRequest
     {
         return [
             'customer_id' => 'exists:users,id',
-            'status'=> 'in:pending, accepted, cancelled, delivered',
-            'order_date'=> 'date',
-            'delivery_date'=> 'date',
-            'delivery_time'=> '',
-            'total_price'=> '',
-            'branch_id'=> '',
-
+            'status' => 'in:pending, accepted, cancelled, delivered',
+            'order_date' => 'date',
+            'delivery_date' => 'date',
+            'delivery_time' => '',
+            'total_price' => '',
+            'branch_id' => '',
         ];
     }
 }

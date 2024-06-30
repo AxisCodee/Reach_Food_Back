@@ -26,128 +26,134 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:sanctum');
 
-Route::prefix('auth')->group(function () {
-    Route::controller(AuthController::class)->group(function () {
-        Route::post('register', 'register');
-        Route::post('login', 'login');
-        Route::get('logout', 'logout');
-        Route::get('refresh', 'refresh');
+Route::post('auth/login', [AuthController::class, 'login']);
+
+Route::middleware('auth:sanctum')->group(function () {
+    Route::get('/user', function (Request $request) {
+        return $request->user();
     });
-});
 
-Route::get('me', [AuthController::class, 'me'])->middleware('auth:sanctum');
-
-Route::prefix('user')->group(function () {
-    Route::apiResource('users', UserController::class)
-        ->only('index', 'destroy')->middleware('auth:sanctum');
-    Route::post('update/{id}', [UserController::class, 'update']);
-    Route::post('restore/{id}', [UserController::class, 'restore']);
-    Route::get('permissions', [PermissionController::class, 'index']);
-    Route::get('address', [UserController::class, 'userAddress']);
-
-
-    Route::prefix('salesman')->group(function () {
-        Route::get('/customers', [UserController::class, 'getSalesmanCustomers']);
-    });
-});
-
-Route::prefix('branch')->group(function () {
-    Route::apiResource('branches', BranchController::class)
-        ->only('store', 'index');
-    Route::get('show/{id}', [BranchController::class, 'show']);
-    Route::post('/{id}', [BranchController::class, 'update']);
-    Route::delete('/delete', [BranchController::class, 'delete']);
-    Route::delete('/delete/{id}', [BranchController::class, 'deleteBranch']);
-    Route::post('/restore/{id}', [BranchController::class, 'restore']);
-    Route::get('/cities', [BranchController::class, 'branches']);
-});
-
-Route::prefix('address')->group(function () {
-    Route::get('addresses/{id}', [AddressController::class, 'getAddresses']);
-    Route::get('cities/{id}', [AddressController::class, 'getCities']);
-    Route::get('countries', [AddressController::class, 'getCountries']);
-    Route::get('allCities', [AddressController::class, 'allCities']);
-    Route::post('deleteBranches', [AddressController::class, 'deleteBranches']);
-
-});
-
-Route::prefix('order')->group(function () {
-    Route::post('assign', [OrderController::class, 'assignOrder']);
-    Route::post('store', [OrderController::class, 'store']);
-    Route::get('index', [OrderController::class, 'index']);
-    Route::post('update/{id}', [OrderController::class, 'update']);
-    Route::get('show/{id}', [OrderController::class, 'show']);
-    Route::delete('/{id}', [OrderController::class, 'destroy']);
-    Route::put('archived/{id}', [OrderController::class, 'updateStatus']);
-    Route::get('cities/{id}', [AddressController::class, 'getCities']);
-    Route::get('countries', [AddressController::class, 'getCountries']);
-    Route::prefix('salesman')->group(function () {
-        Route::get('/myOrders', [OrderController::class, 'salesmanOrders']);
-    });
-});
-
-Route::prefix('product')->group(function () {
-    Route::apiResource('products', ProductController::class)->only('store', 'index');
-    Route::post('products/{id}', [ProductController::class, 'update']);
-    Route::delete('/{id}', [ProductController::class, 'destroy']);
-    Route::post('restore/{id}', [ProductController::class, 'restore']);
-    Route::get('show/{id}', [ProductController::class, 'show']);
-    Route::post('updatePrice', [ProductController::class, 'updatePrice']);
-    Route::post('/import', [ProductController::class, 'importProducts']);
-    Route::prefix('salesman')->group(function () {
-        Route::get('/index', [ProductController::class, 'salesmanProducts']);
-    });
-});
-
-
-Route::prefix('feedback')->group(function () {
-    Route::controller(FeedbackController::class)->group(function () {
-        Route::delete('feedback/{id}', [FeedbackController::class, 'destroy']);
-        Route::apiResource('feedback', FeedbackController::class)->only('store', 'index')->middleware('auth:sanctum');
-    });
-});
-
-Route::prefix('trip')->group(function () {
-    Route::controller(TripController::class)->group(function () {
-        Route::apiResource('trips', TripController::class)->only('store', 'index','destroy');
-        Route::put('trips/{id}', 'edit');
-        Route::post('/restore/{id}', 'restore');
-        Route::prefix('salesman')->group(function () {
-            Route::get('/index/daily', [TripController::class, 'salesmanTripsDaily']);
-            Route::get('/index/weekly', [TripController::class, 'salesmanTripsWeekly']);
+    Route::prefix('auth')->group(function () {
+        Route::controller(AuthController::class)->group(function () {
+            Route::post('register', 'register');
+            Route::get('logout', 'logout');
+            Route::get('refresh', 'refresh');
         });
-        Route::get('/trip-dates/{tripDate}',[TripDatesController::class,'show']);
     });
-});
 
-Route::prefix('tracing')->group(function () {
-    Route::controller(TripTraceController::class)->group(function () {
-        Route::get('index', [TripTraceController::class, 'index']);
-//        Route::post('update', [TripTraceController::class, 'updateOrCreate']);
-        Route::post('{action}', [TripTraceController::class, 'tracing'])
-        ->whereIn('action', ['next', 'pause', 'resume', 'end']);
+    Route::get('me', [AuthController::class, 'me']);
+
+    Route::prefix('user')->group(function () {
+        Route::apiResource('users', UserController::class)
+            ->only('index', 'destroy');
+        Route::post('update/{id}', [UserController::class, 'update']);
+        Route::post('restore/{id}', [UserController::class, 'restore']);
+        Route::get('permissions', [PermissionController::class, 'index']);
+        Route::get('address', [UserController::class, 'userAddress']);
+
+
+        Route::prefix('salesman')->group(function () {
+            Route::get('/customers', [UserController::class, 'getSalesmanCustomers']);
+            Route::get('/branches', [BranchController::class, 'salesmanBranches']);
+        });
     });
-});
+
+    Route::prefix('branch')->group(function () {
+        Route::apiResource('branches', BranchController::class)
+            ->only('store', 'index');
+        Route::get('show/{id}', [BranchController::class, 'show']);
+        Route::post('/{id}', [BranchController::class, 'update']);
+        Route::delete('/delete', [BranchController::class, 'delete']);
+        Route::delete('/delete/{id}', [BranchController::class, 'deleteBranch']);
+        Route::post('/restore/{id}', [BranchController::class, 'restore']);
+        Route::get('/cities', [BranchController::class, 'branches']);
+    });
+
+    Route::prefix('address')->group(function () {
+        Route::get('addresses/{id}', [AddressController::class, 'getAddresses']);
+        Route::get('cities/{id}', [AddressController::class, 'getCities']);
+        Route::get('countries', [AddressController::class, 'getCountries']);
+        Route::get('allCities', [AddressController::class, 'allCities']);
+        Route::post('deleteBranches', [AddressController::class, 'deleteBranches']);
+
+    });
+
+    Route::prefix('order')->group(function () {
+        Route::post('assign', [OrderController::class, 'assignOrder']);
+        Route::post('store', [OrderController::class, 'store']);
+        Route::get('index', [OrderController::class, 'index']);
+        Route::post('update/{id}', [OrderController::class, 'update']);
+        Route::get('show/{id}', [OrderController::class, 'show']);
+        Route::delete('/{id}', [OrderController::class, 'destroy']);
+        Route::put('archived/{id}', [OrderController::class, 'updateStatus']);
+        Route::get('cities/{id}', [AddressController::class, 'getCities']);
+        Route::get('countries', [AddressController::class, 'getCountries']);
+        Route::prefix('salesman')->group(function () {
+            Route::get('/myOrders', [OrderController::class, 'salesmanOrders']);
+        });
+    });
+
+    Route::prefix('product')->group(function () {
+        Route::apiResource('products', ProductController::class)->only('store', 'index');
+        Route::post('products/{id}', [ProductController::class, 'update']);
+        Route::delete('/{id}', [ProductController::class, 'destroy']);
+        Route::post('restore/{id}', [ProductController::class, 'restore']);
+        Route::get('show/{id}', [ProductController::class, 'show']);
+        Route::post('updatePrice', [ProductController::class, 'updatePrice']);
+        Route::post('/import', [ProductController::class, 'importProducts']);
+        Route::prefix('salesman')->group(function () {
+            Route::get('/index', [ProductController::class, 'salesmanProducts']);
+        });
+    });
+
+
+    Route::prefix('feedback')->group(function () {
+        Route::controller(FeedbackController::class)->group(function () {
+            Route::delete('feedback/{id}', [FeedbackController::class, 'destroy']);
+            Route::apiResource('feedback', FeedbackController::class)->only('store', 'index');
+        });
+    });
+
+    Route::prefix('trip')->group(function () {
+        Route::controller(TripController::class)->group(function () {
+            Route::apiResource('trips', TripController::class)->only('store', 'index', 'destroy');
+            Route::put('trips/{id}', 'edit');
+            Route::post('/restore/{id}', 'restore');
+            Route::prefix('salesman')->group(function () {
+                Route::get('/index/daily', [TripController::class, 'salesmanTripsDaily']);
+                Route::get('/index/weekly', [TripController::class, 'salesmanTripsWeekly']);
+            });
+            Route::get('/trip-dates/{tripDate}', [TripDatesController::class, 'show']);
+        });
+    });
+
+    Route::prefix('tracing')->group(function () {
+        Route::controller(TripTraceController::class)->group(function () {
+            Route::get('index', [TripTraceController::class, 'index']);
+//        Route::post('update', [TripTraceController::class, 'updateOrCreate']);
+            Route::post('{action}', [TripTraceController::class, 'tracing'])
+                ->whereIn('action', ['next', 'pause', 'resume', 'end']);
+        });
+    });
 
 /////
-Route::post('importFromJson', [AddressController::class, 'importFromJson']);
+    Route::post('importFromJson', [AddressController::class, 'importFromJson']);
 
 
-Route::prefix('notifications')->group(function (){
-    Route::get('', [NotificationController::class, 'index']);
-    Route::post('/back/{id}', [NotificationController::class, 'back']);
-});
+    Route::prefix('notifications')->group(function () {
+        Route::get('', [NotificationController::class, 'index']);
+        Route::get('/unread',[NotificationController::class,'unReadCounter']);
+        Route::post('/back/{id}', [NotificationController::class, 'back']);
+    });
 
-Route::get('/test', function (){
-    $ser = new NotificationService(Notification::query()->find(41));
+    Route::get('/test', function () {
+        $ser = new NotificationService(Notification::query()->find(41));
 
-    return [
-        'title' => $ser->getTitle(),
-        'type' => $ser->getType(),
-        'content' => $ser->getContent(),
-    ];
+        return [
+            'title' => $ser->getTitle(),
+            'type' => $ser->getType(),
+            'content' => $ser->getContent(),
+        ];
+    });
 });

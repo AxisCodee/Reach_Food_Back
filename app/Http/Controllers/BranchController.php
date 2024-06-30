@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Actions\GetUpperRoleUserIdsAction;
+use App\Enums\NotificationActions;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\CreateBranchRequest;
 use App\Http\Requests\DeleteBranchesRrequest;
@@ -11,7 +13,7 @@ use App\Models\Branch;
 use App\Models\City;
 use App\Models\User;
 use App\Services\BranchService;
-use http\Env\Request;
+use App\Services\NotificationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -73,21 +75,32 @@ class BranchController extends Controller
         return ResponseHelper::error('Something went wrong.', 500);
     }
 
-    public function deleteBranch(DeleteBranchRequest $request,$id)
+    public function deleteBranch(DeleteBranchRequest $request, $id)
     {
         $user_name = auth('sanctum')->user()->user_name;
         $user = User::where('user_name', $user_name)->first();
         if (!$user || !Hash::check($request->password, $user->password)) {
             return ResponseHelper::error('Invalid username or password.', 401);
         }
-        Branch::query()->findOrFail($id)?->delete();
+        $branch = Branch::query()->findOrFail($id);
+        $data = [
+            'action_type' => NotificationActions::DELETE->value,
+            'actionable_id' => $branch->id,
+            'actionable_type' => Branch::class,
+            'user_id' => auth()->id(),
+        ];
+        $ownerIds = GetUpperRoleUserIdsAction::handle(auth()->user());
+        $ownerIds[] = auth()->id();
+        NotificationService::make($data, 0, $ownerIds);
+        $branch->delete();
+
         return ResponseHelper::success('deleted');
     }
 
     public function restore($id)
     {
         $b = Branch::onlyTrashed()->firstWhere('id', $id);
-        if($b){
+        if ($b) {
             $b->restore();
             return ResponseHelper::success('restored');
         }
@@ -110,5 +123,11 @@ class BranchController extends Controller
         return ResponseHelper::success($result);
     }
 
+    public function salesmanBranches()
+    {
+        return ResponseHelper::success(
+            $this->branchService->getBranchesForSalesman()
+        );
+    }
 
 }

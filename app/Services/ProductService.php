@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Actions\GetUpperRoleUserIdsAction;
 use App\Enums\NotificationActions;
 use App\Enums\Roles;
 use App\Events\SendMulticastNotification;
@@ -81,10 +82,19 @@ class ProductService
         return $result;
     }
 
-    public function deleteProduct($product)
+    public function deleteProduct($product): ?bool
     {
-        $result = Product::findOrFail($product)->delete();
-        return $result;
+        $product = Product::findOrFail($product);
+        $data = [
+            'action_type' => NotificationActions::DELETE->value,
+            'actionable_id' => $product->id,
+            'actionable_type' => Product::class,
+            'user_id' => auth()->id(),
+        ];
+        $ownerIds = GetUpperRoleUserIdsAction::handle(auth()->user());
+
+        NotificationService::make($data, 0, $ownerIds);
+        return $product->delete();
     }
 
     public function getSalesmanProducts($request)
