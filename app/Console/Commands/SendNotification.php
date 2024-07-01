@@ -42,7 +42,7 @@ class SendNotification extends Command
             ->get();
         foreach ($trips as $trip) {
             event(new SendMulticastNotification(
-                null,//todo make auth
+                null,
                 [$trip->trip->salesman->id],
                 NotificationActions::START_TRIP->value,
                 $trip,
