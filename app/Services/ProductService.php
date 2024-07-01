@@ -9,6 +9,7 @@ use App\Events\SendMulticastNotification;
 use App\Models\Branch;
 use App\Models\Product;
 use App\Models\User;
+use Illuminate\Support\Facades\DB;
 
 
 /**
@@ -61,7 +62,7 @@ class ProductService
         }
 
         event(new SendMulticastNotification(
-            4,//todo auth id
+            auth()->id(),
             User::query()->whereIn('role', [Roles::CUSTOMER->value, Roles::SALESMAN->value])->pluck('id')->toArray(),
             NotificationActions::CHANGE_PRICE->value,
         ));
@@ -118,4 +119,14 @@ class ProductService
         return true;
     }
 
+    public function getPrice($products): array
+    {
+        $priceType = auth()->user()->customer_type == 'shop' ? "retail_price" : 'wholesale_price';
+        return Product::query()
+            ->whereIn('id', $products)
+            ->select('id', DB::raw("$priceType AS price"))
+            ->get()
+            ->toArray();
+
+    }
 }
