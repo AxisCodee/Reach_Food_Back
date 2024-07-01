@@ -48,6 +48,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('users', UserController::class)
             ->only('index', 'destroy');
         Route::post('update/{id}', [UserController::class, 'update']);
+        Route::get('show/{id}', [UserController::class, 'show']);
+        Route::get('show-salesman/{id}', [UserController::class, 'showSalesMan']);
         Route::post('restore/{id}', [UserController::class, 'restore']);
         Route::get('permissions', [PermissionController::class, 'index']);
         Route::get('address', [UserController::class, 'userAddress']);
