@@ -33,12 +33,14 @@ class BranchService
 
     public function getBranchesForSalesman()
     {
-        $branchesId = auth()->user()->salesManager()?->pluck('branch_id')->toArray();
-        $branchesId[] = auth()->user()->branch_id;
-        return Branch::query()
-            ->with(['city'])
-            ->whereIn('id', $branchesId)
-            ->get();
+        return auth()
+            ->user()
+            ->workBranches()
+            ->whereHas('branch')
+            ->with('branch:id,name')
+            ->get()
+            ->pluck('branch')
+            ->toArray();
     }
 
     public function showBranch($id)
