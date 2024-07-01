@@ -42,7 +42,7 @@ class AuthController extends Controller
     {
         $user = User::where('user_name', $request->user_name)->first();
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return ResponseHelper::error('Invalid username or password.', 401);
+            return ResponseHelper::error('اسم المستخدم او كلمة المرور خاطئة', 401);
         }
         $token = $user->createToken('auth_token', ['*'], now()->addMinutes(10000));
         if ($request['device_token']) {
@@ -65,7 +65,7 @@ class AuthController extends Controller
             $user->currentAccessToken()->delete();
             return ResponseHelper::success('Logged out successfully.');
         }
-        return ResponseHelper::error('You are not authorized.', 401);
+        return ResponseHelper::error('انت غير مخول', 401);
     }
 
     public function refresh(DeviceTokensService $deviceTokensService) //TODO
@@ -91,6 +91,6 @@ class AuthController extends Controller
                 $user
             ]);
         }
-        return ResponseHelper::error('You are not authorized.', 401);
+        return ResponseHelper::error('انت غير مخول', 401);
     }
 }

@@ -41,20 +41,30 @@ class CreateUserRequest extends FormRequest
             // salesman
             //'salesManager_id' => 'exists:users,id',
             'trips' => 'array',//
-            'trips.*address_id' => ['required', 'exists:addresses,id'],
-            'trips.*day_id' => ['required', 'exists:days,id'],
-            'trips.*start_time' => ['required', 'date_format:H:i'],//
-            'trips.*end_time' => ['required', 'date_format:H:i', 'after:trips.*start_time'],//
+            'trips.*.address_id' => ['required', 'exists:addresses,id'],
+            'trips.*.day' => ['required'],
+            'trips.*.start_time' => ['required', 'date_format:H:i'],//
+            'trips.*.end_time' => ['required', 'date_format:H:i', 'after:trips.*.start_time'],//
             'branches' => 'array',
             'branches.*.branch_id' => ['exists:branches,id', 'distinct'],
             'branches.*.salesManger_id' => 'exists:users,id',
             'permissions' => 'array',
-            'permissions.*permission_id' => 'exists:permissions,id',
-            'permissions.*status' => 'in:true,false',
+            'permissions.*.permission_id' => 'exists:permissions,id',
+            'permissions.*.status' => 'in:0,1',
 
             // sales manager
             'salesmen' => 'array',
             'salesmen.*' => 'exists:users,id'
+        ];
+    }
+
+
+    public function messages()
+    {
+        return [
+            'user_name.unique' => 'هذا الاسم مستخدم من قبل',
+            'image.max' => 'حجم الصورة كبير',
+            'trips.*.end_time' => 'وقت انتهاء الرحلة يجب ان يكون بعد وقت البدء',
         ];
     }
 
@@ -70,4 +80,6 @@ class CreateUserRequest extends FormRequest
             'errors' => $transformedErrors,
         ], 422));
     }
+
+
 }

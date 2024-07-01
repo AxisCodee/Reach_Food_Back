@@ -31,4 +31,11 @@ class IndexOrderRequest extends FormRequest
             'date' => ['date'],
         ];
     }
+
+    public function messages()
+    {
+        return [
+            'branch_id.required' => 'اختيار الفرع مطلوب'
+        ];
+    }
 }

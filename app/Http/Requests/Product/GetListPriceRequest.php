@@ -26,4 +26,12 @@ class GetListPriceRequest extends FormRequest
             'products.*'=>['required','exists:products,id'],
         ];
     }
+
+    public function messages(): array
+    {
+        return [
+            'product.required' => 'تحديد المنتجات مطلوب',
+            'product.*.exists' => 'المنتج المطلوب غير موجود'
+        ];
+    }
 }
