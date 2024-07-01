@@ -136,19 +136,13 @@ class OrderService
             Order::where('id', $result->id)->update(['is_base' => 0]);
         }
 
-//        event(new SendMulticastNotification(
-//            auth()->id(),
-//            [$order->trip_date->trip->salesman->id],
-//            NotificationActions::UPDATE->value,
-//            $order
-//        ));
+        event(new SendMulticastNotification(
+            auth()->id(),
+            [$order->trip_date->trip->salesman->id],
+            NotificationActions::UPDATE->value,
+            $order
+        ));
 
-        NotificationService::make([
-            'user_id' => \auth()->id(),
-            'actionable_type' => Order::class,
-            'actionable_id' => $order->id,
-            'action_type' => NotificationActions::UPDATE->value,
-        ], false, [$order->trip_date->trip->salesman->id]);
 
         return $result;
 
