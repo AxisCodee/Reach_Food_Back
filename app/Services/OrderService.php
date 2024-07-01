@@ -223,7 +223,7 @@ class OrderService
     {
         $order = Order::findOrFail($order);
         event(new SendMulticastNotification(
-            19,//todo make auth
+            auth()->id(),
             [$order->trip_date->trip->salesman->id],
             NotificationActions::DELETE->value,
             $order
@@ -258,7 +258,12 @@ class OrderService
                 'actionable_type' => Order::class,
                 'user_id' => auth()->id(),
             ];
-            $ownerIds = auth()->user()->salesManager()->pluck('users.id')->toArray();
+            $ownerIds = auth()
+                ->user()
+                ->salesManager()
+                ->where('users.branch_id','=',$order->branch_id)
+                ->pluck('users.id')
+                ->toArray();
             NotificationService::make($data, 0, $ownerIds);
         }
         return $order;

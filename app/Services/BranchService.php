@@ -37,7 +37,11 @@ class BranchService
             ->user()
             ->workBranches()
             ->whereHas('branch')
-            ->with('branch:id,name')
+            ->with([
+                'branch:id,name,city_id'=>[
+                    'city:id,name'
+                ]
+            ])
             ->get()
             ->pluck('branch')
             ->toArray();

@@ -59,7 +59,7 @@ class NotificationService
 
     public function getType(): string
     {
-        if($this->notification['action_type'] == 'late'){
+        if ($this->notification['action_type'] == 'late') {
             return "عدم خروج مندوب في رحلة بعد مرور ساعة من موعد انطلاقها";
         }
         return
@@ -84,7 +84,7 @@ class NotificationService
             return "{$this->actionable['customer']['name']} للزبون  {$this->actionable['id']}  بإلغاء الطلب  {$this->user['name']} قام ";
         }
 
-        if($this->notification['action_type'] == 'late'){
+        if ($this->notification['action_type'] == 'late') {
             $salesmanName = $this->actionable['trip']['salesman']['name'];
             $tripId = $this->actionable['id'];
             return "لم يخرج المندوب $salesmanName في الرحلة $tripId بعد ";
@@ -108,7 +108,7 @@ class NotificationService
         }
 
 
-        if (($this->user['role'] == 'salesman'|| $this->user['role'] == 'customer') && $this->notification['actionable_type'] == Order::class) {
+        if (($this->user['role'] == 'salesman' || $this->user['role'] == 'customer') && $this->notification['actionable_type'] == Order::class) {
             $complete = $this->notification['action_type'] == 'delete' ?
                 ' طلب' :
                 ' على طلب';
@@ -138,11 +138,13 @@ class NotificationService
         return $this->user['name'];
     }
 
-    public static function make($data, bool $firstOrCreate, array $ownerIds): NotificationService
+    public static function make($data, bool $firstOrCreate, array $ownerIds): ?NotificationService
     {
+        if (!count($ownerIds))
+            return null;
         $notification = Notification::query();
         $notification = $firstOrCreate ?
-            $notification->updateOrCreate($data,['updated_at' => now()]) :
+            $notification->updateOrCreate($data, ['updated_at' => now()]) :
             $notification->create($data);
 
         $notification->users()->syncWithoutDetaching($ownerIds);

@@ -70,7 +70,7 @@ class TripService
         return DB::transaction(function () use ($trip) {
             $conflicts = $this->conflicts($trip);
 
-            if($conflicts){
+            if ($conflicts) {
                 throw new \Exception('الاوقات متضاربة');
             }
             $trips = Trip::create([
@@ -82,17 +82,17 @@ class TripService
                 'salesman_id' => $trip['salesman_id']
             ]);
             $startDate = Carbon::parse(now())->next($trip['day']);
-             TripDates::create([
+            TripDates::create([
                 'trip_id' => $trips->id,
                 'address_id' => $trip['address_id'],
                 'start_time' => $trip['start_time'],
                 'start_date' => $startDate->format('Y-m-d'),
             ]);
 
-            if(isset($trip['customerTimes'])){
+            if (isset($trip['customerTimes'])) {
                 foreach ($trip['customerTimes'] as $id => $customerTime) {
-                    if($customerTime['time'] < $trips['start_time']
-                    || $customerTime['time'] > $trips['end_time']){
+                    if ($customerTime['time'] < $trips['start_time']
+                        || $customerTime['time'] > $trips['end_time']) {
                         throw new \Exception('وقت الزبون خاطئ');
                     }
                     CustomerTime::create([
@@ -110,11 +110,11 @@ class TripService
     {
         return DB::transaction(function () use ($data, $trip) {
             $trip->delete();
-            try{
+            try {
                 $new = $this->createTrip($data);
                 $trip->forceDelete();
                 return $new;
-            }catch (\Exception $exception){
+            } catch (\Exception $exception) {
                 $trip->restore();
                 throw $exception;
             }
@@ -140,12 +140,12 @@ class TripService
         $salesman = User::FindOrFail(auth('sanctum')->id());
         $date = Carbon::today();
         $isToday = true;
-        if(request()->day){
+        if (request()->day) {
             $date = Carbon::now()->next(request()->day);
             $isToday = false;
         }
         $trips = $salesman->trips()
-            ->with(['address:id,city_id,area', 'dates' => function ($query) use ($date){
+            ->with(['address:id,city_id,area', 'dates' => function ($query) use ($date) {
                 $query->withCount('order')->whereDate('start_date', '=', $date);
             }])
             ->where('day', '=', $date->dayName)
@@ -154,18 +154,17 @@ class TripService
             ->toArray();
 
 
-        if($isToday){
+        if ($isToday) {
             $newTrips = [];
             $tracingServices = new TripTraceService();
             $current = $tracingServices->currentTrip($salesman);
             $next = $tracingServices->next($salesman);
-            foreach ($trips['data'] as $trip){
-                if($current && $trip['dates']['0']['id'] == $current['id']){
+            foreach ($trips['data'] as $trip) {
+                if ($current && $trip['dates']['0']['id'] == $current['id']) {
                     $trip['status'] = 'current';
-                }
-                else if($next && $trip['dates']['0']['id'] == $next['id']){
+                } else if ($next && $trip['dates']['0']['id'] == $next['id']) {
                     $trip['status'] = 'next';
-                }else{
+                } else {
                     $trip['status'] = 'non';
                 }
                 $newTrips[] = $trip;

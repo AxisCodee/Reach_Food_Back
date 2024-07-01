@@ -72,7 +72,7 @@ class User extends Authenticatable
             return $permissions->mapWithKeys(function ($permission) use ($userPermissions) {
                 $userPermission = $userPermissions->get($permission->id);
                 $status = $userPermission ? $userPermission->status : null;
-                return [$permission->name => $status];
+                return [$permission->name => (bool)$status];
             });
         } else return null;
     }
@@ -141,7 +141,8 @@ class User extends Authenticatable
     public function notifications(): BelongsToMany
     {
         return $this->belongsToMany(Notification::class, 'user_notifications', 'owner_id', 'notification_id')
-            ->with('user');
+            ->with('user')
+            ->withPivot('read');
     }
 
     public function userPassword(): HasOne
@@ -149,7 +150,7 @@ class User extends Authenticatable
         return $this->hasOne(UsersPassword::class, 'user_id');
     }
 
-    public function workBranches() : HasMany
+    public function workBranches(): HasMany
     {
         return $this->hasMany(WorkBranch::class, 'salesman_id');
     }
