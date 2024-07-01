@@ -104,7 +104,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('show/{id}', [ProductController::class, 'show']);
         Route::post('updatePrice', [ProductController::class, 'updatePrice']);
         Route::post('/import', [ProductController::class, 'importProducts']);
-        Route::get('/prices',[ProductController::class, 'getPrices']);
+        Route::get('/prices', [ProductController::class, 'getPrices']);
         Route::prefix('salesman')->group(function () {
             Route::get('/index', [ProductController::class, 'salesmanProducts']);
         });
@@ -135,10 +135,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::controller(TripTraceController::class)->group(function () {
             Route::get('index', [TripTraceController::class, 'index']);
 //        Route::post('update', [TripTraceController::class, 'updateOrCreate']);
-        Route::post('{action}', [TripTraceController::class, 'tracing'])
-        ->whereIn('action', ['next', 'pause', 'resume', 'end', 'stop']);
+            Route::post('{action}', [TripTraceController::class, 'tracing'])
+                ->whereIn('action', ['next', 'pause', 'resume', 'end', 'stop']);
+        });
     });
-});
 
 /////
     Route::post('importFromJson', [AddressController::class, 'importFromJson']);
@@ -146,10 +146,10 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('notifications')->group(function () {
         Route::get('', [NotificationController::class, 'index']);
-        Route::get('/unread',[NotificationController::class,'unReadCounter']);
+        Route::get('/unread', [NotificationController::class, 'unReadCounter']);
         Route::post('/back/{id}', [NotificationController::class, 'back']);
     });
-
+});
 Route::get('/test', function (){
     $salesman = User::query()->findOrFail(9);
 
