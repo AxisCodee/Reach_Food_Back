@@ -24,9 +24,34 @@ class UserController extends Controller
         return ResponseHelper::success($users);
     }
 
-    public function show($user)//???
+    public function show($id)//???
     {
-        $result = $this->userService->show($user);
+        $result = $this->userService->show($id);
+        return ResponseHelper::success($result);
+    }
+
+    public function showSalesMan($id)
+    {
+        $day = \request()->input('day');
+        $branchId = \request()->input('branch_id');
+        $result = User::query()
+            ->with([
+                'contacts',
+                'address.city.country',
+                'workBranches' => function ($query) {
+                    $query->with(['branch', 'salesManager']);
+                },
+                'trips' => function ($query) use ($day, $branchId) {
+                    $query
+                        ->when($day, function ($query) use ($day) {
+                            $query->where('day', $day);
+                        })
+                        ->where('branch_id', $branchId)
+                        ->with('customers');
+                }
+            ])
+            ->where('role', Roles::SALESMAN)
+            ->findOrFail($id);
         return ResponseHelper::success($result);
     }
 

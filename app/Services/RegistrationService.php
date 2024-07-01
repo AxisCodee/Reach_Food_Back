@@ -6,6 +6,7 @@ use App\Enums\Roles;
 use App\Models\User;
 use App\Models\UserPermission;
 use App\Models\UsersPassword;
+use App\Models\WorkBranch;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -114,12 +115,25 @@ class RegistrationService
         }
         // link with categories
         $branches = $request['branches'];
-        $attached = [];
+        $data = [];
         if ($branches) {
             foreach ($branches as $branch) {
-                $attached = $branch['salesManager_id'];
+                if($branch['salesManager_id']) {
+                    $salesManager = User::query()->findOrFail($branch['salesManager_id']);
+                    if ($salesManager['role'] != Roles::SALES_MANAGER->value) {
+                        throw new \Exception('هذا الشخص ليس مدير مبيعات');
+                    }
+                    logger($branch['branch_id']);
+                    if ($salesManager['branch_id'] != $branch['branch_id']) {
+                        throw new \Exception('هذا المدير لا يتبع لهذا الفرع');
+                    }
+                }
+                $work['sales_manager_id'] = $branch['salesManager_id'];
+                $work['salesman_id'] = $this->user->id;
+                $work['branch_id'] = $branch['branch_id'];
+                $data[] = $work;
             }
-            $this->user->salesManager()->attach($attached);
+            WorkBranch::query()->insert($data);
         }
     }
 }

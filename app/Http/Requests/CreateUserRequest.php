@@ -46,8 +46,8 @@ class CreateUserRequest extends FormRequest
             'trips.*start_time' => ['required', 'date_format:H:i'],//
             'trips.*end_time' => ['required', 'date_format:H:i', 'after:trips.*start_time'],//
             'branches' => 'array',
-            'branches.*branch_id' => 'exists:branches,id',
-            'branches.*salesManger_id' => 'exists:users,id',
+            'branches.*.branch_id' => ['exists:branches,id', 'distinct'],
+            'branches.*.salesManger_id' => 'exists:users,id',
             'permissions' => 'array',
             'permissions.*permission_id' => 'exists:permissions,id',
             'permissions.*status' => 'in:true,false',

@@ -45,6 +45,8 @@ Route::prefix('user')->group(function () {
     Route::apiResource('users', UserController::class)
         ->only('index', 'destroy')->middleware('auth:sanctum');
     Route::post('update/{id}', [UserController::class, 'update']);
+    Route::get('show/{id}', [UserController::class, 'show']);
+    Route::get('show-salesman/{id}', [UserController::class, 'showSalesMan']);
     Route::post('restore/{id}', [UserController::class, 'restore']);
     Route::get('permissions', [PermissionController::class, 'index']);
     Route::get('address', [UserController::class, 'userAddress']);
@@ -129,7 +131,7 @@ Route::prefix('tracing')->group(function () {
         Route::get('index', [TripTraceController::class, 'index']);
 //        Route::post('update', [TripTraceController::class, 'updateOrCreate']);
         Route::post('{action}', [TripTraceController::class, 'tracing'])
-        ->whereIn('action', ['next', 'pause', 'resume', 'end']);
+        ->whereIn('action', ['next', 'pause', 'resume', 'end', 'stop']);
     });
 });
 
@@ -143,11 +145,7 @@ Route::prefix('notifications')->group(function (){
 });
 
 Route::get('/test', function (){
-    $ser = new NotificationService(Notification::query()->find(41));
+    $salesman = User::query()->findOrFail(9);
 
-    return [
-        'title' => $ser->getTitle(),
-        'type' => $ser->getType(),
-        'content' => $ser->getContent(),
-    ];
+    return $salesman['salesman'];
 });

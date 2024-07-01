@@ -10,7 +10,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasManyThrough;
 use Illuminate\Database\Eloquent\Relations\HasOne;
-use Illuminate\Database\Eloquent\Relations\MorphOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -124,12 +123,13 @@ class User extends Authenticatable
 
     public function salesManager(): BelongsToMany//
     {
-        return $this->belongsToMany(User::class, 'salesManager_salesman', 'salesman_id', 'salesManager_id');
+        return $this->belongsToMany(User::class, 'work_branches', 'salesman_id', 'sales_manager_id');
     }
 
     public function salesman(): belongsToMany//
     {
-        return $this->belongsToMany(User::class, 'salesManager_salesman', 'salesManager_id', 'salesman_id');
+        return $this
+            ->belongsToMany(User::class, 'work_branches', 'sales_manager_id', 'salesman_id');
 
     }
 
@@ -147,4 +147,10 @@ class User extends Authenticatable
     {
         return $this->hasOne(UsersPassword::class, 'user_id');
     }
+
+    public function workBranches() : HasMany
+    {
+        return $this->hasMany(WorkBranch::class, 'salesman_id');
+    }
+
 }

@@ -4,8 +4,6 @@ namespace App\Services;
 
 use App\Enums\NotificationActions;
 use App\Events\SendMulticastNotification;
-use App\Models\CustomerTime;
-use App\Models\Notification;
 use App\Models\TripDates;
 use App\Models\TripTrace;
 use App\Models\User;
@@ -119,7 +117,7 @@ class TripTraceService
         }
     }
 
-    public function stopTrip(TripDates $tripDate): void
+    public function stop(TripDates $tripDate): void
     {
 
         $trace = $tripDate['tripTrace'];
@@ -137,12 +135,20 @@ class TripTraceService
         $current = $this->currentTrip($salesman);
         $next = $this->next($salesman);
         if($current){
-            $this->stopTrip($current);
+            $this->stop($current);
         }
         if($next){
             $this->startTrip($next);
         }else{
             throw new \Exception('No trip to go');
+        }
+    }
+
+    public function stopTrip(User $salesman): void
+    {
+        $current = $this->currentTrip($salesman);
+        if($current){
+            $this->stop($current);
         }
     }
 
@@ -175,7 +181,7 @@ class TripTraceService
     {
         $trips = $salesman->todayTripsDates;
         foreach ($trips as $trip) {
-            $this->stopTrip($trip);
+            $this->stop($trip);
         }
     }
 }

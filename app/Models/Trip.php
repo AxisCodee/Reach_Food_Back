@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Facades\Date;
@@ -42,6 +43,11 @@ class Trip extends Model
 
     public function customerTimes(): HasMany{
         return $this->hasMany(CustomerTime::class, 'trip_id');
+    }
+
+    public function customers(): BelongsToMany
+    {
+        return $this->belongsToMany(User::class, 'customer_times', 'trip_id', 'customer_id');
     }
 
 }

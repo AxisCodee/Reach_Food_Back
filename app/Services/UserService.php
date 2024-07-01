@@ -6,6 +6,7 @@ use App\Enums\Roles;
 use App\Models\Contact;
 use App\Models\User;
 use App\Models\UserPermission;
+use App\Models\WorkBranch;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -65,27 +66,44 @@ class UserService
 
     public function updateSalesman($request, $user)
     {
-        //update permissions
-        $permissions = $request['permissions'];
-        if ($permissions) {
-            foreach ($permissions as $index => $permission) {
-                $status = $permission['status'];
-                UserPermission::query()->where('user_id', $user->id)
-                    ->where('permission_id', $index + 1)
-                    ->update([
-                        'status' => $status
-                    ]);
+        DB::transaction(function () use ($user, $request) {
+            //update permissions
+            $permissions = $request['permissions'];
+            if ($permissions) {
+                foreach ($permissions as $index => $permission) {
+                    $status = $permission['status'];
+                    UserPermission::query()->where('user_id', $user->id)
+                        ->where('permission_id', $index + 1)
+                        ->update([
+                            'status' => $status
+                        ]);
+                }
             }
-        }
-        //update branches
-        // Get branches data from the request
-        $branches = $request['branches'];
-        if ($branches) {
-            $user->salesManager()->detach();
-            foreach ($branches as $branch) {
-                $user->salesManager()->attach($branch['salesManager_id']);
+            //update branches
+            // Get branches data from the request
+            $branches = $request['branches'];
+            $data = [];
+            $user->workBranches()->delete();
+            if ($branches) {
+                foreach ($branches as $branch) {
+                    if($branch['salesManager_id']) {
+                        $salesManager = User::query()->findOrFail($branch['salesManager_id']);
+                        if ($salesManager['role'] != Roles::SALES_MANAGER->value) {
+                            throw new \Exception('هذا الشخص ليس مدير مبيعات');
+                        }
+                        logger($branch['branch_id']);
+                        if ($salesManager['branch_id'] != $branch['branch_id']) {
+                            throw new \Exception('هذا المدير لا يتبع لهذا الفرع');
+                        }
+                    }
+                    $work['sales_manager_id'] = $branch['salesManager_id'];
+                    $work['salesman_id'] = $user->id;
+                    $work['branch_id'] = $branch['branch_id'];
+                    $data[] = $work;
+                }
+                WorkBranch::query()->insert($data);
             }
-        }
+        });
 
     }
 

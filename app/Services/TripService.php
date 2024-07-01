@@ -128,16 +128,42 @@ class TripService
     {
         $salesman = User::FindOrFail(auth('sanctum')->id());
         $date = Carbon::today();
+        $isToday = true;
         if(request()->day){
             $date = Carbon::now()->next(request()->day);
+            $isToday = false;
         }
-        return $salesman->trips()
+        $trips = $salesman->trips()
             ->with(['address:id,city_id,area', 'dates' => function ($query) use ($date){
                 $query->withCount('order')->whereDate('start_date', '=', $date);
             }])
             ->where('day', '=', $date->dayName)
+            ->orderBy('start_time', 'asc')
             ->paginate(10)
             ->toArray();
+
+
+        if($isToday){
+            $newTrips = [];
+            $tracingServices = new TripTraceService();
+            $current = $tracingServices->currentTrip($salesman);
+            $next = $tracingServices->next($salesman);
+            foreach ($trips['data'] as $trip){
+                if($current && $trip['dates']['0']['id'] == $current['id']){
+                    $trip['status'] = 'current';
+                }
+                else if($next && $trip['dates']['0']['id'] == $next['id']){
+                    $trip['status'] = 'next';
+                }else{
+                    $trip['status'] = 'non';
+                }
+                $newTrips[] = $trip;
+            }
+            $trips['data'] = $newTrips;
+        }
+
+        return $trips;
+
     }
 
     public function getSalesmanTripsWeekly()
