@@ -19,13 +19,13 @@ class DashboardNotifications extends JsonResource
     {
         $service = new NotificationService($this->resource);
         return [
+            'id' => $this['id'],
             'user' => $this['user'],
             'type' => $service->getType(),
             'title' => $service->getTitle(),
             'content' => $service->getContent(),
             'date' => Carbon::make($this['created_at'])->diffForHumans(),
-            'id' => $this['id'],
-            'there_back' => $this['action_type'] == NotificationActions::DELETE->value
+            'there_back' => $this['action_type'] == NotificationActions::DELETE->value,
         ];
     }
 }

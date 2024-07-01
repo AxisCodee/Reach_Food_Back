@@ -140,7 +140,8 @@ class User extends Authenticatable
 
     public function notifications(): BelongsToMany
     {
-        return $this->belongsToMany(Notification::class, 'user_notifications', 'owner_id', 'notification_id');
+        return $this->belongsToMany(Notification::class, 'user_notifications', 'owner_id', 'notification_id')
+            ->with('user');
     }
 
     public function userPassword(): HasOne
