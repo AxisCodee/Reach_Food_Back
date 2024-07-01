@@ -12,11 +12,13 @@ use App\Models\Product;
 use App\Models\Trip;
 use App\Models\User;
 use App\Services\TripService;
+use App\Traits\HasApiResponse;
 use Illuminate\Support\Facades\DB;
-use function GuzzleHttp\default_user_agent;
 
 class NotificationController extends Controller
 {
+    use HasApiResponse;
+
     public function index()
     {
         $user = auth()->user();
@@ -27,13 +29,9 @@ class NotificationController extends Controller
                 'read' => true
             ]);
         if ($user['role'] == Roles::SALESMAN->value || $user['role'] == Roles::CUSTOMER->value) {
-            return ResponseHelper::success(
-                MobileNotifications::collection($notifications)
-            );
+            return $this->success(MobileNotifications::collection($notifications));
         } else {
-            return ResponseHelper::success(
-                DashboardNotifications::collection($notifications)
-            );
+            return $this->success(DashboardNotifications::collection($notifications));
         }
     }
 
@@ -67,7 +65,7 @@ class NotificationController extends Controller
     public function unReadCounter()
     {
         return ResponseHelper::success(
-                DB::table('user_notifications')
+            DB::table('user_notifications')
                 ->where('owner_id', '=', auth()->id())
                 ->where('read', '=', false)
                 ->count()
