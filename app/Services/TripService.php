@@ -160,9 +160,9 @@ class TripService
             $current = $tracingServices->currentTrip($salesman);
             $next = $tracingServices->next($salesman);
             foreach ($trips['data'] as $trip) {
-                if ($current && $trip['dates']['0']['id'] == $current['id']) {
+                if ($current && $trip['dates'][0]['id'] == $current['id']) {
                     $trip['status'] = 'current';
-                } else if ($next && $trip['dates']['0']['id'] == $next['id']) {
+                } else if ($next && $trip['dates'][0]['id'] == $next['id']) {
                     $trip['status'] = 'next';
                 } else {
                     $trip['status'] = 'non';

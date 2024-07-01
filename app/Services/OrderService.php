@@ -36,7 +36,6 @@ class OrderService
     {
         $req = Request();
 
-        //
         $data = $request->validated();
         $data['status'] = 'accepted';
         $data['order_date'] = Carbon::now()->format('Y-m-d');
@@ -48,19 +47,10 @@ class OrderService
 
             OrderProduct::insert($data['order_products']);
 
-//            $customerAddress = User::where('id', $customer->id)->first();
             $trip = TripDates::query()
                 ->where('address_id', $customer->address_id)
                 ->latest()
                 ->first();
-
-//            if ($trip != null) {
-//                Order::where('id', $result->id)
-//                    ->update(['total_price' => $totalPrice, 'trip_date_id' => $trip->id]);
-//            } else {
-//                    Order::where('id', $result->id)
-//                    ->update(['total_price' => $totalPrice, 'trip_date_id' => null]);
-//            }
 
             $order->update([
                 'total_price' => $data['total_price'],
@@ -85,12 +75,6 @@ class OrderService
                 'quantity' => $quantity,
             ];
 
-//                if ($customer->customer_type == 'shop') {
-//                    $price = $product->retail_price * $quantity;
-//                }
-//                if ($customer->customer_type == 'center') {
-//                    $price = $product->wholesale_price * $quantity;
-//                }
             $price = ($customer->customer_type == 'shop' ? $product->retail_price : $product->wholesale_price) * $quantity;
 
             $totalPrice += $price;
@@ -147,50 +131,6 @@ class OrderService
         return $result;
 
 
-        // $total_price = 0;
-        // $price = 0;
-        // $req = Request();
-
-        // $orderProducts = [];
-        // return DB::transaction(function () use (&$price, $order, $req, $customer_id, &$total_price, &$orderProducts) {
-        //     foreach ($req->product_id as $key => $product_id) {
-        //         $product = Product::findOrFail($product_id);
-        //         $orderProducts[] = [
-        //             'order_id' => $order,
-        //             'product_id' => $product->id,
-        //             'quantity' => $req->quantity[$key],
-        //         ];
-
-        //         $customer = User::findOrFail($customer_id);
-        //         if ($customer->customer_type == 'shop') {
-        //             $price = $product->retail_price * $req->quantity[$key];
-        //         }
-        //         if ($customer->customer_type == 'center') {
-        //             $price = $product->wholesale_price * $req->quantity[$key];
-        //         }
-        //         $total_price += $price;
-        //     }
-
-        //     $orderId = OrderProduct::query();
-        //     $orderId->where('order_id', $order)->delete();
-        //     $orderId->insert($orderProducts);
-
-        //     $order = Order::findOrFail($order);
-
-        //     $customerAddress = UserDetail::where('user_id', $customer_id)->first();
-
-        //     $trip = Trip::query()
-        //         ->where('address_id', $customerAddress->address_id)
-        //         ->latest()->first();
-
-        //     $order->update([
-        //         'customer_id' => $customer_id,
-        //         'total_price' => $total_price,
-        //         'trip_date_id' => $trip->id
-        //     ]);
-
-        //     return $order;
-        // });
     }
 
 

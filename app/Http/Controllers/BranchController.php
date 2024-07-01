@@ -66,13 +66,13 @@ class BranchController extends Controller
         $user_name = auth('sanctum')->user()->user_name;
         $user = User::where('user_name', $user_name)->first();
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return ResponseHelper::error('Invalid username or password.', 401);
+            return ResponseHelper::error('اسم المستخدم او كلمة المرور خاطئة', 401);
         }
         $result = $this->branchService->deleteBranches($request);
         if ($result) {
             return ResponseHelper::success('deleted');
         }
-        return ResponseHelper::error('Something went wrong.', 500);
+        return ResponseHelper::error('حدث شيء خاطئ', 500);
     }
 
     public function deleteBranch(DeleteBranchRequest $request, $id)
@@ -80,7 +80,7 @@ class BranchController extends Controller
         $user_name = auth('sanctum')->user()->user_name;
         $user = User::where('user_name', $user_name)->first();
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return ResponseHelper::error('Invalid username or password.', 401);
+            return ResponseHelper::error('اسم المستخدم او كلمة المرور خاطئة', 401);
         }
         $branch = Branch::query()->findOrFail($id);
         $data = [
@@ -104,7 +104,7 @@ class BranchController extends Controller
             $b->restore();
             return ResponseHelper::success('restored');
         }
-        return ResponseHelper::error('Not Found.', 404);
+        return ResponseHelper::error('غير موجود', 404);
     }
 
     public function branches()

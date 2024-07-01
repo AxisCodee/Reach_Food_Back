@@ -8,6 +8,7 @@ use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use App\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -68,7 +69,7 @@ class UserController extends Controller
         if ($result) {
             return ResponseHelper::success('User deleted successfully.');
         }
-        return ResponseHelper::error('User not found.');
+        return ResponseHelper::error('المستخدم غير موجود');
     }
 
     public function restore($id)
@@ -78,7 +79,7 @@ class UserController extends Controller
             $u->restore();
             return ResponseHelper::success('User restored successfully.');
         }
-        return ResponseHelper::error('User not found.');
+        return ResponseHelper::error('المستخدم غير موجود');
     }
 
 
@@ -95,7 +96,7 @@ class UserController extends Controller
         if ($result) {
             return ResponseHelper::success('User updated successfully.');
         }
-        return ResponseHelper::error('User not updated.');
+        return ResponseHelper::error('حدث خطأ في تحديث بيانات المستخدم');
     }
 
     public function getSalesmanCustomers()
