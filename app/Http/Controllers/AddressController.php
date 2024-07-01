@@ -58,7 +58,11 @@ class AddressController extends Controller
 
     public function allCities()
     {
-        $cities = City::with('country')->get()->toArray();
+        $cities = City::query()
+            ->whereHas('branch')
+            ->with('country')
+            ->get()
+            ->toArray();
         return ResponseHelper::success($cities);
     }
 

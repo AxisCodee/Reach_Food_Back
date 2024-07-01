@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\Product\GetListPriceRequest;
 use App\Http\Requests\StoreProductRequest;
 use App\Models\Product;
 use App\Services\ProductService;
@@ -52,7 +53,7 @@ class ProductController extends Controller
     public function restore($id)
     {
         $p = Product::onlyTrashed()->where('id', $id)->first();
-        if($p){
+        if ($p) {
             $p->restore();
             return ResponseHelper::success($p, null, 'products restore successfully', 200);
         }
@@ -80,5 +81,10 @@ class ProductController extends Controller
         return ResponseHelper::success('Products imported successfully');
     }
 
-
+    public function getPrices(GetListPriceRequest $request)
+    {
+        return ResponseHelper::success(
+            $this->productService->getPrice($request->products)
+        );
+    }
 }

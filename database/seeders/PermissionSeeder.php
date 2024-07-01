@@ -14,18 +14,18 @@ class PermissionSeeder extends Seeder
     public function run(): void
     {
         DB::table('permissions')->insert([
-            'name' => 'اضافة',
+            'name' => 'add',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
 
         DB::table('permissions')->insert([
-            'name' => 'تعديل',
+            'name' => 'edit',
             'created_at' => now(),
             'updated_at' => now(),
         ]);
         DB::table('permissions')->insert([
-            'name' => 'حذف',
+            'name' => 'delete',
             'created_at' => now(),
             'updated_at' => now(),
         ]);

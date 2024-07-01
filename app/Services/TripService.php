@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Actions\GetUpperRoleUserIdsAction;
+use App\Enums\NotificationActions;
 use App\Models\CustomerTime;
 use App\Models\Trip;
 use App\Models\TripDates;
@@ -119,9 +121,18 @@ class TripService
         });
     }
 
-    public function deleteTrip(Trip $trip)
+    public function deleteTrip(Trip $trip): ?bool
     {
-        $trip->delete();
+        $data = [
+            'action_type' => NotificationActions::DELETE->value,
+            'actionable_id' => $trip->id,
+            'actionable_type' => Trip::class,
+            'user_id' => auth()->id(),
+        ];
+        $ownerIds = GetUpperRoleUserIdsAction::handle(auth()->user());
+
+        NotificationService::make($data, 0, $ownerIds);
+        return $trip->delete();
     }
 
     public function getSalesmanTrips()

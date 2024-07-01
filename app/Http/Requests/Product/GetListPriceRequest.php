@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Order;
+namespace App\Http\Requests\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class OrderRequest extends FormRequest
+class GetListPriceRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,13 +22,8 @@ class OrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'customer_id' => 'exists:users,id',
-            'status' => 'in:pending, accepted, cancelled, delivered',
-            'order_date' => 'date',
-            'delivery_date' => 'date',
-            'delivery_time' => '',
-            'total_price' => '',
-            'branch_id' => '',
+            'products'=>['required','array'],
+            'products.*'=>['required','exists:products,id'],
         ];
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Enums\NotificationActions;
+use App\Enums\Roles;
 use App\Events\SendMulticastNotification;
 use App\Models\Order;
 use App\Models\OrderProduct;
@@ -40,34 +41,12 @@ class OrderService
         $data['status'] = 'accepted';
         $data['order_date'] = Carbon::now()->format('Y-m-d');
         $data['customer_id'] = $customer_id;
-
         return DB::transaction(function () use ($req, $data, $request, $customer_id) {
-            $totalPrice = 0;
             $order = Order::query()->create($data);
-            $orderProducts = [];
             $customer = User::findOrFail($customer_id);
-            foreach ($req->input('product') as $productData) {
-                $product = Product::findOrFail($productData['product_id']);
-                $quantity = $productData['quantity'];
+            $data = $this->prepareProductsInOrder($request['product'], $order->id, $customer);
 
-                $orderProducts[] = [
-                    'order_id' => $order->id,
-                    'product_id' => $product->id,
-                    'quantity' => $quantity,
-                ];
-
-//                if ($customer->customer_type == 'shop') {
-//                    $price = $product->retail_price * $quantity;
-//                }
-//                if ($customer->customer_type == 'center') {
-//                    $price = $product->wholesale_price * $quantity;
-//                }
-                $price = ($customer->customer_type == 'shop' ? $product->retail_price : $product->wholesale_price) * $quantity;
-
-                $totalPrice += $price;
-            }
-
-            OrderProduct::insert($orderProducts);
+            OrderProduct::insert($data['order_products']);
 
 //            $customerAddress = User::where('id', $customer->id)->first();
             $trip = TripDates::query()
@@ -84,7 +63,7 @@ class OrderService
 //            }
 
             $order->update([
-                'total_price' => $totalPrice,
+                'total_price' => $data['total_price'],
                 'trip_date_id' => $trip?->id
             ]);
 
@@ -92,26 +71,73 @@ class OrderService
         });
     }
 
+    private function prepareProductsInOrder($products, int $orderId, User $customer): array
+    {
+        $totalPrice = 0;
+        $orderProducts = [];
+        foreach ($products as $product) {
+            $quantity = $product['quantity'];
+            $product = Product::findOrFail($product['product_id']);
+
+            $orderProducts[] = [
+                'order_id' => $orderId,
+                'product_id' => $product->id,
+                'quantity' => $quantity,
+            ];
+
+//                if ($customer->customer_type == 'shop') {
+//                    $price = $product->retail_price * $quantity;
+//                }
+//                if ($customer->customer_type == 'center') {
+//                    $price = $product->wholesale_price * $quantity;
+//                }
+            $price = ($customer->customer_type == 'shop' ? $product->retail_price : $product->wholesale_price) * $quantity;
+
+            $totalPrice += $price;
+        }
+        return [
+            'order_products' => $orderProducts,
+            'total_price' => $totalPrice,
+        ];
+    }
+
+    private function customerUpdateOrder($request, Order $order): void
+    {
+        OrderProduct::query()
+            ->where('order_id', $order->id)
+            ->delete();
+
+        $data = $this->prepareProductsInOrder($request['product'], $order->id, auth()->user());
+        DB::transaction(function () use ($order, $data) {
+            OrderProduct::insert($data['order_products']);
+            $order->update([
+                'total_price' => $data['total_price'],
+            ]);
+        });
+    }
 
     public function updateOrder($request, $order, $customer_id)
     {
-        $result = $this->assignOrder($request, $customer_id);
-        // dd($result->id);
-        logger($result);
         $order = Order::where('id', $order)->first();
-        //  dd( $result->id);
 
-        if ($order->order_id == null) {
-            $order->update(['order_id' => $result->id]);
+        if (auth()->user()->role == Roles::CUSTOMER->value) {
+            $this->customerUpdateOrder($request, $order);
+            $result = $order;
         } else {
-            $order->update(['order_id' => $result->order_id]);
+            $result = $this->assignOrder($request, $customer_id);
+
+            if ($order->order_id == null) {
+                $order->update(['order_id' => $result->id]);
+            } else {
+                $order->update(['order_id' => $result->order_id]);
+            }
+
+            Order::where('order_id', $order->id)->update(['order_id' => $result->id]);
+            Order::where('id', $result->id)->update(['is_base' => 0]);
         }
 
-        Order::where('order_id', $order->id)->update(['order_id' => $result->id]);
-        Order::where('id', $result->id)->update(['is_base' => 0]);
-
         event(new SendMulticastNotification(
-            $customer_id,
+            auth()->id(),
             [$order->trip_date->trip->salesman->id],
             NotificationActions::UPDATE->value,
             $order
@@ -225,6 +251,16 @@ class OrderService
             'delivery_date' => $data['delivery_date'] ?? $order['delivery_date'],
             'delivery_time' => $data['delivery_time'] ?? $order['delivery_time'],
         ]);
+        if ($data['action'] == 'canceled' && auth()->user()->role == Roles::SALESMAN->value) {
+            $data = [
+                'action_type' => NotificationActions::CANCEL->value,
+                'actionable_id' => $order->id,
+                'actionable_type' => Order::class,
+                'user_id' => auth()->id(),
+            ];
+            $ownerIds = auth()->user()->salesManager()->pluck('users.id')->toArray();
+            NotificationService::make($data, 0, $ownerIds);
+        }
         return $order;
     }
 

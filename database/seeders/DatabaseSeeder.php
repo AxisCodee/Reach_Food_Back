@@ -2,7 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Actions\GetUpperRoleUserIdsAction;
 use App\Enums\NotificationActions;
+use App\Enums\Roles;
 use App\Events\SendMulticastNotification;
 use App\Models\Branch;
 use App\Models\Notification;
@@ -23,16 +25,6 @@ class DatabaseSeeder extends Seeder
     public function run(): void
     {
 
-        $ids = User::pluck('id')->toArray();
-        $arr=[];
-        foreach ($ids as $id) {
-            $arr[]=[
-                'user_id'=>$id,
-                'password'=>'password'
-            ];
-        }
-        UsersPassword::insert($arr);
-//        event(new SendMulticastNotification(9,[4],NotificationActions::UPDATE->value,Order::find(1)));
         $this->call([
             CountrySeeder::class,
             CitySeeder::class,

@@ -2,6 +2,8 @@
 
 namespace App\Services;
 
+use App\Actions\GetUpperRoleUserIdsAction;
+use App\Enums\NotificationActions;
 use App\Enums\Roles;
 use App\Models\User;
 use App\Models\UserPermission;
@@ -39,8 +41,19 @@ class RegistrationService
                 break;
             case Roles::SALES_MANAGER :
                 $baseData['branch_id'] = $request->branch_id;
+                break;
+            case Roles::SALESMAN :
+                $baseData['branch_id'] = $request->input('branch_id');
         }
         $this->user = User::create($baseData);
+        $data = [
+            'action_type' => NotificationActions::ADD->value,
+            'actionable_id' => $this->user->id,
+            'actionable_type' => User::class,
+            'user_id' => auth()->id(),
+        ];
+        $ownerIds = GetUpperRoleUserIdsAction::handle(auth()->user());
+        NotificationService::make($data, 0, $ownerIds);
 
 
         //Attaching

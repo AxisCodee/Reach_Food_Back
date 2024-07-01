@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Notifications;
 
+use App\Enums\NotificationActions;
 use App\Services\NotificationService;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -18,11 +19,13 @@ class DashboardNotifications extends JsonResource
     {
         $service = new NotificationService($this->resource);
         return [
+            'id' => $this['id'],
             'user' => $this['user'],
             'type' => $service->getType(),
             'title' => $service->getTitle(),
             'content' => $service->getContent(),
             'date' => Carbon::make($this['created_at'])->diffForHumans(),
+            'there_back' => $this['action_type'] == NotificationActions::DELETE->value,
         ];
     }
 }

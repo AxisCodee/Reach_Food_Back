@@ -14,19 +14,19 @@ class AddressSeeder extends Seeder
     public function run(): void
     {
         // Ensure you have some cities created before creating addresses
-        $cities = City::all();
-
-        if ($cities->isEmpty()) {
-            $this->command->info('No cities found. Please seed cities first.');
-            return;
-        }
+//        $cities = City::all();
+//
+//        if ($cities->isEmpty()) {
+//            $this->command->info('No cities found. Please seed cities first.');
+//            return;
+//        }
 
         $addresses = [
-            ['city_id' => $cities->random()->id, 'area' => 'منطقة 1'],
-            ['city_id' => $cities->random()->id, 'area' => 'منطقة 2'],
-            ['city_id' => $cities->random()->id, 'area' => 'منطقة 3'],
-            ['city_id' => $cities->random()->id, 'area' => 'منطقة 4'],
-            ['city_id' => $cities->random()->id, 'area' => 'منطقة 5'],
+            ['city_id' => 1, 'area' => 'منطقة 1'],
+            ['city_id' => 2, 'area' => 'منطقة 2'],
+            ['city_id' => 3, 'area' => 'منطقة 3'],
+            ['city_id' => 4, 'area' => 'منطقة 4'],
+            ['city_id' => 1, 'area' => 'منطقة 5'],
             // Add more addresses as needed
         ];
 

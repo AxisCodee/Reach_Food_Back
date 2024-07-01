@@ -49,12 +49,12 @@ class TripController extends Controller
 
     public function destroy(Trip $trip)
     {
-        try {
-            $this->tripService->deleteTrip($trip);
+        $result = $this->tripService->deleteTrip($trip);
+        if ($result)
             return ResponseHelper::success('Trip deleted successfully');
-        } catch (Exception) {
-            return ResponseHelper::error('Failed to delete trip');
-        }
+
+        return ResponseHelper::error('Failed to delete trip');
+
     }
 
 
