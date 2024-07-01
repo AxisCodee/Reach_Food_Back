@@ -23,7 +23,8 @@ class MobileNotifications extends JsonResource
             'content' => $service->getContent(),
             'date' => Carbon::make($this['updated_at'])->diffForHumans(),
             'image'=>$this['user']?->image,
-            'location' => $this['user']?->location
+            'location' => $this['user']?->location,
+            'is_read' => $this['pivot']['read'],
         ];
     }
 }
