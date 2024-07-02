@@ -4,6 +4,7 @@ namespace App\Models;
 
 
 use Carbon\Carbon;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -46,7 +47,7 @@ class User extends Authenticatable
         'password',
         'remember_token',
     ];
-    protected $appends = ['permissions'];
+    protected $appends = ['permissions', 'customer_type_ar'];
 
     /**
      * Get the attributes that should be cast.
@@ -160,4 +161,14 @@ class User extends Authenticatable
         return $this->hasMany(WorkBranch::class, 'sales_manager_id');
     }
 
+
+    public function customerTypeAr(): Attribute
+    {
+        return Attribute::get(function (){
+            if ($this['customer_type']) {
+                return $this['customer_type'] == 'shop' ? 'متجر' : 'مركز';
+            }
+            return null;
+        });
+    }
 }
