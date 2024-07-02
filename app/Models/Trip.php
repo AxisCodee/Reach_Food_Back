@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,6 +16,8 @@ class Trip extends Model
     use HasFactory, SoftDeletes;
 
     protected $guarded = [];
+
+    protected $appends = ['day_ar'];
 
     public function salesman(): BelongsTo
     {
@@ -48,6 +51,23 @@ class Trip extends Model
     public function customers(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'customer_times', 'trip_id', 'customer_id');
+    }
+
+    public function dayAr(): Attribute
+    {
+        return Attribute::get(function () {
+            $translateDays = [
+                'Sunday' => 'الأحد',
+                'Monday' => 'الإثنين',
+                'Tuesday' => 'الثلاثاء',
+                'Wednesday' => 'الأربعاء',
+                'Thursday' => 'الخميس',
+                'Friday' => 'الجمعة',
+                'Saturday' => 'السبت',
+            ];
+
+            return $translateDays[$this['day']];
+        });
     }
 
 }
