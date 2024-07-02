@@ -18,11 +18,12 @@ class MobileNotifications extends JsonResource
     public function toArray(Request $request): array
     {
         $service = new NotificationService($this->resource);
+        $date = Carbon::make($this['updated_at'])->locale('ar');
         return [
             'title' => $service->getTitle(),
             'content' => $service->getContent(),
-            'date' => Carbon::make($this['updated_at'])->diffForHumans(),
-            'image'=>$this['user']?->image,
+            'date' => $date->diffForHumans(),
+            'image' => $this['user']?->image,
             'location' => $this['user']?->location,
             'is_read' => (bool)$this['pivot']['read'],
         ];

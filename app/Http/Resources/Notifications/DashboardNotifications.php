@@ -18,13 +18,14 @@ class DashboardNotifications extends JsonResource
     public function toArray(Request $request): array
     {
         $service = new NotificationService($this->resource);
+        $date = Carbon::make($this['updated_at'])->locale('ar');
         return [
             'id' => $this['id'],
             'user' => $this['user'],
             'type' => $service->getType(),
             'title' => $service->getTitle(),
             'content' => $service->getContent(),
-            'date' => Carbon::make($this['created_at'])->diffForHumans(),
+            'date' => $date->diffForHumans(),
             'there_back' => $this['action_type'] == NotificationActions::DELETE->value,
         ];
     }
