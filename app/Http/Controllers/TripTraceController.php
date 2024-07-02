@@ -37,7 +37,7 @@ class TripTraceController extends Controller
 
     public function tracing($action)
     {
-        $user = User::query()->find(4);//todo add auth id
+        $user = auth()->user();//todo add auth id
         $functionName = $action . 'Trip';
         try {
            $this->tripTraceService->$functionName($user);

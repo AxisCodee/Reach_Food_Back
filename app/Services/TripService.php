@@ -137,18 +137,17 @@ class TripService
 
     public function getSalesmanTrips()
     {
-        $salesman = User::FindOrFail(auth('sanctum')->id());
+        $salesman = User::findOrFail(auth('sanctum')->id());
         $date = Carbon::today();
         $isToday = true;
         if (request()->day) {
             $date = Carbon::now()->next(request()->day);
             $isToday = false;
         }
-        $trips = $salesman->trips()
-            ->with(['address:id,city_id,area', 'dates' => function ($query) use ($date) {
-                $query->withCount('order')->whereDate('start_date', '=', $date);
-            }])
-            ->where('day', '=', $date->dayName)
+        $trips = $salesman->todayTripsDates()
+            ->with(['trip','address:id,city_id,area'])
+            ->withCount('order')
+            ->whereDate('start_date', '=', $date)
             ->orderBy('start_time', 'asc')
             ->paginate(10)
             ->toArray();
@@ -160,9 +159,9 @@ class TripService
             $current = $tracingServices->currentTrip($salesman);
             $next = $tracingServices->next($salesman);
             foreach ($trips['data'] as $trip) {
-                if ($current && $trip['dates'][0]['id'] == $current['id']) {
+                if ($current && $trip['id'] == $current['id']) {
                     $trip['status'] = 'current';
-                } else if ($next && $trip['dates'][0]['id'] == $next['id']) {
+                } else if ($next && $trip['id'] == $next['id']) {
                     $trip['status'] = 'next';
                 } else {
                     $trip['status'] = 'non';
