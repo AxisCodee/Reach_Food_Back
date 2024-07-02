@@ -64,6 +64,8 @@ class User extends Authenticatable
 
     public function getPermissionsAttribute()
     {
+
+
         $userPermissions = UserPermission::where('user_id', $this->id)
             ->get()
             ->keyBy('permission_id');
@@ -71,9 +73,14 @@ class User extends Authenticatable
         $permissions = Permission::get();
         if ($permissions || $userPermissions) {
             return $permissions->mapWithKeys(function ($permission) use ($userPermissions) {
+                $translate = [
+                    'add' => 'إضافة',
+                    'edit' => 'حذف',
+                    'delete' => 'تعديل',
+                ];
                 $userPermission = $userPermissions->get($permission->id);
                 $status = $userPermission ? $userPermission->status : null;
-                return [$permission->name => (bool)$status];
+                return [$translate[$permission->name] => (bool)$status];
             });
         } else return null;
     }
