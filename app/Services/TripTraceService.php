@@ -17,13 +17,24 @@ class TripTraceService
     public function getTripTraces($request)
     {
         $date = $request->start_date ?? Carbon::today();
-        return TripDates::with(['trip.salesman', 'tripTrace'])
+        $isMonth = strlen($date) == 7;
+        $trips =  TripDates::with(['trip.salesman', 'tripTrace'])
             ->whereHas('tripTrace', function ($query) use ($request) {
                 $query->whereNotNull('status');
-            })
-            ->whereDate('start_date', '=', $date)
-            ->get()
-            ->toArray();
+            });
+
+        if($isMonth){
+            $date = Carbon::make($date);
+            return $trips->whereYear('start_date','=', $date->year)
+                ->whereMonth('start_date', '=', $date->month)
+                ->get()
+                ->toArray();
+        }else{
+            logger('noohere');
+            return $trips->whereDate('start_date', '=', $date)
+                ->get()
+                ->toArray();
+        }
     }
 
     public function updateTripTrace($request)
