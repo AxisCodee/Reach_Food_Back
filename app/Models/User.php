@@ -155,4 +155,9 @@ class User extends Authenticatable
         return $this->hasMany(WorkBranch::class, 'salesman_id');
     }
 
+    public function managerBranches(): HasMany
+    {
+        return $this->hasMany(WorkBranch::class, 'sales_manager_id');
+    }
+
 }

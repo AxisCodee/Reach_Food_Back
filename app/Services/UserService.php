@@ -109,17 +109,24 @@ class UserService
 
     }
 
-    public function updateSalesManager($request, $user)
+    public function updateSalesManager($request,User $user)
     {
-        $user->update([//link with category(branch)
-            'branch_id' => $request->branch_id
-        ]);
-        //link with salesmen
-        $salesmen = $request['salesmen'];
-        if ($salesmen) {
-            $user->salesman()->detach();
-            $user->salesman()->attach($salesmen);
-        }
+        DB::transaction(function () use ($request, $user){
+            $salesmen = $request['salesmen'];
+            $user->managerBranches()->delete();
+            if($salesmen)
+                foreach ($salesmen as $salesman){
+                    $userS = User::query()->findOrFail($salesman);
+                    if ($userS['role'] != Roles::SALESMAN->value) {
+                        throw new \Exception('هذا الشخص ليس مندوب');
+                    }
+                    WorkBranch::query()->create([
+                        'salesman_id' => $salesman,
+                        'sales_manager_id'=> $user->id,
+                        'branch_id' => $user->branch_id,
+                    ]);
+                }
+        });
     }
 
     public function show($user)
@@ -186,7 +193,7 @@ class UserService
                     $query->with('userPassword:user_id,password');
                 })
                 ->where('role', Roles::SALESMAN->value)
-                ->whereHas('salesManager', function ($query) use ($request) {
+                ->whereHas('workBranches', function ($query) use ($request) {
                     $query->where('branch_id', $request->branch_id);
                 })
                 ->get()->toArray();

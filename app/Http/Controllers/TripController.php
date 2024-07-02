@@ -44,7 +44,7 @@ class TripController extends Controller
         if ($result) {
             return ResponseHelper::success($result, '200');
         }
-        return ResponseHelper::error('Failed to update trip');
+        return ResponseHelper::error('حدث خطأ في تحديث الرحلة');
     }
 
     public function destroy(Trip $trip)
@@ -53,7 +53,7 @@ class TripController extends Controller
         if ($result)
             return ResponseHelper::success('Trip deleted successfully');
 
-        return ResponseHelper::error('Failed to delete trip');
+        return ResponseHelper::error('حدث خطأ في حذف الرحلة');
 
     }
 
@@ -76,12 +76,12 @@ class TripController extends Controller
         $t = Trip::onlyTrashed()->where('id', $id)->first();
         if($t){
             if($this->tripService->conflicts($t)){
-                return ResponseHelper::error('Failed to restore trip because conflicts');
+                return ResponseHelper::error('حدث خطأ في استعادة الرحلة بسبب تضارب الوقت');
             }
             $t->restore();
             return ResponseHelper::success($t, 200);
         }
-        return ResponseHelper::error('Failed to restore trip');
+        return ResponseHelper::error('حدث خطئ في استعادة الرحلة');
     }
 
 }

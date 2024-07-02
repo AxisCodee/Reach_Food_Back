@@ -57,7 +57,7 @@ class ProductController extends Controller
             $p->restore();
             return ResponseHelper::success($p, null, 'products restore successfully', 200);
         }
-        return ResponseHelper::error(null, 'products not found', 404);
+        return ResponseHelper::error(null, 'المنتج غير موجود', 404);
     }
 
     public function updatePrice(Request $request)
