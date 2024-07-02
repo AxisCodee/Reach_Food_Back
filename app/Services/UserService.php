@@ -114,17 +114,18 @@ class UserService
         DB::transaction(function () use ($request, $user){
             $salesmen = $request['salesmen'];
             $user->managerBranches()->delete();
-            foreach ($salesmen as $salesman){
-                $userS = User::query()->findOrFail($salesman);
-                if ($userS['role'] != Roles::SALESMAN->value) {
-                    throw new \Exception('هذا الشخص ليس مندوب');
+            if($salesmen)
+                foreach ($salesmen as $salesman){
+                    $userS = User::query()->findOrFail($salesman);
+                    if ($userS['role'] != Roles::SALESMAN->value) {
+                        throw new \Exception('هذا الشخص ليس مندوب');
+                    }
+                    WorkBranch::query()->create([
+                        'salesman_id' => $salesman,
+                        'sales_manager_id'=> $user->id,
+                        'branch_id' => $user->branch_id,
+                    ]);
                 }
-                WorkBranch::query()->create([
-                    'salesman_id' => $salesman,
-                    'sales_manager_id'=> $user->id,
-                    'branch_id' => $user->branch_id,
-                ]);
-            }
         });
     }
 

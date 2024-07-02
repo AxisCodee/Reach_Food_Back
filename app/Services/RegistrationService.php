@@ -79,17 +79,18 @@ class RegistrationService
     {
         //link with salesmen
         $salesmen = $request['salesmen'];
-        foreach ($salesmen as $salesman){
-            $user = User::query()->findOrFail($salesman);
-            if ($user['role'] != Roles::SALESMAN->value) {
-                throw new \Exception('هذا الشخص ليس مندوب');
+        if($salesmen)
+            foreach ($salesmen as $salesman){
+                $user = User::query()->findOrFail($salesman);
+                if ($user['role'] != Roles::SALESMAN->value) {
+                    throw new \Exception('هذا الشخص ليس مندوب');
+                }
+                WorkBranch::query()->create([
+                    'salesman_id' => $salesman,
+                    'sales_manager_id'=> $this->user->id,
+                    'branch_id' => $this->user->branch_id,
+                ]);
             }
-            WorkBranch::query()->create([
-                'salesman_id' => $salesman,
-                'sales_manager_id'=> $this->user->id,
-                'branch_id' => $this->user->branch_id,
-            ]);
-        }
     }
 
     private function attachForSalesMan($request): void
