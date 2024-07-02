@@ -127,7 +127,7 @@ class NotificationService
             $complete = $this->actionable['name'];
         }
 
-        return "$action {$this->user['name']}  $complete $type";
+        return "$action {$this->user['name']} $type $complete";
     }
 
     public function getTitle(): string
