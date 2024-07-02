@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\Order\IndexOrderRequest;
 use App\Http\Requests\Order\OrderRequest;
+use App\Http\Requests\Order\SalesmanOrdersRequest;
 use App\Http\Requests\Order\UpdateArchivedOrderRequest;
 use App\Models\Order;
 use App\Services\DateService;
@@ -70,7 +71,7 @@ class OrderController extends Controller
 
 //salesman
 
-    public function salesmanOrders(Request $request)
+    public function salesmanOrders(SalesmanOrdersRequest $request)
     {
         $result = $this->orderService->getSalesmanOrders($request);
         return ResponseHelper::success($result);

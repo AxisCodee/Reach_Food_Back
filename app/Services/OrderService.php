@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Actions\GetDaysNamesAction;
 use App\Enums\NotificationActions;
 use App\Enums\Roles;
 use App\Events\SendMulticastNotification;
@@ -173,12 +174,14 @@ class OrderService
 
     public function getSalesmanOrders($request)
     {
-        $salesman = User::findOrFail(auth('sanctum')->id());//auth
+        $salesman = auth()->user();
         $customers = User::whereHas('trips.dates.order', function ($query) use ($salesman) {
             $query->where('salesman_id', $salesman->id);
         })
             ->with(['trips' => function ($query) use ($request) {
-                $query->where('day', $request->input('day'));
+                $query->when($request->input('days'), function ($query) use ($request) {
+                    $query->whereIn('day', GetDaysNamesAction::handle($request->input('days')));
+                });
             }])
             ->get()->toArray();
         return $customers;
@@ -201,7 +204,7 @@ class OrderService
             $ownerIds = auth()
                 ->user()
                 ->salesManager()
-                ->where('users.branch_id','=',$order->branch_id)
+                ->where('users.branch_id', '=', $order->branch_id)
                 ->pluck('users.id')
                 ->toArray();
             NotificationService::make($data, 0, $ownerIds);

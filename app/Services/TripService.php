@@ -39,7 +39,7 @@ class TripService
             ->when($request->day, function (Builder $query) use ($request) {
                 $query->where('day', $request->day);
             })
-            ->with(['dates.order.customer', 'address', 'salesman'])
+            ->with(['customers', 'address', 'salesman'])
             ->get()->toArray();
     }
 
