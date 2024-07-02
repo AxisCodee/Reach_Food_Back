@@ -73,14 +73,9 @@ class User extends Authenticatable
         $permissions = Permission::get();
         if ($permissions || $userPermissions) {
             return $permissions->mapWithKeys(function ($permission) use ($userPermissions) {
-                $translate = [
-                    'add' => 'إضافة',
-                    'edit' => 'حذف',
-                    'delete' => 'تعديل',
-                ];
                 $userPermission = $userPermissions->get($permission->id);
                 $status = $userPermission ? $userPermission->status : null;
-                return [$translate[$permission->name] => (bool)$status];
+                return [$permission->name => (bool)$status];
             });
         } else return null;
     }
