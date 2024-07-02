@@ -144,13 +144,20 @@ class OrderService
             })
             ->where('branch_id', $data['branch_id'])
             ->whereNull('order_id')
+            ->when($data['is_archived'] ?? false,
+                function (Builder $query) {
+                    $query
+                        ->whereDate('order_date', '<', Carbon::now()->format('Y-m-d'))
+                        ->whereIn('status', ['delivered', 'canceled']);
+
+                },
+                function (Builder $query) {
+                    $query
+                        ->whereDate('order_date', '>=', Carbon::now()->format('Y-m-d'))
+                        ->whereIn('status', ['accepted', 'canceled']);
+                })
             ->when($data['status'] ?? false, function (Builder $query) {
                 $query->where('status', request()->status);
-            })
-            ->when($data['is_archived'] ?? null, function (Builder $query) {
-                $query->whereDate('order_date', '<', Carbon::now()->format('Y-m-d'));
-            }, function (Builder $query) {
-                $query->whereDate('order_date', '>=', Carbon::now()->format('Y-m-d'));
             });
     }
 
