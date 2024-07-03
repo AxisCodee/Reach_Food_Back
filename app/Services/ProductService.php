@@ -127,6 +127,13 @@ class ProductService
             ->select('id', DB::raw("$priceType AS price"))
             ->get()
             ->toArray();
+    }
 
+    public function listPrices($branchId)
+    {
+        return Product::query()
+            ->where('branch_id', $branchId)
+            ->get()
+            ->toArray();
     }
 }

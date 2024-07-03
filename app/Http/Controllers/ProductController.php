@@ -87,4 +87,11 @@ class ProductController extends Controller
             $this->productService->getPrice($request->products)
         );
     }
+
+    public function listPrices()
+    {
+        return ResponseHelper::success(
+            $this->productService->listPrices(request('branch_id'))
+        );
+    }
 }
