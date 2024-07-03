@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Helpers\ResponseHelper;
 use App\Models\Branch;
 use App\Models\Notification;
 use App\Models\Order;
@@ -160,5 +161,39 @@ class NotificationService
             ->update([
                 'read' => true
             ]);
+    }
+
+    public static function unReadCount(int $userId): int
+    {
+        return DB::table('user_notifications')
+            ->where('owner_id', '=', $userId)
+            ->where('read', '=', false)
+            ->count();
+    }
+
+
+    private static array $canBack = [
+        Product::class,
+        Branch::class,
+        User::class,
+        Trip::class
+    ];
+
+    public static function back(Notification $notification)
+    {
+        $actionableType = $notification['actionable_type'];
+        if ($notification['action_type'] == 'delete' && in_array($actionableType,  self::$canBack)) {
+            if($actionableType == Trip::class){
+                $tripService = new TripService();
+                if ($tripService->conflicts($notification['actionable'])) {
+                    return ResponseHelper::error('لا يمكن ارجاع هذه الرحلة');
+                }
+            }
+            $notification->actionable->restore();
+            $notification->delete();
+            return ResponseHelper::success('success back');
+        } else {
+            return ResponseHelper::error('لا يمكن التراجع عن هذا الحدث');
+        }
     }
 }
