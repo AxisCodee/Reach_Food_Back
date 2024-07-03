@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\Product\GetListPriceRequest;
 use App\Http\Requests\StoreProductRequest;
+use App\Http\Requests\SupplyProductsRequest;
 use App\Models\Product;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
@@ -93,5 +94,20 @@ class ProductController extends Controller
         return ResponseHelper::success(
             $this->productService->listPrices(request('branch_id'))
         );
+    }
+
+    public function supply(SupplyProductsRequest $request)
+    {
+        $data = $request->validated();
+        $products = Product::query()
+            ->whereIn('id', $data['products'])
+            ->get();
+        foreach ($products as $product) {
+            $newProduct = $product->replicate();
+            $newProduct['branch_id'] = $data['branch_id'];
+            $newProduct->save();
+        }
+
+        return ResponseHelper::success('success');
     }
 }
