@@ -100,7 +100,7 @@ class ProductService
 
     public function getSalesmanProducts($request)
     {
-        return Branch::findOrFail($request->branch_id)->products()->get()->toArray();
+        return Branch::findOrFail($request->branch_id)->products()->paginate(10)->toArray();
     }
 
     public function importProduct($product_id, $branch_id)
