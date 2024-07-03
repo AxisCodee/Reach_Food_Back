@@ -62,6 +62,7 @@ class OrderService
                 'trip_date_id' => $trip->id
             ]);
 
+            $order->load('trip_date.trip');
             return $order;
         });
     }
