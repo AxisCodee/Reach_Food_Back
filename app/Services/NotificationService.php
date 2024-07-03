@@ -148,8 +148,15 @@ class NotificationService
         $notification = $firstOrCreate ?
             $notification->updateOrCreate($data, ['updated_at' => now()]) :
             $notification->create($data);
-
-        $notification->users()->syncWithoutDetaching($ownerIds);
+        $attaching = [];
+        foreach ($ownerIds as $ownerId){
+            $attaching = [
+                $ownerId => [
+                    'read' => 0
+                ]
+            ];
+        }
+        $notification->users()->syncWithoutDetaching($attaching);
 
         return new NotificationService($notification);
     }
