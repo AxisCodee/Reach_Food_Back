@@ -32,40 +32,17 @@ class NotificationController extends Controller
         }
     }
 
-    public function back(TripService $tripService, $id)
+    public function back($id)
     {
         $notification = Notification::query()->find($id);
-        if ($notification['action_type'] != 'delete') {
-            return ResponseHelper::error('can not back this action');
-        }
-        $actionableType = $notification['actionable_type'];
-        if (in_array($actionableType, [
-            Product::class,
-            Branch::class,
-            User::class,
-        ])) {
-            $notification->actionable->restore();
-            $notification->delete();
-            return ResponseHelper::success('success back');
-        } elseif ($actionableType == Trip::class) {
-            if ($tripService->conflicts($notification['actionable'])) {
-                return ResponseHelper::error('لا يمكن ارجاع هذه الرحلة');
-            }
-            $notification['actionable']->restore();
-            return ResponseHelper::success('success back');
-        } else {
-            return ResponseHelper::error('لا يمكن التراجع عن هذا الحدث');
-        }
 
+        return NotificationService::back($notification);
     }
 
     public function unReadCounter()
     {
         return ResponseHelper::success(
-            DB::table('user_notifications')
-                ->where('owner_id', '=', auth()->id())
-                ->where('read', '=', false)
-                ->count()
+           NotificationService::unReadCount(auth()->id())
         );
     }
 }
