@@ -9,6 +9,7 @@ use App\Models\Product;
 use App\Models\Trip;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB;
 
 class NotificationService
 {
@@ -37,7 +38,7 @@ class NotificationService
         'Sunday' => 'الأحد',
         'Monday' => 'الاثنين',
         'Tuesday' => 'الثلاثاء',
-        'Wednesday' => 'الاربعاء',
+        'Wednesday' => 'الأربعاء',
         'Thursday' => 'الخميس',
         'Friday' => 'الجمعة',
         'Saturday' => 'السبت',
@@ -46,7 +47,7 @@ class NotificationService
     private array $translateAction = [
         'delete' => 'حذف',
         'update' => 'عدل',
-        'add' => 'إضاف',
+        'add' => 'أضاف',
     ];
 
     public function __construct(
@@ -152,4 +153,12 @@ class NotificationService
         return new NotificationService($notification);
     }
 
+    public static function setRead(int $userId): void
+    {
+        DB::table('user_notifications')
+            ->where('owner_id', '=', $userId)
+            ->update([
+                'read' => true
+            ]);
+    }
 }
