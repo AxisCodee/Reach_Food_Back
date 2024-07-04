@@ -3,6 +3,7 @@
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BranchController;
+use App\Http\Controllers\CityController;
 use App\Http\Controllers\FeedbackController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\OrderController;
@@ -150,6 +151,14 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('', [NotificationController::class, 'index']);
         Route::get('/unread', [NotificationController::class, 'unReadCounter']);
         Route::post('/back/{id}', [NotificationController::class, 'back']);
+    });
+
+    Route::prefix('cities')->group(function (){
+        Route::get('/', [CityController::class, 'index']);
+        Route::get('/without-admin', [CityController::class, 'citiesWithoutAdmin']);
+        Route::get('/without-branches', [CityController::class, 'citiesWithoutBranches']);
+        Route::post('/', [CityController::class, 'store']);
+        Route::put('/{city}', [CityController::class, 'update']);
     });
 });
 Route::get('/test', function (){

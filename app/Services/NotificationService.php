@@ -196,6 +196,11 @@ class NotificationService
                     return ResponseHelper::error('لا يمكن ارجاع هذه الرحلة');
                 }
             }
+            if($actionableType == Branch::class){
+                $notification->actionable->update([
+                    'name'=>(new CityServices())->getNameOfBranch($notification->actionable['city_id'], $notification->actionable['name'])
+                ]);
+            }
             $notification->actionable->restore();
             $notification->delete();
             return ResponseHelper::success('success back');

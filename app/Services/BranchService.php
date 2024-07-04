@@ -18,6 +18,7 @@ class BranchService
 
     public function getBranches()
     {
+        //todo
         $cityId = request('city_id');
         return Branch::query()
             ->with(['city.country'])
