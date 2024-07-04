@@ -22,6 +22,7 @@ return new class extends Migration {
             $table->enum('role', ['customer', 'salesman', 'sales manager', 'admin', 'super admin'])->default('customer');
             $table->enum('customer_type', ['shop', 'center'])->nullable();
             $table->text('image')->nullable();
+            $table->foreignId('added_by')->nullable()->constrained('users')->nullOnDelete()->cascadeOnUpdate();
             $table->softDeletes();
             $table->rememberToken();
             $table->timestamps();

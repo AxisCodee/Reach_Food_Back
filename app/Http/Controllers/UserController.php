@@ -4,11 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Enums\Roles;
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\GetSalesmanCustomersRequest;
 use App\Http\Requests\UpdateUserRequest;
 use App\Models\User;
 use App\Services\UserService;
+use Exception;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\DB;
 
 class UserController extends Controller
 {
@@ -64,18 +66,20 @@ class UserController extends Controller
 
     public function destroy($user)
     {
-        $result = $this->userService->destroy($user);
-
-        if ($result) {
+        try {
+            $this->userService->destroy($user);
             return ResponseHelper::success('User deleted successfully.');
+        } catch (ModelNotFoundException) {
+            return ResponseHelper::error('المستخدم غير موجود');
+        } catch (Exception $e) {
+            return ResponseHelper::error($e->getMessage());
         }
-        return ResponseHelper::error('المستخدم غير موجود');
     }
 
     public function restore($id)
     {
         $u = User::onlyTrashed()->findOrFail($id);
-        if($u){
+        if ($u) {
             $u->restore();
             return ResponseHelper::success('User restored successfully.');
         }
@@ -99,10 +103,10 @@ class UserController extends Controller
         return ResponseHelper::error('حدث خطأ في تحديث بيانات المستخدم');
     }
 
-    public function getSalesmanCustomers()
+    public function getSalesmanCustomers(GetSalesmanCustomersRequest $request)
     {
-        $salesman = User::findOrFail(auth('sanctum')->id());//auth
-        $customers = $this->userService->getSalesmanCustomers($salesman);
+        $salesman = auth()->user();
+        $customers = $this->userService->getSalesmanCustomers($salesman, $request);
         return ResponseHelper::success($customers);
     }
 
