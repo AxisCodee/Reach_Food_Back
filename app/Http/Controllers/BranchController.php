@@ -13,6 +13,7 @@ use App\Models\Branch;
 use App\Models\City;
 use App\Models\User;
 use App\Services\BranchService;
+use App\Services\CityServices;
 use App\Services\NotificationService;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -97,15 +98,6 @@ class BranchController extends Controller
         return ResponseHelper::success('deleted');
     }
 
-    public function restore($id)
-    {
-        $b = Branch::onlyTrashed()->firstWhere('id', $id);
-        if ($b) {
-            $b->restore();
-            return ResponseHelper::success('restored');
-        }
-        return ResponseHelper::error('غير موجود', 404);
-    }
 
     public function branches()
     {

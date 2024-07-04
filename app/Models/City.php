@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class City extends Model
 {
@@ -27,8 +28,15 @@ class City extends Model
     {
         return $this->hasMany(Branch::class,'city_id');
     }
-    public function admins(): HasMany
+
+    public function branches(): HasMany
     {
-        return $this->hasMany(User::class,'admin_id');
+        return $this->hasMany(Branch::class,'city_id');
+    }
+
+    public function admin(): HasOne
+    {
+        return $this->hasOne(User::class,'city_id')
+           ;
     }
 }
