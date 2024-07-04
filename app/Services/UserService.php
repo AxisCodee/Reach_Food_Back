@@ -9,6 +9,7 @@ use App\Models\Contact;
 use App\Models\User;
 use App\Models\UserPermission;
 use App\Models\WorkBranch;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -91,11 +92,11 @@ class UserService
                     if($branch['salesManager_id']) {
                         $salesManager = User::query()->findOrFail($branch['salesManager_id']);
                         if ($salesManager['role'] != Roles::SALES_MANAGER->value) {
-                            throw new \Exception('هذا الشخص ليس مدير مبيعات');
+                            throw new Exception('هذا الشخص ليس مدير مبيعات');
                         }
                         logger($branch['branch_id']);
                         if ($salesManager['branch_id'] != $branch['branch_id']) {
-                            throw new \Exception('هذا المدير لا يتبع لهذا الفرع');
+                            throw new Exception('هذا المدير لا يتبع لهذا الفرع');
                         }
                     }
                     $work['sales_manager_id'] = $branch['salesManager_id'];
@@ -118,7 +119,7 @@ class UserService
                 foreach ($salesmen as $salesman){
                     $userS = User::query()->findOrFail($salesman);
                     if ($userS['role'] != Roles::SALESMAN->value) {
-                        throw new \Exception('هذا الشخص ليس مندوب');
+                        throw new Exception('هذا الشخص ليس مندوب');
                     }
                     WorkBranch::query()->create([
                         'salesman_id' => $salesman,
@@ -155,9 +156,15 @@ class UserService
                 ->with(['contacts:id,user_id,phone_number', 'address.city.country', 'userPassword:user_id,password'])
                 ->where('role', Roles::CUSTOMER->value)
                 ->whereHas('address', function ($query) use ($request) {
-                    $query->where('city_id', $request->city_id);//TODO city Customers
+                    $query->where('city_id', $request->city_id);
                 })
-                ->get()->toArray();
+                ->when($request->query('no_orders'), function (Builder $query) use ($request) {
+                    $query->whereDoesntHave('orders', function ($query) use ($request) {
+                        $query->where('branch_id', $request->query('branch_id'));
+                    });
+                })
+                ->get()
+                ->toArray();
         }
         if ($request->role == Roles::ADMIN->value) {
             $canShowPassword = auth()->user()->role == Roles::SUPER_ADMIN->value;
@@ -200,22 +207,32 @@ class UserService
         }
     }
 
-    public function getSalesmanCustomers($salesman)
+    public function getSalesmanCustomers($salesman, $request)
     {
         return User::query()
-            ->with('contacts:id,user_id,phone_number', 'address:id,city_id,area')
-            ->whereIn('id', function ($query) use ($salesman) {
+            ->with(['contacts:id,user_id,phone_number', 'address:id,city_id,area'])
+            ->whereIn('id', function ($query) use ($salesman, $request) {
                 $query->select('customer_times.customer_id')
                     ->from('customer_times')
                     ->join('trips', 'customer_times.trip_id', '=', 'trips.id')
-                    ->where('trips.salesman_id', $salesman->id);
-            })->get()
+                    ->where('trips.salesman_id', $salesman->id)
+                    ->where('trips.branch_id', $request->input('branch_id'));
+            })
+            ->when($request->has('orders'), function (Builder $query) use ($request) {
+                $query->whereHas('orders');
+            })
+            ->get()
             ->toArray();
     }
 
+    /**
+     * @throws Exception
+     */
     public function destroy($userId): ?bool
     {
         $user = User::findOrFail($userId);
+        if (auth()->user()['role'] == Roles::SALESMAN->value && (($user['added_by'] != auth()->id())))
+            throw new Exception("لا يمكنك حذف هذا الزبون");
         $data = [
             'action_type' => NotificationActions::DELETE->value,
             'actionable_id' => $user->id,
