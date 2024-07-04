@@ -105,6 +105,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('updatePrice', [ProductController::class, 'updatePrice']);
         Route::post('/import', [ProductController::class, 'importProducts']);
         Route::get('/prices', [ProductController::class, 'getPrices']);
+        Route::get('/list-prices', [ProductController::class, 'listPrices']);
+        Route::post('/supply', [ProductController::class, 'supply']);
         Route::prefix('salesman')->group(function () {
             Route::get('/index', [ProductController::class, 'salesmanProducts']);
         });

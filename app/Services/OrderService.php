@@ -14,6 +14,7 @@ use App\Models\TripDates;
 use App\Models\User;
 use App\Models\UserDetail;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -45,19 +46,23 @@ class OrderService
             $order = Order::query()->create($data);
             $customer = User::findOrFail($customer_id);
             $data = $this->prepareProductsInOrder($request['product'], $order->id, $customer);
-
             OrderProduct::insert($data['order_products']);
-
             $trip = TripDates::query()
                 ->where('address_id', $customer->address_id)
+                ->whereHas('trip', function (Builder $query) use ($req) {
+                    $query->where('branch_id', $req['branch_id']);
+                })
                 ->latest()
                 ->first();
-
+            if(!$trip){
+                throw new Exception('لا يمكن استقبال هذا الطلب لعدم وجود رحلة الى هذه المنطقة');
+            }
             $order->update([
                 'total_price' => $data['total_price'],
-                'trip_date_id' => $trip?->id
+                'trip_date_id' => $trip->id
             ]);
 
+            $order->load('trip_date.trip');
             return $order;
         });
     }

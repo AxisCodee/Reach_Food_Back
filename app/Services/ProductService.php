@@ -100,7 +100,7 @@ class ProductService
 
     public function getSalesmanProducts($request)
     {
-        return Branch::findOrFail($request->branch_id)->products()->get()->toArray();
+        return Branch::findOrFail($request->branch_id)->products()->paginate(10)->toArray();
     }
 
     public function importProduct($product_id, $branch_id)
@@ -127,6 +127,13 @@ class ProductService
             ->select('id', DB::raw("$priceType AS price"))
             ->get()
             ->toArray();
+    }
 
+    public function listPrices($branchId)
+    {
+        return Product::query()
+            ->where('branch_id', $branchId)
+            ->get()
+            ->toArray();
     }
 }
