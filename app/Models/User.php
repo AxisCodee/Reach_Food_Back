@@ -35,7 +35,8 @@ class User extends Authenticatable
         'address_id',
         'location',
         'image',
-        'city_id'
+        'city_id',
+        'added_by',
     ];
 
     /**
@@ -167,7 +168,7 @@ class User extends Authenticatable
 
     public function customerTypeAr(): Attribute
     {
-        return Attribute::get(function (){
+        return Attribute::get(function () {
             if ($this['customer_type']) {
                 return $this['customer_type'] == 'shop' ? 'متجر' : 'مركز';
             }

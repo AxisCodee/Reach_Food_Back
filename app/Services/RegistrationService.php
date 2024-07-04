@@ -38,12 +38,13 @@ class RegistrationService
                 break;
             case Roles::CUSTOMER :
                 $baseData['customer_type'] = $request->customer_type;
+                if (auth()->user()->role == Roles::SALESMAN->value) {
+                    $baseData['added_by'] = auth()->id();
+                }
                 break;
             case Roles::SALES_MANAGER :
                 $baseData['branch_id'] = $request->branch_id;
                 break;
-            case Roles::SALESMAN :
-                $baseData['branch_id'] = $request->input('branch_id');
         }
         $this->user = User::create($baseData);
         $data = [
