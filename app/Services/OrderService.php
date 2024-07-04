@@ -47,13 +47,9 @@ class OrderService
             $customer = User::findOrFail($customer_id);
             $data = $this->prepareProductsInOrder($request['product'], $order->id, $customer);
             OrderProduct::insert($data['order_products']);
-            $trip = TripDates::query()
-                ->where('address_id', $customer->address_id)
-                ->whereHas('trip', function (Builder $query) use ($req) {
-                    $query->where('branch_id', $req['branch_id']);
-                })
-                ->latest()
-                ->first();
+
+            $trip = (new TripService())->nearTrip($customer->address_id, $req['branch_id']);
+
             if(!$trip){
                 throw new Exception('لا يمكن استقبال هذا الطلب لعدم وجود رحلة الى هذه المنطقة');
             }

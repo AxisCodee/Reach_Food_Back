@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Actions\GetUpperRoleUserIdsAction;
 use App\Enums\NotificationActions;
 use App\Enums\Roles;
+use App\Models\City;
 use App\Models\User;
 use App\Models\UserPermission;
 use App\Models\UsersPassword;
@@ -34,6 +35,14 @@ class RegistrationService
         //Adding Data
         switch ($role) {
             case Roles::ADMIN :
+                $cityId = $request->city_id;
+                if($cityId && User::query()
+                        ->where('role', Roles::ADMIN->value)
+                        ->where('city_id', $cityId)
+                        ->exists())
+                {
+                    throw new \Exception('هذا الفرع لديه مدير بالفعل');
+                }
                 $baseData['city_id'] = $request->city_id;
                 break;
             case Roles::CUSTOMER :
