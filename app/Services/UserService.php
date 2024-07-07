@@ -245,4 +245,20 @@ class UserService
         return $user->delete();
     }
 
+    public function canAssignCity($cityId): bool
+    {
+        return ! User::query()
+            ->where('role', Roles::ADMIN->value)
+            ->where('city_id', $cityId)
+            ->exists();
+    }
+
+    public function assignCity($user, $cityId): void
+    {
+        if(! $this->canAssignCity($cityId)){
+            throw new Exception('هذا الفرع لديه مدير بالفعل');
+        }
+        $user->update(['city_id' => $cityId]);
+    }
+
 }

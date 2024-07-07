@@ -49,10 +49,11 @@ class NotificationService
         'delete' => 'حذف',
         'update' => 'عدل',
         'add' => 'أضاف',
+        'cancel' => 'الغى',
     ];
 
     public function __construct(
-        private readonly Notification $notification
+        private readonly Notification $notification,
     )
     {
         $this->user = $this->notification['user'];
@@ -111,9 +112,9 @@ class NotificationService
 
 
         if (($this->user['role'] == 'salesman' || $this->user['role'] == 'customer') && $this->notification['actionable_type'] == Order::class) {
-            $complete = $this->notification['action_type'] == 'delete' ?
-                ' طلب' :
-                ' على طلب';
+            $complete = $this->notification['action_type'] == 'update' ?
+                ' على طلب':
+                ' طلب' ;
             $complete .= $this->user['role'] == 'customer' ? 'ه' : 'ك';
             return "{$this->translateAction[$this->notification['action_type']]} {$this->user['name']} $complete رقم {$this->actionable['id']}";
         }

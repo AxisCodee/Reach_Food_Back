@@ -55,7 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('permissions', [PermissionController::class, 'index']);
         Route::get('address', [UserController::class, 'userAddress']);
 
-
+        Route::get('/admins-without-city', [UserController::class, 'adminsWithoutCity']);
         Route::prefix('salesman')->group(function () {
             Route::get('/customers', [UserController::class, 'getSalesmanCustomers']);
             Route::get('/branches', [BranchController::class, 'salesmanBranches']);
@@ -131,6 +131,7 @@ Route::middleware('auth:sanctum')->group(function () {
                 Route::get('/index/weekly', [TripController::class, 'salesmanTripsWeekly']);
             });
             Route::get('/trip-dates/{tripDate}', [TripDatesController::class, 'show']);
+            Route::get('/near-trip', [TripController::class, 'nearTrip']);
         });
     });
 

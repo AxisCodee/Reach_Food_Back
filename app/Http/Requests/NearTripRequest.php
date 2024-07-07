@@ -4,7 +4,7 @@ namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class CreateCityRequest extends FormRequest
+class NearTripRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,10 +22,8 @@ class CreateCityRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'city_id' => ['required', 'exists:cities,id'],
-            'branches' => ['required', 'array'],
-            'branches.*' => ['required', 'string'],
-            'admin_id' => ['nullable' ,'exists:users,id'],
+            'customer_id' => ['required', 'exists:users,id'],
+            'branch_id' => ['required', 'exists:branches,id'],
         ];
     }
 }

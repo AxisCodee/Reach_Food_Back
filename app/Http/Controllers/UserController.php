@@ -97,6 +97,10 @@ class UserController extends Controller
         if ($user->role == Roles::SALES_MANAGER->value) {
             $this->userService->updateSalesManager($request, $user);
         }
+        if ($user->role == Roles::ADMIN->value){
+            if($request->city_id)
+                $this->userService->assignCity($user, $request->city_id);
+        }
         if ($result) {
             return ResponseHelper::success('User updated successfully.');
         }
@@ -108,6 +112,18 @@ class UserController extends Controller
         $salesman = auth()->user();
         $customers = $this->userService->getSalesmanCustomers($salesman, $request);
         return ResponseHelper::success($customers);
+    }
+
+    public function adminsWithoutCity()
+    {
+        return ResponseHelper::success(
+            User::query()
+                ->select('id', 'name')
+                ->where('role', Roles::ADMIN->value)
+                ->whereNull('city_id')
+                ->get()
+                ->toArray()
+        );
     }
 
 }

@@ -9,6 +9,7 @@ use App\Models\Trip;
 use App\Models\TripDates;
 use App\Models\User;
 use Carbon\Carbon;
+use Exception;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\DB;
 
@@ -182,5 +183,21 @@ class TripService
             ->with(['address:id,city_id,area', 'dates'])
             ->paginate(10)
             ->toArray();
+    }
+
+    public function nearTrip($branchId, $addressId)
+    {
+        $trip = TripDates::query()
+            ->where('address_id', $addressId)
+            ->whereHas('trip', function (Builder $query) use ($branchId) {
+                $query->where('branch_id', $branchId);
+            })
+            ->whereDate('start_date', '>', Carbon::now())
+            ->first();
+        if(!$trip){
+            throw new Exception('لا يمكن استقبال هذا الطلب لعدم وجود رحلة الى هذه المنطقة');
+        }
+
+        return $trip;
     }
 }
