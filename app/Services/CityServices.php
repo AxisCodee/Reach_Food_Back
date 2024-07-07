@@ -77,7 +77,7 @@ class CityServices
     }
 
 
-    private function deleteBranches($branches): void
+    public function deleteBranches($branches): void
     {
         foreach ($branches as $branch) {
             $data = [
@@ -92,7 +92,7 @@ class CityServices
             $branch->delete();
         }
     }
-    private function deleteOldAdmin($cityId): void
+    public function deleteOldAdmin($cityId): void
     {
         User::query()
             ->where('city_id', $cityId)

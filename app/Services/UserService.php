@@ -169,7 +169,7 @@ class UserService
         if ($request->role == Roles::ADMIN->value) {
             $canShowPassword = auth()->user()->role == Roles::SUPER_ADMIN->value;
             return User::query()
-                ->with(['contacts:id,user_id,phone_number', 'address.city.country'])
+                ->with(['contacts:id,user_id,phone_number', 'city'])
                 ->when($canShowPassword, function (Builder $query) {
                     $query->with('userPassword:user_id,password');
                 })

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Enums\Roles;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\CreateCityRequest;
+use App\Http\Requests\DeleteBranchRequest;
 use App\Http\Requests\UpdateCityRequest;
 use App\Http\Resources\CitiesWithCountryResource;
 use App\Http\Resources\CityResource;
@@ -16,6 +17,7 @@ use App\Traits\HasApiResponse;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Mockery\Exception;
 
 class CityController extends Controller
@@ -101,4 +103,15 @@ class CityController extends Controller
         });
     }
 
+    public function delete(DeleteBranchRequest $request, City $city)
+    {
+        $password = $request->validated()['password'];
+        if(! Hash::check($password, auth()->user()['password'])){
+            return $this->failed('كلمة المرور غير صحيحة');
+        }
+        $this->cityServices->deleteOldAdmin($city['id']);
+        $branches = $city['branches'];
+        $this->cityServices->deleteBranches($branches);
+        return $this->success(null);
+    }
 }
