@@ -196,7 +196,8 @@ class OrderService
             ->with([
                 'products',
                 'customer'=>[
-                    'contacts'
+                    'contacts',
+                    'address'
                 ]
             ])
             ->get()
