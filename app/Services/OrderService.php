@@ -195,7 +195,9 @@ class OrderService
             })
             ->with([
                 'products',
-                'customer'
+                'customer'=>[
+                    'contacts'
+                ]
             ])
             ->get()
             ->each(function ($order) {
