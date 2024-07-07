@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\Roles;
 use App\Helpers\ResponseHelper;
 use App\Models\Branch;
 use App\Models\Notification;
@@ -10,6 +11,7 @@ use App\Models\Product;
 use App\Models\Trip;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
 class NotificationService
@@ -84,7 +86,8 @@ class NotificationService
         }
 
         if ($this->notification['action_type'] == 'cancel') {
-            return "{$this->actionable['customer']['name']} للزبون  {$this->actionable['id']}  بإلغاء الطلب  {$this->user['name']} قام ";
+            if (auth()->user()?->role == Roles::SALES_MANAGER->value)
+                return "{$this->actionable['customer']['name']} للزبون  {$this->actionable['id']}  بإلغاء الطلب  {$this->user['name']} قام ";
         }
 
         if ($this->notification['action_type'] == 'late') {
@@ -113,10 +116,10 @@ class NotificationService
 
         if (($this->user['role'] == 'salesman' || $this->user['role'] == 'customer') && $this->notification['actionable_type'] == Order::class) {
             $complete = $this->notification['action_type'] == 'update' ?
-                ' على طلب':
-                ' طلب' ;
+                ' على طلب' :
+                ' طلب';
             $complete .= $this->user['role'] == 'customer' ? 'ه' : 'ك';
-            return "{$this->translateAction[$this->notification['action_type']]} {$this->user['name']} $complete رقم {$this->actionable['id']}";
+            return "{$this->translateAction[$this->notification['action_type']]} {$this->user['name']} $complete رقم {$this->notification['actionable_id']}";
         }
 
         $action = $this->translateAction[$this->notification['action_type']];
@@ -150,11 +153,9 @@ class NotificationService
             $notification->updateOrCreate($data, ['updated_at' => now()]) :
             $notification->create($data);
         $attaching = [];
-        foreach ($ownerIds as $ownerId){
-            $attaching = [
-                $ownerId => [
-                    'read' => 0
-                ]
+        foreach ($ownerIds as $ownerId) {
+            $attaching[$ownerId] = [
+                'read' => 0
             ];
         }
         $notification->users()->syncWithoutDetaching($attaching);
@@ -171,11 +172,17 @@ class NotificationService
             ]);
     }
 
-    public static function unReadCount(int $userId): int
+    public static function unReadCount(int $userId, ?int $branchId): int
     {
         return DB::table('user_notifications')
             ->where('owner_id', '=', $userId)
             ->where('read', '=', false)
+            ->join('notifications', 'notifications.id', '=', 'user_notifications.notification_id')
+            ->where(function (Builder $query) use ($branchId) {
+                $query
+                    ->where('notifications.branch_id', '=', $branchId)
+                    ->orWhereNull('notifications.branch_id');
+            })
             ->count();
     }
 
@@ -190,16 +197,16 @@ class NotificationService
     public static function back(Notification $notification)
     {
         $actionableType = $notification['actionable_type'];
-        if ($notification['action_type'] == 'delete' && in_array($actionableType,  self::$canBack)) {
-            if($actionableType == Trip::class){
+        if ($notification['action_type'] == 'delete' && in_array($actionableType, self::$canBack)) {
+            if ($actionableType == Trip::class) {
                 $tripService = new TripService();
                 if ($tripService->conflicts($notification['actionable'])) {
                     return ResponseHelper::error('لا يمكن ارجاع هذه الرحلة');
                 }
             }
-            if($actionableType == Branch::class){
+            if ($actionableType == Branch::class) {
                 $notification->actionable->update([
-                    'name'=>(new CityServices())->getNameOfBranch($notification->actionable['city_id'], $notification->actionable['name'])
+                    'name' => (new CityServices())->getNameOfBranch($notification->actionable['city_id'], $notification->actionable['name'])
                 ]);
             }
             $notification->actionable->restore();

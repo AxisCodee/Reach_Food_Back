@@ -42,10 +42,12 @@ class PushMulticastNotification
                 'actionable_id' => $event->actionModel['id'] ?? null,
                 'actionable_type' => is_object($event->actionModel) ? get_class((object)$event->actionModel) : null,
                 'user_id' => $event->userId,
+                'branch_id' => $event->branchId,
             ];
 
             $notificationService = NotificationService::make($data, $event->firstOrCreate, $event->ownerIds);
-
+            if (!$notificationService)
+                return;
             $title = $notificationService->getTitle();
             $body = $notificationService->getContent();
 

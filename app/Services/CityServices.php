@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Actions\GetUpperRoleUserIdsAction;
+use App\Actions\GetNotificationUserIdsAction;
 use App\Enums\NotificationActions;
 use App\Enums\Roles;
 use App\Models\Branch;
@@ -86,7 +86,7 @@ class CityServices
                 'actionable_type' => Branch::class,
                 'user_id' => auth()->id(),
             ];
-            $ownerIds = GetUpperRoleUserIdsAction::handle(auth()->user());
+            $ownerIds = GetNotificationUserIdsAction::upperRole(auth()->user());
             $ownerIds[] = auth()->id();
             NotificationService::make($data, 0, $ownerIds);
             $branch->delete();

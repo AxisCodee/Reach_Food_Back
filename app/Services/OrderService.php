@@ -50,7 +50,7 @@ class OrderService
 
             $trip = (new TripService())->nearTrip($customer->address_id, $req['branch_id']);
 
-            if(!$trip){
+            if (!$trip) {
                 throw new Exception('لا يمكن استقبال هذا الطلب لعدم وجود رحلة الى هذه المنطقة');
             }
             $order->update([
@@ -188,11 +188,22 @@ class OrderService
                         $query->whereIn('day', GetDaysNamesAction::handle($request->input('days')));
                     });
             })
+            ->when($request->input('s'), function (Builder $query, $search) use ($request) {
+                $query->whereHas('customer', function (Builder $query) use ($search) {
+                    $query->where('name', 'LIKE', "%$search%");
+                });
+            })
             ->with([
                 'products',
-                'customer'
+                'customer'=>[
+                    'contacts',
+                    'address'
+                ]
             ])
             ->get()
+            ->each(function ($order) {
+                $order->setAppends(['can_undo']);
+            })
             ->toArray();
 //        $salesman = auth()->user();
 //        $customers = User::whereHas('trips.dates.order', function ($query) use ($salesman) {
@@ -207,16 +218,23 @@ class OrderService
 //        return $customers;
     }
 
+    /**
+     * @throws Exception
+     */
     public function updateStatus($order, $data)
     {
+        if (auth()->user()->role == Roles::CUSTOMER->value && $data['action'] != 'canceled')
+            throw new Exception('لا يمكنك القيام بهذه العملية');
         $order->update([
             'status' => $data['action'],
             'delivery_date' => $data['delivery_date'] ?? $order['delivery_date'],
             'delivery_time' => $data['delivery_time'] ?? $order['delivery_time'],
         ]);
         if ($data['action'] == 'canceled') {
-//             if the role is customer just send notification to salesman
-//            else if the role is salesman send notification to customer and add notification to sales managers
+            /**
+             * if the role is customer just send notification to salesman
+             * else if the role is salesman send notification to customer and add notification to sales managers
+             */
             $role = Roles::from(auth()->user()->role);
             switch ($role) {
                 case Roles::SALESMAN:

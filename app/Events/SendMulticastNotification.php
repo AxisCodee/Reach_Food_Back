@@ -19,9 +19,10 @@ class SendMulticastNotification
      * Create a new event instance.
      */
     public function __construct(
-        public readonly ?int    $userId,
+        public readonly ?int   $userId,
         public readonly array  $ownerIds,
         public readonly string $action,
+        public readonly ?int   $branchId = null,
         public                 $actionModel = null,
         public readonly bool   $firstOrCreate = false)
     {

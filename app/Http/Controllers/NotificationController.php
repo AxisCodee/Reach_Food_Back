@@ -6,15 +6,9 @@ use App\Enums\Roles;
 use App\Helpers\ResponseHelper;
 use App\Http\Resources\Notifications\DashboardNotifications;
 use App\Http\Resources\Notifications\MobileNotifications;
-use App\Models\Branch;
 use App\Models\Notification;
-use App\Models\Product;
-use App\Models\Trip;
-use App\Models\User;
 use App\Services\NotificationService;
-use App\Services\TripService;
 use App\Traits\HasApiResponse;
-use Illuminate\Support\Facades\DB;
 
 class NotificationController extends Controller
 {
@@ -23,7 +17,7 @@ class NotificationController extends Controller
     public function index()
     {
         $user = auth()->user();
-        $notifications = $user['notifications'];
+        $notifications = $user->notifications(request('branch_id'))->get();
         NotificationService::setRead($user['id']);
         if ($user['role'] == Roles::SALESMAN->value || $user['role'] == Roles::CUSTOMER->value) {
             return $this->success(MobileNotifications::collection($notifications));
@@ -42,7 +36,7 @@ class NotificationController extends Controller
     public function unReadCounter()
     {
         return ResponseHelper::success(
-           NotificationService::unReadCount(auth()->id())
+            NotificationService::unReadCount(auth()->id(),request('branch_id'))
         );
     }
 }

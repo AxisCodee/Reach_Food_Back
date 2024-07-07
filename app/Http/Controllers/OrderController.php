@@ -10,6 +10,7 @@ use App\Http\Requests\Order\UpdateArchivedOrderRequest;
 use App\Models\Order;
 use App\Services\DateService;
 use App\Services\OrderService;
+use Exception;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -78,10 +79,15 @@ class OrderController extends Controller
     }
 
 
-    public function updateStatus(UpdateArchivedOrderRequest $request, $id){
+    public function updateStatus(UpdateArchivedOrderRequest $request, $id)
+    {
         $order = Order::query()->findOrFail($id);
-        return ResponseHelper::success(
-            $this->orderService->updateStatus($order, $request->validated())
-        );
+        try {
+            return ResponseHelper::success(
+                $this->orderService->updateStatus($order, $request->validated())
+            );
+        } catch (Exception $e) {
+            return ResponseHelper::error(null, null, $e->getMessage());
+        }
     }
 }
