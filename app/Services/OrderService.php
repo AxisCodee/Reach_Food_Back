@@ -194,7 +194,6 @@ class OrderService
             ])
             ->get()
             ->each(function ($order) {
-//                if($order->status== 'canceled')
                 $order->setAppends(['can_undo']);
             })
             ->toArray();
