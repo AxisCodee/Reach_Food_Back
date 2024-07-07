@@ -188,6 +188,11 @@ class OrderService
                         $query->whereIn('day', GetDaysNamesAction::handle($request->input('days')));
                     });
             })
+            ->when($request->input('s'), function (Builder $query, $search) use ($request) {
+                $query->whereHas('customer', function (Builder $query) use ($search) {
+                    $query->where('name', 'LIKE', "%$search%");
+                });
+            })
             ->with([
                 'products',
                 'customer'
