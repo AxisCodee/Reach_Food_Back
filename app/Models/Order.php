@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -45,12 +47,28 @@ class Order extends Model
         return $this->belongsToMany(Product::class, 'order_products', 'order_id', 'product_id');
     }
 
+    public function scopeThisWeek(Builder $query): Builder
+    {
+        $startOfWeek = Carbon::now()->startOfWeek(CarbonInterface::SATURDAY);
+        $endOfWeek = Carbon::now()->endOfWeek(CarbonInterface::FRIDAY);
+        return $query->whereBetween('order_date', [$startOfWeek, $endOfWeek]);
+    }
+
     protected function canUndo(): Attribute
     {
         return Attribute::get(function () {
             if (Carbon::parse($this['order_date'])->lt(Carbon::today()->toDate()))
                 return false;
             return true;
+        });
+    }
+
+    protected function isLate(): Attribute
+    {
+        return Attribute::get(function () {
+            if (Carbon::parse($this['delivery_time'])->lt(Carbon::now()->toDateTime()))
+                return true;
+            return false;
         });
     }
 

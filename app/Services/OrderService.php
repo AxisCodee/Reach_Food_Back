@@ -181,6 +181,7 @@ class OrderService
     public function getSalesmanOrders($request)
     {
         return Order::query()
+            ->thisWeek()
             ->whereHas('trip_date.trip', function ($query) use ($request) {
                 $query
                     ->where('salesman_id', auth()->id())
@@ -195,14 +196,14 @@ class OrderService
             })
             ->with([
                 'products',
-                'customer'=>[
+                'customer' => [
                     'contacts',
                     'address'
                 ]
             ])
             ->get()
             ->each(function ($order) {
-                $order->setAppends(['can_undo']);
+                $order->setAppends(['can_undo', 'is_late']);
             })
             ->toArray();
 //        $salesman = auth()->user();
