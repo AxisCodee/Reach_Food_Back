@@ -197,8 +197,8 @@ class OrderService
             ->with([
                 'products',
                 'customer' => [
-                    'contacts',
-                    'address'
+                    'contacts:id,user_id,phone_number',
+                    'address:id,city_id,area'
                 ]
             ])
             ->get()
