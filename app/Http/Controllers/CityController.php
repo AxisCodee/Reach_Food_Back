@@ -6,6 +6,7 @@ use App\Enums\Roles;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\CreateCityRequest;
 use App\Http\Requests\UpdateCityRequest;
+use App\Http\Resources\CitiesWithCountryResource;
 use App\Http\Resources\CityResource;
 use App\Models\Branch;
 use App\Models\City;
@@ -65,20 +66,26 @@ class CityController extends Controller
     {
         $idsWithAdmins = City::query()->whereHas('admin')->pluck('id')->toArray();
         return $this->success(
-            City::query()
-                ->select('id', 'name')
-                ->whereNotIn('id', $idsWithAdmins)
-                ->get()
+            CitiesWithCountryResource::collection(
+                City::query()
+                    ->with('country')
+                    ->whereNotIn('id', $idsWithAdmins)
+                    ->get()
+            )
         );
     }
 
-    public function citiesWithoutBranches(): JsonResponse
+    public function citiesWithoutBranches(Request $request): JsonResponse
     {
-        $idsWithBranches = City::query()->whereHas('branches')->pluck('id')->toArray();
+        $idsWithBranches = City::query()
+            ->whereHas('branches')
+            ->pluck('id')
+            ->toArray();
         return $this->success(
             City::query()
                 ->select('id', 'name')
                 ->whereNotIn('id', $idsWithBranches)
+                ->where('country_id', '=', $request->input('country_id'))
                 ->get()
         );
     }
