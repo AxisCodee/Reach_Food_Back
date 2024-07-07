@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Actions\GetUpperRoleUserIdsAction;
+use App\Actions\GetNotificationUserIdsAction;
 use App\Enums\NotificationActions;
 use App\Enums\Roles;
 use App\Events\SendMulticastNotification;
@@ -63,8 +63,11 @@ class ProductService
 
         event(new SendMulticastNotification(
             auth()->id(),
-            User::query()->whereIn('role', [Roles::CUSTOMER->value, Roles::SALESMAN->value])->pluck('id')->toArray(),
+            GetNotificationUserIdsAction::relatedToBranch($request->input('branch_id')),
             NotificationActions::CHANGE_PRICE->value,
+            $request->input('branch_id'),
+            null,
+            true
         ));
 
         return $updatedProduct;
@@ -91,8 +94,9 @@ class ProductService
             'actionable_id' => $product->id,
             'actionable_type' => Product::class,
             'user_id' => auth()->id(),
+            'branch_id' => $product->branch_id,
         ];
-        $ownerIds = GetUpperRoleUserIdsAction::handle(auth()->user());
+        $ownerIds = GetNotificationUserIdsAction::upperRole(auth()->user());
 
         NotificationService::make($data, 0, $ownerIds);
         return $product->delete();

@@ -68,11 +68,11 @@ class UserController extends Controller
     {
         try {
             $this->userService->destroy($user);
-            return ResponseHelper::success('User deleted successfully.');
+            return ResponseHelper::success(null, null, 'User deleted successfully.');
         } catch (ModelNotFoundException) {
-            return ResponseHelper::error('المستخدم غير موجود');
+            return ResponseHelper::error(null, null, 'المستخدم غير موجود', 404);
         } catch (Exception $e) {
-            return ResponseHelper::error($e->getMessage());
+            return ResponseHelper::error(null, null, $e->getMessage());
         }
     }
 

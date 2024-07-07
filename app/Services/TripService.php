@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Actions\GetUpperRoleUserIdsAction;
+use App\Actions\GetNotificationUserIdsAction;
 use App\Enums\NotificationActions;
 use App\Models\CustomerTime;
 use App\Models\Trip;
@@ -129,8 +129,9 @@ class TripService
             'actionable_id' => $trip->id,
             'actionable_type' => Trip::class,
             'user_id' => auth()->id(),
+            'branch_id' => $trip->branch_id,
         ];
-        $ownerIds = GetUpperRoleUserIdsAction::handle(auth()->user());
+        $ownerIds = GetNotificationUserIdsAction::upperRole(auth()->user());
 
         NotificationService::make($data, 0, $ownerIds);
         return $trip->delete();
@@ -146,7 +147,7 @@ class TripService
             $isToday = false;
         }
         $trips = $salesman->todayTripsDates()
-            ->with(['trip','address:id,city_id,area'])
+            ->with(['trip', 'address:id,city_id,area'])
             ->withCount('order')
             ->whereDate('start_date', '=', $date)
             ->orderBy('start_time', 'asc')

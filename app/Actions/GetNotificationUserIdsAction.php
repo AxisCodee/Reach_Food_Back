@@ -3,11 +3,12 @@
 namespace App\Actions;
 
 use App\Enums\Roles;
+use App\Models\Branch;
 use App\Models\User;
 
-class GetUpperRoleUserIdsAction
+class GetNotificationUserIdsAction
 {
-    public static function handle(User $user, ?int $branchId = null): array
+    public static function upperRole(User $user, ?int $branchId = null): array
     {
 
         $ownerIds = User::query()
@@ -48,5 +49,21 @@ class GetUpperRoleUserIdsAction
             );
         }
         return $ownerIds;
+    }
+
+    public static function relatedToBranch(int $branchId): array
+    {
+        $branch = Branch::find($branchId);
+        $ownerIds = User::query()
+            ->where('role', Roles::CUSTOMER)
+            ->whereHas('address', function ($query) use ($branch) {
+                $query->where('city_id', $branch->city_id);
+            })
+            ->pluck('id')
+            ->toArray();
+        return array_merge(
+            $ownerIds,
+            $branch->salesmen()->pluck('users.id')->toArray()
+        );
     }
 }

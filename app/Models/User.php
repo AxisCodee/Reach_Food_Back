@@ -142,9 +142,13 @@ class User extends Authenticatable
         return $this->belongsTo(City::class);
     }
 
-    public function notifications(): BelongsToMany
+    public function notifications(?int $branchId): BelongsToMany
     {
         return $this->belongsToMany(Notification::class, 'user_notifications', 'owner_id', 'notification_id')
+            ->where(function ($query) use ($branchId) {
+                $query->where('branch_id', $branchId)
+                    ->orWhereNull('branch_id');
+            })
             ->orderBy('updated_at', 'desc')
             ->with('user')
             ->withPivot('read');

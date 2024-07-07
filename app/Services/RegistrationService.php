@@ -2,7 +2,7 @@
 
 namespace App\Services;
 
-use App\Actions\GetUpperRoleUserIdsAction;
+use App\Actions\GetNotificationUserIdsAction;
 use App\Enums\NotificationActions;
 use App\Enums\Roles;
 use App\Models\City;
@@ -62,7 +62,7 @@ class RegistrationService
             'actionable_type' => User::class,
             'user_id' => auth()->id(),
         ];
-        $ownerIds = GetUpperRoleUserIdsAction::handle(auth()->user());
+        $ownerIds = GetNotificationUserIdsAction::upperRole(auth()->user());
         NotificationService::make($data, 0, $ownerIds);
 
 

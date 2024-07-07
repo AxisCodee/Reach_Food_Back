@@ -23,9 +23,9 @@ class UpdateArchivedOrderRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'action' => ['required','string', Rule::in(['canceled', 'delivered'])],
-            'delivery_date'=>['date','required_if:action,delivered'],
-            'delivery_time'=>['date_format:H:i','required_if:action,delivered']
+            'action' => ['required', 'string', Rule::in(['canceled', 'delivered', 'accepted'])],
+            'delivery_date' => ['date', 'required_if:action,delivered'],
+            'delivery_time' => ['date_format:H:i', 'required_if:action,delivered']
         ];
     }
 }
