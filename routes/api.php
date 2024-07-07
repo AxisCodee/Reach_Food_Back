@@ -160,6 +160,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/without-branches', [CityController::class, 'citiesWithoutBranches']);
         Route::post('/', [CityController::class, 'store']);
         Route::put('/{city}', [CityController::class, 'update']);
+        Route::delete('/{city}', [CityController::class, 'delete']);
     });
 });
 Route::get('/test', function (){
