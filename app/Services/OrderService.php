@@ -181,7 +181,7 @@ class OrderService
     public function getSalesmanOrders($request)
     {
         return Order::query()
-//            ->thisWeek()
+            ->thisWeek()
             ->whereHas('trip_date.trip', function ($query) use ($request) {
                 $query
                     ->where('salesman_id', auth()->id())
