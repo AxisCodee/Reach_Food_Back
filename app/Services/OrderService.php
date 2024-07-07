@@ -54,7 +54,7 @@ class OrderService
                 })
                 ->latest()
                 ->first();
-            if(!$trip){
+            if (!$trip) {
                 throw new Exception('لا يمكن استقبال هذا الطلب لعدم وجود رحلة الى هذه المنطقة');
             }
             $order->update([
@@ -97,7 +97,7 @@ class OrderService
             ->where('order_id', $order->id)
             ->delete();
 
-        $data = $this->prepareProductsInOrder($request['product'], $order->id, auth()->user());
+        $data = $this->prepareProductsInOrder($request['product'] ?? [], $order->id, auth()->user());
         DB::transaction(function () use ($order, $data) {
             OrderProduct::insert($data['order_products']);
             $order->update([
@@ -128,15 +128,12 @@ class OrderService
 
         event(new SendMulticastNotification(
             auth()->id(),
-            [$order->trip_date->trip->salesman->id],
+            $this->getUserForNotification($order),
             NotificationActions::UPDATE->value,
+            $order->branch_id,
             $order
         ));
-
-
         return $result;
-
-
     }
 
 
@@ -177,8 +174,9 @@ class OrderService
         $order = Order::findOrFail($order);
         event(new SendMulticastNotification(
             auth()->id(),
-            [$order->trip_date->trip->salesman->id],
+            $this->getUserForNotification($order),
             NotificationActions::DELETE->value,
+            $order->branch_id,
             $order
         ));
         return $order->delete();
@@ -186,17 +184,31 @@ class OrderService
 
     public function getSalesmanOrders($request)
     {
-        $salesman = auth()->user();
-        $customers = User::whereHas('trips.dates.order', function ($query) use ($salesman) {
-            $query->where('salesman_id', $salesman->id);
-        })
-            ->with(['trips' => function ($query) use ($request) {
-                $query->when($request->input('days'), function ($query) use ($request) {
-                    $query->whereIn('day', GetDaysNamesAction::handle($request->input('days')));
-                });
-            }])
-            ->get()->toArray();
-        return $customers;
+        return Order::query()
+            ->whereHas('trip_date.trip', function ($query) use ($request) {
+                $query
+                    ->where('salesman_id', auth()->id())
+                    ->when($request->input('days'), function ($query) use ($request) {
+                        $query->whereIn('day', GetDaysNamesAction::handle($request->input('days')));
+                    });
+            })
+            ->with([
+                'products',
+                'customer'
+            ])
+            ->get()
+            ->toArray();
+//        $salesman = auth()->user();
+//        $customers = User::whereHas('trips.dates.order', function ($query) use ($salesman) {
+//            $query->where('salesman_id', $salesman->id);
+//        })
+//            ->with(['trips' => function ($query) use ($request) {
+//                $query->when($request->input('days'), function ($query) use ($request) {
+//                    $query->whereIn('day', GetDaysNamesAction::handle($request->input('days')));
+//                });
+//            }])
+//            ->get()->toArray();
+//        return $customers;
     }
 
     public function updateStatus($order, $data)
@@ -206,22 +218,43 @@ class OrderService
             'delivery_date' => $data['delivery_date'] ?? $order['delivery_date'],
             'delivery_time' => $data['delivery_time'] ?? $order['delivery_time'],
         ]);
-        if ($data['action'] == 'canceled' && auth()->user()->role == Roles::SALESMAN->value) {
-            $data = [
-                'action_type' => NotificationActions::CANCEL->value,
-                'actionable_id' => $order->id,
-                'actionable_type' => Order::class,
-                'user_id' => auth()->id(),
-            ];
-            $ownerIds = auth()
-                ->user()
-                ->salesManager()
-                ->where('users.branch_id', '=', $order->branch_id)
-                ->pluck('users.id')
-                ->toArray();
-            NotificationService::make($data, 0, $ownerIds);
+        if ($data['action'] == 'canceled') {
+//             if the role is customer just send notification to salesman
+//            else if the role is salesman send notification to customer and add notification to sales managers
+            $role = Roles::from(auth()->user()->role);
+            switch ($role) {
+                case Roles::SALESMAN:
+                    $data = [
+                        'action_type' => NotificationActions::CANCEL->value,
+                        'actionable_id' => $order->id,
+                        'actionable_type' => Order::class,
+                        'user_id' => auth()->id(),
+                    ];
+                    $ownerIds = auth()
+                        ->user()
+                        ->salesManager()
+                        ->where('users.branch_id', '=', $order->branch_id)
+                        ->pluck('users.id')
+                        ->toArray();
+                    NotificationService::make($data, 0, $ownerIds);
+                case Roles::CUSTOMER:
+                    event(new SendMulticastNotification(
+                        auth()->id(),
+                        $this->getUserForNotification($order),
+                        NotificationActions::CANCEL->value,
+                        $order->branch_id,
+                        $order
+                    ));
+                    break;
+            }
         }
         return $order;
     }
 
+    private function getUserForNotification(Order $order): array
+    {
+        return (auth()->user()->role == Roles::SALESMAN->value) ?
+            [$order->customer_id] :
+            [$order->trip_date->trip->salesman->id];
+    }
 }
