@@ -36,7 +36,7 @@ class NotificationController extends Controller
     public function unReadCounter()
     {
         return ResponseHelper::success(
-            NotificationService::unReadCount(auth()->id())
+            NotificationService::unReadCount(auth()->id(),request('branch_id'))
         );
     }
 }

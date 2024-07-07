@@ -11,6 +11,7 @@ use App\Models\Product;
 use App\Models\Trip;
 use App\Models\User;
 use Carbon\Carbon;
+use Illuminate\Database\Query\Builder;
 use Illuminate\Support\Facades\DB;
 
 class NotificationService
@@ -171,11 +172,17 @@ class NotificationService
             ]);
     }
 
-    public static function unReadCount(int $userId): int
+    public static function unReadCount(int $userId, ?int $branchId): int
     {
         return DB::table('user_notifications')
             ->where('owner_id', '=', $userId)
             ->where('read', '=', false)
+            ->join('notifications', 'notifications.id', '=', 'user_notifications.notification_id')
+            ->where(function (Builder $query) use ($branchId) {
+                $query
+                    ->where('notifications.branch_id', '=', $branchId)
+                    ->orWhereNull('notifications.branch_id');
+            })
             ->count();
     }
 
