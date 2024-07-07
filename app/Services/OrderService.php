@@ -198,7 +198,9 @@ class OrderService
                 'products',
                 'customer' => [
                     'contacts:id,user_id,phone_number',
-                    'address:id,city_id,area'
+                    'address:id,city_id,area'=>[
+                        'city:id,name'
+                    ]
                 ]
             ])
             ->get()
