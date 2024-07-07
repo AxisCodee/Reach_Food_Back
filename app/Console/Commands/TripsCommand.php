@@ -40,7 +40,7 @@ class TripsCommand extends Command
                     $newTrip = $trip_date->create([
                         'trip_id' => $trip->id,
                         'start_time' => $trip->start_time,
-                        'start_date' => Carbon::now()->addDays(7)->format('Y-m-d'),
+                        'start_date' => Carbon::now()->addDays(0)->format('Y-m-d'),
                         'address_id' => $trip->address_id
                     ]);
                     TripTrace::query()
