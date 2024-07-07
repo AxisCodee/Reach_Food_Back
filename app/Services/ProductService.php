@@ -75,8 +75,14 @@ class ProductService
 
     public function indexProduct()
     {
+        $search = request('s');
         $branch_id = request()->input('branch_id');
-        $result = Product::query()->where('branch_id', $branch_id)->paginate(10);
+        $result = Product::query()
+            ->where('branch_id', $branch_id)
+            ->when($search, function ($query, $search) {
+                $query->where('name', 'LIKE', "%{$search}%");
+            })
+            ->paginate(10);
         return $result;
     }
 
