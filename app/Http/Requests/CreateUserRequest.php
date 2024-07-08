@@ -62,7 +62,7 @@ class CreateUserRequest extends FormRequest
     public function messages()
     {
         return [
-            'user_name.unique' => 'هذا الاسم مستخدم من قبل',
+            'user_name.unique' => 'عذراً, اسم المستخدم الذي أدخلته موجود بالفعل. يرجى اختيار اسم مستخدم آخر.',
             'image.max' => 'حجم الصورة كبير',
             'trips.*.end_time' => 'وقت انتهاء الرحلة يجب ان يكون بعد وقت البدء',
         ];
