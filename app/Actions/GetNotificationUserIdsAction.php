@@ -21,7 +21,7 @@ class GetNotificationUserIdsAction
                 $ownerIds,
                 User::query()
                     ->where('role', Roles::ADMIN->value)
-                    ->where('city_id', '=', $user->branch->city_id)
+                    ->where('city_id', '=', $user->branch?->city_id)
                     ->pluck('id')
                     ->toArray()
             );
@@ -36,7 +36,7 @@ class GetNotificationUserIdsAction
                     })
                     ->pluck('users.id')->toArray()
             );
-            $cityId = $user->salesManager()->first()?->branch->city_id;
+            $cityId = $user->salesManager()->first()?->branch?->city_id;
             return array_merge(
                 $ownerIds,
                 User::query()
@@ -57,13 +57,13 @@ class GetNotificationUserIdsAction
         $ownerIds = User::query()
             ->where('role', Roles::CUSTOMER)
             ->whereHas('address', function ($query) use ($branch) {
-                $query->where('city_id', $branch->city_id);
+                $query->where('city_id', $branch?->city_id);
             })
             ->pluck('id')
             ->toArray();
         return array_merge(
             $ownerIds,
-            $branch->salesmen()->pluck('users.id')->toArray()
+            $branch?->salesmen()->pluck('users.id')->toArray()
         );
     }
 }

@@ -9,14 +9,10 @@ use App\Events\SendMulticastNotification;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
-use App\Models\Trip;
-use App\Models\TripDates;
 use App\Models\User;
-use App\Models\UserDetail;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -180,7 +176,9 @@ class OrderService
 
     public function getSalesmanOrders($request)
     {
-        return Order::query()
+        $orders = Order::query()
+            ->thisWeek()
+            ->where('branch_id', '=', $request->input('branch_id'))
             ->whereHas('trip_date.trip', function ($query) use ($request) {
                 $query
                     ->where('salesman_id', auth()->id())
@@ -195,27 +193,20 @@ class OrderService
             })
             ->with([
                 'products',
-                'customer'=>[
-                    'contacts',
-                    'address'
+                'customer' => [
+                    'contacts:id,user_id,phone_number',
+                    'address:id,city_id,area' => [
+                        'city:id,name'
+                    ]
                 ]
             ])
-            ->get()
+            ->paginate(10);
+        $orders->getCollection()
             ->each(function ($order) {
-                $order->setAppends(['can_undo']);
+                $order->setAppends(['can_undo', 'is_late']);
             })
             ->toArray();
-//        $salesman = auth()->user();
-//        $customers = User::whereHas('trips.dates.order', function ($query) use ($salesman) {
-//            $query->where('salesman_id', $salesman->id);
-//        })
-//            ->with(['trips' => function ($query) use ($request) {
-//                $query->when($request->input('days'), function ($query) use ($request) {
-//                    $query->whereIn('day', GetDaysNamesAction::handle($request->input('days')));
-//                });
-//            }])
-//            ->get()->toArray();
-//        return $customers;
+        return $orders;
     }
 
     /**
