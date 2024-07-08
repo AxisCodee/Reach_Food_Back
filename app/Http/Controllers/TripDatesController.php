@@ -4,12 +4,22 @@ namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
 use App\Models\TripDates;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
 
 class TripDatesController extends Controller
 {
-    public function show(TripDates $tripDate)
+    public function show(Request $request, TripDates $tripDate)
     {
-        return ResponseHelper::success($tripDate->order()->with(['customer.address', 'products'])->paginate(10));
+        $orders = $tripDate
+            ->order()
+            ->when($request->input('s'), function (Builder $query, $search) {
+                $query->whereHas('customer', function (Builder $query) use ($search) {
+                    $query->where('name', 'LIKE', "%$search%");
+                });
+            })
+            ->with(['customer.address', 'products'])
+            ->paginate(10);
+        return ResponseHelper::success($orders);
     }
 }
