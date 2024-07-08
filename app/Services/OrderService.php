@@ -203,7 +203,7 @@ class OrderService
             ->paginate(10);
         $orders->getCollection()
             ->each(function ($order) {
-                $order->setAppends(['can_undo', 'is_late','day']);
+                $order->setAppends(['can_undo', 'is_late']);
             })
             ->toArray();
         return $orders;

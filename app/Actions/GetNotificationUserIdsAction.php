@@ -37,7 +37,12 @@ class GetNotificationUserIdsAction
                     })
                     ->pluck('users.id')->toArray()
             );
-            $cityId = $user->salesManager()->first()?->branch()->withTrashed()->first()?->city_id;
+//            $cityId = $user->salesManager()->first()?->branch()->withTrashed()->first()?->city_id;
+            $cityId = $user->salesManager()
+                ->join('branches', 'branches.id', '=', 'users.branch_id')
+                ->whereNull('branches.deleted_at')
+                ->pluck('branches.city_id')
+                ->first();
             return array_merge(
                 $ownerIds,
                 User::query()
