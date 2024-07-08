@@ -180,7 +180,7 @@ class OrderService
 
     public function getSalesmanOrders($request)
     {
-        return Order::query()
+        $orders = Order::query()
             ->thisWeek()
             ->whereHas('trip_date.trip', function ($query) use ($request) {
                 $query
@@ -198,27 +198,18 @@ class OrderService
                 'products',
                 'customer' => [
                     'contacts:id,user_id,phone_number',
-                    'address:id,city_id,area'=>[
+                    'address:id,city_id,area' => [
                         'city:id,name'
                     ]
                 ]
             ])
-            ->get()
+            ->paginate(10);
+        $orders->getCollection()
             ->each(function ($order) {
                 $order->setAppends(['can_undo', 'is_late']);
             })
             ->toArray();
-//        $salesman = auth()->user();
-//        $customers = User::whereHas('trips.dates.order', function ($query) use ($salesman) {
-//            $query->where('salesman_id', $salesman->id);
-//        })
-//            ->with(['trips' => function ($query) use ($request) {
-//                $query->when($request->input('days'), function ($query) use ($request) {
-//                    $query->whereIn('day', GetDaysNamesAction::handle($request->input('days')));
-//                });
-//            }])
-//            ->get()->toArray();
-//        return $customers;
+        return $orders;
     }
 
     /**
