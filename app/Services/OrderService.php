@@ -182,6 +182,7 @@ class OrderService
     {
         $orders = Order::query()
             ->thisWeek()
+            ->where('branch_id', $request->input('branch_id'))
             ->whereHas('trip_date.trip', function ($query) use ($request) {
                 $query
                     ->where('salesman_id', auth()->id())
