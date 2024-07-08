@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Enums\Roles;
 use App\Models\Branch;
+use App\Models\City;
 use App\Models\User;
 
 class GetNotificationUserIdsAction
@@ -36,7 +37,7 @@ class GetNotificationUserIdsAction
                     })
                     ->pluck('users.id')->toArray()
             );
-            $cityId = $user->salesManager()->first()?->branch?->city_id;
+            $cityId = $user->salesManager()->first()?->branch()->withTrashed()->first()?->city_id;
             return array_merge(
                 $ownerIds,
                 User::query()
