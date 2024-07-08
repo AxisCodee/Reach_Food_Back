@@ -57,7 +57,6 @@ class Order extends Model
     public function scopeSearch(Builder $query, ?string $search): void
     {
         $query->when($search, function (Builder $query, $search) {
-            logger("search");
             $query->whereHas('customer', function (Builder $query) use ($search) {
                 $query->where('name', 'LIKE', "%$search%");
             });
