@@ -18,7 +18,15 @@ class TripDatesController extends Controller
                     $query->where('name', 'LIKE', "%$search%");
                 });
             })
-            ->with(['customer.address', 'products'])
+            ->with([
+                'products',
+                'customer' => [
+                    'contacts:id,user_id,phone_number',
+                    'address:id,city_id,area' => [
+                        'city:id,name'
+                    ]
+                ]
+            ])
             ->paginate(10);
         return ResponseHelper::success($orders);
     }
