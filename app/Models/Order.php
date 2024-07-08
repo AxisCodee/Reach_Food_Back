@@ -47,11 +47,33 @@ class Order extends Model
         return $this->belongsToMany(Product::class, 'order_products', 'order_id', 'product_id');
     }
 
-    public function scopeThisWeek(Builder $query): Builder
+    public function scopeThisWeek(Builder $query): void
     {
         $startOfWeek = Carbon::now()->startOfWeek(CarbonInterface::SATURDAY);
         $endOfWeek = Carbon::now()->endOfWeek(CarbonInterface::FRIDAY);
-        return $query->whereBetween('order_date', [$startOfWeek, $endOfWeek]);
+        $query->whereBetween('order_date', [$startOfWeek, $endOfWeek]);
+    }
+
+    public function scopeSearch(Builder $query, ?string $search): void
+    {
+        $query->when($search, function (Builder $query, $search) {
+            $query->whereHas('customer', function (Builder $query) use ($search) {
+                $query->where('name', 'LIKE', "%$search%");
+            });
+        });
+    }
+
+    public function scopeWithForSalesman(Builder $query): void
+    {
+        $query->with([
+            'products',
+            'customer' => [
+                'contacts:id,user_id,phone_number',
+                'address:id,city_id,area' => [
+                    'city:id,name'
+                ]
+            ]
+        ]);
     }
 
     protected function canUndo(): Attribute
