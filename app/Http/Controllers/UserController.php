@@ -98,7 +98,7 @@ class UserController extends Controller
             $this->userService->updateSalesManager($request, $user);
         }
         if ($user->role == Roles::ADMIN->value){
-            if($request->city_id)
+            if($request->city_id && $user['city_id'] != $request->city_id)
                 $this->userService->assignCity($user, $request->city_id);
             $user->load(['city', 'contacts']);
         }
