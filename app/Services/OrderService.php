@@ -9,14 +9,10 @@ use App\Events\SendMulticastNotification;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
-use App\Models\Trip;
-use App\Models\TripDates;
 use App\Models\User;
-use App\Models\UserDetail;
 use Carbon\Carbon;
 use Exception;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
@@ -182,7 +178,7 @@ class OrderService
     {
         $orders = Order::query()
             ->thisWeek()
-            ->where('branch_id', $request->input('branch_id'))
+            ->where('branch_id', '=', $request->input('branch_id'))
             ->whereHas('trip_date.trip', function ($query) use ($request) {
                 $query
                     ->where('salesman_id', auth()->id())
