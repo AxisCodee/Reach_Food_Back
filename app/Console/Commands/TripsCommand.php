@@ -48,6 +48,51 @@ class TripsCommand extends Command
                             'trip_date_id' => $newTrip->id,
                         ]);
                 }
+                if ($trip->day === Carbon::now()->addDays(1)->format('l')) {
+
+                    $trip_date = TripDates::query();
+
+                    $newTrip = $trip_date->create([
+                        'trip_id' => $trip->id,
+                        'start_time' => $trip->start_time,
+                        'start_date' => Carbon::now()->addDays(1)->format('Y-m-d'),
+                        'address_id' => $trip->address_id
+                    ]);
+                    TripTrace::query()
+                        ->create([
+                            'trip_date_id' => $newTrip->id,
+                        ]);
+                }
+                if ($trip->day === Carbon::now()->addDays(2)->format('l')) {
+
+                    $trip_date = TripDates::query();
+
+                    $newTrip = $trip_date->create([
+                        'trip_id' => $trip->id,
+                        'start_time' => $trip->start_time,
+                        'start_date' => Carbon::now()->addDays(2)->format('Y-m-d'),
+                        'address_id' => $trip->address_id
+                    ]);
+                    TripTrace::query()
+                        ->create([
+                            'trip_date_id' => $newTrip->id,
+                        ]);
+                }
+                if ($trip->day === Carbon::now()->addDays(3)->format('l')) {
+
+                    $trip_date = TripDates::query();
+
+                    $newTrip = $trip_date->create([
+                        'trip_id' => $trip->id,
+                        'start_time' => $trip->start_time,
+                        'start_date' => Carbon::now()->addDays(3)->format('Y-m-d'),
+                        'address_id' => $trip->address_id
+                    ]);
+                    TripTrace::query()
+                        ->create([
+                            'trip_date_id' => $newTrip->id,
+                        ]);
+                }
             }
         }
     }
