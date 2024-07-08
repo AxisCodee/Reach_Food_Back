@@ -100,9 +100,10 @@ class UserController extends Controller
         if ($user->role == Roles::ADMIN->value){
             if($request->city_id)
                 $this->userService->assignCity($user, $request->city_id);
+            $user->load(['city', 'contacts']);
         }
         if ($result) {
-            return ResponseHelper::success('User updated successfully.');
+            return ResponseHelper::success($user);
         }
         return ResponseHelper::error('حدث خطأ في تحديث بيانات المستخدم');
     }
