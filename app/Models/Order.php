@@ -72,4 +72,11 @@ class Order extends Model
         });
     }
 
+    protected function day(): Attribute
+    {
+        return Attribute::get(function () {
+            return Carbon::parse($this['order_date'])->locale('ar')->dayName;
+        });
+    }
+
 }
