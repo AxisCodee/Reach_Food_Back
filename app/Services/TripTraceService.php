@@ -119,9 +119,10 @@ class TripTraceService
         $customers = $trip['trip']['customerTimes'];
         foreach ($customers as $customer) {
             event(new SendMulticastNotification(
-                4,//todo make auth for authentication user
+                auth()->id(),
                 [$customer->customer->id],
                 NotificationActions::TRACE->value,
+                $trip->trip->branch_id,
                 $customer,
                 true
             ));
