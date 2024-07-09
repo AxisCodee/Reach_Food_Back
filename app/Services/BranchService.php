@@ -37,9 +37,10 @@ class BranchService
         return auth()
             ->user()
             ->workBranches()
+            ->selectRaw('DISTINCT branch_id')
             ->whereHas('branch')
             ->with([
-                'branch:id,name,city_id'=>[
+                'branch:id,name,city_id' => [
                     'city:id,name'
                 ]
             ])
