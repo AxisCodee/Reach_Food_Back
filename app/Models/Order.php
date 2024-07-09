@@ -51,7 +51,7 @@ class Order extends Model
     {
         $startOfWeek = Carbon::now()->startOfWeek(CarbonInterface::SATURDAY);
         $endOfWeek = Carbon::now()->endOfWeek(CarbonInterface::FRIDAY);
-        $query->whereBetween('order_date', [$startOfWeek, $endOfWeek]);
+        $query->whereBetween('delivery_date', [$startOfWeek, $endOfWeek]);
     }
 
     public function scopeSearch(Builder $query, ?string $search): void

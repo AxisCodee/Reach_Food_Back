@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Actions\GetNotificationUserIdsAction;
 use App\Enums\NotificationActions;
+use App\Enums\Roles;
 use App\Helpers\ResponseHelper;
 use App\Http\Requests\CreateBranchRequest;
 use App\Http\Requests\DeleteBranchesRrequest;
@@ -15,6 +16,7 @@ use App\Models\User;
 use App\Services\BranchService;
 use App\Services\CityServices;
 use App\Services\NotificationService;
+use Exception;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 
@@ -115,10 +117,18 @@ class BranchController extends Controller
         return ResponseHelper::success($result);
     }
 
-    public function salesmanBranches()
+    public function userBranches(string $role)
     {
+        if (auth()->user()->role != $role)
+            return ResponseHelper::error(null, null, 'انت لست مخول للقيام بهذا الأمر');
+        $roles = Roles::from($role);
+        $branches = match ($roles) {
+            Roles::SALESMAN => $this->branchService->getBranchesForSalesman(),
+            Roles::CUSTOMER => $this->branchService->getBranchesForCustomer(),
+            default => [],
+        };
         return ResponseHelper::success(
-            $this->branchService->getBranchesForSalesman()
+            $branches
         );
     }
 
