@@ -90,6 +90,7 @@ class CityServices
             $ownerIds[] = auth()->id();
             NotificationService::make($data, 0, $ownerIds);
             $branch->delete();
+            $branch->salesManagers()->delete();
         }
     }
     public function deleteOldAdmin($cityId): void

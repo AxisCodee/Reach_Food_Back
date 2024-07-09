@@ -164,7 +164,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 Route::get('/test', function (){
-    $salesman = User::query()->findOrFail(9);
-
-    return $salesman['salesman'];
+    return User::query()
+        ->get();
 });
