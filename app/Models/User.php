@@ -103,7 +103,7 @@ class User extends Authenticatable
         return $this
             ->hasManyThrough(TripDates::class, Trip::class, 'salesman_id')
             ->whereDate('start_date', '=', $date)
-            ->where('branchId', $branchId);
+            ->where('trips.branch_id', $branchId);
     }
 
     public function feedbacks(): HasMany
