@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class FeedbackRequest extends FormRequest
 {
@@ -23,7 +24,7 @@ class FeedbackRequest extends FormRequest
     {
         return [
             'content'=>'string|required',
-            'branch_id'=> 'exists:branches,id'
+            'branch_id'=> [Rule::exists('branches', 'id')->whereNull('deleted_at')]
         ];
     }
 }
