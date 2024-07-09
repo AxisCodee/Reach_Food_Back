@@ -92,7 +92,7 @@ class AuthController extends Controller
                 $user->load('city.country', 'contacts');
                 break;
             case Roles::CUSTOMER:
-                $user->load(['address.city.country', 'contacts']);
+                $user->load(['address.city.country', 'contacts','userPassword:user_id,password']);
                 break;
             default:
                 break;
