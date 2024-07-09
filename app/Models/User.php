@@ -92,12 +92,18 @@ class User extends Authenticatable
         return $this->hasMany(Trip::class, 'salesman_id');
     }
 
-    public function todayTripsDates(): HasManyThrough
+    public function todayTripsDates($branchId): HasManyThrough
+    {
+        return $this
+            ->tripsDates($branchId, Carbon::today());
+    }
+
+    public function tripsDates($branchId, $date): HasManyThrough
     {
         return $this
             ->hasManyThrough(TripDates::class, Trip::class, 'salesman_id')
-            ->whereDate('start_date', '=', Carbon::today());
-
+            ->whereDate('start_date', '=', $date)
+            ->where('branchId', $branchId);
     }
 
     public function feedbacks(): HasMany

@@ -81,9 +81,9 @@ class TripTraceService
     }
 
 
-    public function currentTrip(User $salesman)
+    public function currentTrip(User $salesman, $bId)
     {
-        return $salesman->todayTripsDates()
+        return $salesman->todayTripsDates($bId)
             ->whereHas('tripTrace', function ($query) {
                 $query->whereNotNull('status');
             })
@@ -92,9 +92,9 @@ class TripTraceService
             ->first();
     }
 
-    public function next(User $salesman)
+    public function next(User $salesman, $bId)
     {
-        return $salesman->todayTripsDates()
+        return $salesman->todayTripsDates($bId)
             ->whereHas('tripTrace', function ($query) {
                 $query->whereNull('status');
             })
@@ -142,10 +142,10 @@ class TripTraceService
         $trace->save();
     }
 
-    public function nextTrip(User $salesman): void
+    public function nextTrip(User $salesman, $bId): void
     {
-        $current = $this->currentTrip($salesman);
-        $next = $this->next($salesman);
+        $current = $this->currentTrip($salesman, $bId);
+        $next = $this->next($salesman, $bId);
         if($current){
             $this->stop($current);
         }
@@ -156,17 +156,17 @@ class TripTraceService
         }
     }
 
-    public function stopTrip(User $salesman): void
+    public function stopTrip(User $salesman, $bId): void
     {
-        $current = $this->currentTrip($salesman);
+        $current = $this->currentTrip($salesman, $bId);
         if($current){
             $this->stop($current);
         }
     }
 
-    public function pauseTrip(User $salesman): void
+    public function pauseTrip(User $salesman, $bId): void
     {
-        $current = $this->currentTrip($salesman);
+        $current = $this->currentTrip($salesman, $bId);
         if($current){
             $trace = $current['tripTrace'];
             $trace['status'] = 'pause';
@@ -174,9 +174,9 @@ class TripTraceService
         }
     }
 
-    public function resumeTrip(User $salesman): void
+    public function resumeTrip(User $salesman, $bId): void
     {
-        $current = $this->currentTrip($salesman);
+        $current = $this->currentTrip($salesman, $bId);
         if($current){
             $trace = $current['tripTrace'];
             $trace['status'] = 'resume';
@@ -189,9 +189,9 @@ class TripTraceService
     }
 
 
-    public function endTrip(User $salesman): void
+    public function endTrip(User $salesman, $bId): void
     {
-        $trips = $salesman->todayTripsDates;
+        $trips = $salesman->todayTripsDates($bId)->get();
         foreach ($trips as $trip) {
             $this->stop($trip);
         }

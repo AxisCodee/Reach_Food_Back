@@ -208,6 +208,7 @@ class NotificationService
                 $notification->actionable->update([
                     'name' => (new CityServices())->getNameOfBranch($notification->actionable['city_id'], $notification->actionable['name'])
                 ]);
+                $notification->actionable->salesManagers()->restore();
             }
             $notification->actionable->restore();
             $notification->delete();

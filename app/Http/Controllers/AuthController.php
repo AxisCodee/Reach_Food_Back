@@ -51,7 +51,7 @@ class AuthController extends Controller
         $expiresAt = $token->accessToken['expires_at'];
 
         return ResponseHelper::success([
-            'user' => $user->with(['contacts', 'address.city.country', 'branch.city'])->find($user->id),
+            'user' => $user->with(['contacts', 'address.city.country', 'branch'])->find($user->id),
             'access_token' => $token->plainTextToken,
             'token_type' => 'Bearer',
             'expires_at' => $expiresAt,

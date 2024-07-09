@@ -142,14 +142,14 @@ class TripService
         $salesman = User::findOrFail(auth('sanctum')->id());
         $date = Carbon::today();
         $isToday = true;
+        $bId = request()->branch_id;
         if (request()->day) {
             $date = Carbon::now()->next(request()->day);
             $isToday = false;
         }
-        $trips = $salesman->todayTripsDates()
+        $trips = $salesman->tripsDates($bId, $date)
             ->with(['trip', 'address:id,city_id,area'])
             ->withCount('order')
-            ->whereDate('start_date', '=', $date)
             ->orderBy('start_time', 'asc')
             ->paginate(10)
             ->toArray();
@@ -158,8 +158,8 @@ class TripService
         if ($isToday) {
             $newTrips = [];
             $tracingServices = new TripTraceService();
-            $current = $tracingServices->currentTrip($salesman);
-            $next = $tracingServices->next($salesman);
+            $current = $tracingServices->currentTrip($salesman, $bId);
+            $next = $tracingServices->next($salesman, $bId);
             foreach ($trips['data'] as $trip) {
                 if ($current && $trip['id'] == $current['id']) {
                     $trip['status'] = 'current';
@@ -180,10 +180,44 @@ class TripService
     public function getSalesmanTripsWeekly()
     {
         $salesman = User::FindOrFail(auth('sanctum')->id()); //auth
-        return $salesman->trips()
-            ->with(['address:id,city_id,area', 'dates'])
-            ->paginate(10)
-            ->toArray();
+        $trips = $salesman->trips()
+            ->where('branch_id', request()->branch_id)
+            ->with(['address:id,area'])
+            ->get();
+        $days = [
+            'Sunday' => [
+                'day_ar' => 'الأحد',
+                'addresses' => [],
+            ],
+            'Monday' => [
+                'day_ar' => 'الإثنين',
+                'addresses' => [],
+            ],
+            'Tuesday' => [
+                'day_ar' => 'الثلاثاء',
+                'addresses' => [],
+            ],
+            'Wednesday' => [
+                'day_ar' => 'الأربعاء',
+                'addresses' => [],
+            ],
+            'Thursday' => [
+                'day_ar' => 'الخميس',
+                'addresses' => [],
+            ],
+            'Friday' => [
+                'day_ar' => 'الجمعة',
+                'addresses' => [],
+            ],
+            'Saturday' => [
+                'day_ar' => 'السبت',
+                'addresses' => [],
+            ]
+        ];
+        foreach ($trips as $trip){
+            $days[$trip['day']]['addresses'][] = $trip['address']['area'];
+        }
+        return $days;
     }
 
     public function nearTrip($branchId, $addressId)

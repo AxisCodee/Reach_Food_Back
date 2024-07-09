@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Enums\Roles;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -33,6 +34,14 @@ class Branch extends Model
     public function salesmen(): BelongsToMany
     {
         return $this->belongsToMany(User::class, 'work_branches', 'branch_id', 'salesman_id');
+    }
+
+    public function salesManagers(): HasMany
+    {
+        return $this
+            ->hasMany(User::class, 'branch_id')
+            ->withTrashed()
+            ->where('role', Roles::SALES_MANAGER->value);
     }
 
 }
