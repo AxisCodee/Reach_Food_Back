@@ -3,6 +3,7 @@
 namespace App\Http\Requests\Order;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class SalesmanOrdersRequest extends FormRequest
 {
@@ -23,6 +24,9 @@ class SalesmanOrdersRequest extends FormRequest
     {
         return [
             'days' => 'array',
+            'days.*' => ['integer', 'min:1', 'max:7'],
+            'branch_id' => ['required', 'integer', Rule::exists('branches', 'id')->whereNull('deleted_at')],
+            's' => ['string']
         ];
     }
 }
