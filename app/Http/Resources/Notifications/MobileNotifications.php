@@ -20,7 +20,6 @@ class MobileNotifications extends JsonResource
         $service = new NotificationService($this->resource);
         $date = Carbon::make($this['updated_at']);
         return [
-            'id'=>$this['id'],
             'title' => $service->getTitle(),
             'content' => $service->getContent(),
             'date' => $this->getDate($date),
