@@ -20,6 +20,7 @@ class MobileNotifications extends JsonResource
         $service = new NotificationService($this->resource);
         $date = Carbon::make($this['updated_at']);
         return [
+            'id'=>$this['id'],
             'title' => $service->getTitle(),
             'content' => $service->getContent(),
             'date' => $this->getDate($date),
@@ -32,10 +33,10 @@ class MobileNotifications extends JsonResource
     public function getDate(Carbon $date)
     {
         if ($date->toDateString() === Carbon::today()->toDateString()){
-            return "اليوم {$date->toTimeString()}";
+            return "اليوم: {$date->format('g:i A')}";
         }
         if ($date->toDateString() === Carbon::today()->subDay()->toDateString()){
-            return "الأمس {$date->toTimeString()}";
+            return "الأمس: {$date->format('g:i A')}";
         }
         return $date->toDateString();
     }
