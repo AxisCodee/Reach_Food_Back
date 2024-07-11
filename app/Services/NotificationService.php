@@ -102,8 +102,7 @@ class NotificationService
                 ->where('start_date', '=', Carbon::today()
                     ->toDateString())
                 ->first();
-            logger($trace);
-            $delay = $trace['delay'];
+            $delay = $trace?->delay ?? 0;
             $time->addMinutes($delay);
 
             $time = $time->format('H:i');
