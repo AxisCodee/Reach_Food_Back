@@ -83,14 +83,20 @@ class AuthController extends Controller
     public function me()
     {
         $user = auth()->user();
-        if ($user->role == Roles::SALESMAN->value) {
-            $user->load('branch.city');
+        $roles = Roles::from($user['role']);
+        switch ($roles) {
+            case Roles::SALESMAN:
+                $user->load('contacts');
+                break;
+            case Roles::ADMIN:
+                $user->load('city.country', 'contacts');
+                break;
+            case Roles::CUSTOMER:
+                $user->load(['address.city.country', 'contacts','userPassword:user_id,password']);
+                break;
+            default:
+                break;
         }
-        if ($user) {
-            return ResponseHelper::success([
-                $user
-            ]);
-        }
-        return ResponseHelper::error('انت غير مخول', 401);
+        return ResponseHelper::success([$user]);
     }
 }

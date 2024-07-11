@@ -49,6 +49,17 @@ class BranchService
             ->toArray();
     }
 
+    public function getBranchesForCustomer(): array
+    {
+        return Branch::query()
+            ->select('id', 'name', 'city_id')
+            ->where('city_id', '=', auth()->user()->address->city_id)
+            ->with('city:id,name')
+            ->get()
+            ->toArray();
+
+    }
+
     public function showBranch($id)
     {
         return Branch::query()

@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\Roles;
 use App\Http\Controllers\AddressController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\BranchController;
@@ -56,9 +57,11 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('address', [UserController::class, 'userAddress']);
 
         Route::get('/admins-without-city', [UserController::class, 'adminsWithoutCity']);
+//       User by role branches
+        Route::get('{role}/branches', [BranchController::class, 'userBranches'])
+            ->whereIn('role', [Roles::SALESMAN->value, Roles::CUSTOMER->value]);
         Route::prefix('salesman')->group(function () {
             Route::get('/customers', [UserController::class, 'getSalesmanCustomers']);
-            Route::get('/branches', [BranchController::class, 'salesmanBranches']);
         });
     });
 
@@ -154,7 +157,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::post('/back/{id}', [NotificationController::class, 'back']);
     });
 
-    Route::prefix('cities')->group(function (){
+    Route::prefix('cities')->group(function () {
         Route::get('/', [CityController::class, 'index']);
         Route::get('/without-admin', [CityController::class, 'citiesWithoutAdmin']);
         Route::get('/without-branches', [CityController::class, 'citiesWithoutBranches']);
@@ -163,7 +166,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/{city}', [CityController::class, 'delete']);
     });
 });
-Route::get('/test', function (){
+Route::get('/test', function () {
     return User::query()
         ->get();
 });
