@@ -99,8 +99,8 @@ class NotificationService
         if ($this->notification['action_type'] == 'trace') {
             $time = Carbon::make($this->actionable['arrival_time']);
             $trace = $this->actionable['trip']->dates()
-                ->where('start_date', '=', Carbon::today()
-                    ->toDateString())
+//                ->where('start_date', '=', Carbon::today()
+//                    ->toDateString())
                 ->first();
             $delay = $trace?->delay ?? 0;
             $time->addMinutes($delay);
