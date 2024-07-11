@@ -40,7 +40,7 @@ class TripTraceController extends Controller
         $user = auth()->user();//todo add auth id
         $functionName = $action . 'Trip';
         try {
-           $this->tripTraceService->$functionName($user);
+           $this->tripTraceService->$functionName($user, \request()->branch_id);
         }catch (\Exception $exception){
             return ResponseHelper::error($exception->getMessage());
         }

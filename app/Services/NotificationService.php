@@ -73,7 +73,7 @@ class NotificationService
             $this->translate[$this->types[$this->notification['actionable_type']]];
     }
 
-    public function getContent(): string
+    public function getContent($id = null): string
     {
 
         if ($this->notification['action_type'] == 'start_trip') {
@@ -97,16 +97,12 @@ class NotificationService
         }
 
         if ($this->notification['action_type'] == 'trace') {
-            $time = Carbon::make($this->actionable['arrival_time']);
-            $trace = $this->actionable['trip']->dates()
-//                ->where('start_date', '=', Carbon::today()
-//                    ->toDateString())
-                ->first();
-            $delay = $trace?->delay ?? 0;
+            $delay = $this->actionable['delay'];
+            $customer = $this->actionable['trip']->customerTimes()->where('customer_id', $id)->first();
+            $time = Carbon::make($customer['arrival_time']);
             $time->addMinutes($delay);
-
             $time = $time->format('H:i');
-            if ($trace['tripTrace']['status'] == 'start')
+            if ($this->actionable['tripTrace']['status'] == 'start')
                 return " بدأ {$this->user['name']} الرحلة وقت الوصول المتوقع $time"; // todo add hour
             else
                 return ' تم تغيير الوقت الوصول المتوقع للساعة  ' . $time; // todo add hour

@@ -29,7 +29,7 @@ class MobileNotifications extends JsonResource
         ];
     }
 
-    public function getDate(Carbon $date)
+    public function getDate(Carbon $date): string
     {
         if ($date->toDateString() === Carbon::today()->toDateString()){
             return "اليوم: {$date->format('g:i A')}";

@@ -49,7 +49,10 @@ class PushMulticastNotification
             if (!$notificationService)
                 return;
             $title = $notificationService->getTitle();
-            $body = $notificationService->getContent();
+            if($event->action == 'start_trip')
+                $body = $notificationService->getContent($event->ownerIds[0]);
+            else
+                $body = $notificationService->getContent();
 
 
             $tokensService = new DeviceTokensService();
