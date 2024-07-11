@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Models\Order;
+use App\Models\OrderProduct;
 use App\Models\Trip;
 use App\Models\TripDates;
 use App\Models\TripTrace;
@@ -29,7 +31,7 @@ class TestTrips extends Command
      */
     public function handle()
     {
-        $trips = Trip::query()
+        /*$trips = Trip::query()
             ->where('day', 'Monday')
             ->where('salesman_id', 7)
             ->get();
@@ -58,7 +60,33 @@ class TestTrips extends Command
             TripTrace::query()
             ->create([
                 'trip_date_id' => $newTrip->id,
-            ]);
+            ]);*/
+        $trips = TripDates::query()
+            ->where('start_date', '2024-07-11')
+            ->get();
+        foreach ($trips as $trip) {
+            for ($i = 0; $i < 22; $i++) {
+                $order = Order::query()
+                    ->create([
+                        'customer_id' => rand(4, 6),
+                        'trip_date_id' => $trip->id,
+                        'status' => 'accepted',
+                        'branch_id' => 1,
+                        'order_date' => Carbon::today()->format('Y-m-d'),
+                        'delivery_date' => Carbon::today()->format('Y-m-d'),
+                        'delivery_time' => Carbon::now()->format('H:i'),
+                        'is_base' => 1,
+                        'total_price' => rand(1000, 5000)
+                    ]);
+                for ($j = 8; $j < 12; $j++) {
+                    OrderProduct::query()
+                        ->create([
+                            'order_id' => $order->id,
+                            'product_id' => $j,
+                            'quantity' => rand(2, 7),
+                        ]);
+                }
+            }
         }
     }
 }
