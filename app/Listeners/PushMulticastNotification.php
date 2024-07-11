@@ -49,7 +49,7 @@ class PushMulticastNotification
             if (!$notificationService)
                 return;
             $title = $notificationService->getTitle();
-            if($event->action == 'start_trip')
+            if($event->action == 'trace')
                 $body = $notificationService->getContent($event->ownerIds[0]);
             else
                 $body = $notificationService->getContent();
