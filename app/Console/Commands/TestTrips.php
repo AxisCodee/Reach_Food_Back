@@ -44,7 +44,8 @@ class TestTrips extends Command
                 'start_time' => $trip->start_time,
                 'end_time' => $trip->end_time,
             ]);
-        }
+        }*/
+
         $trips = Trip::query()
             ->where('day', Carbon::today()->dayName)
             ->where('salesman_id', 7)
@@ -58,11 +59,12 @@ class TestTrips extends Command
                 'address_id' => $trip->address_id
             ]);
             TripTrace::query()
-            ->create([
-                'trip_date_id' => $newTrip->id,
-            ]);*/
+                ->create([
+                    'trip_date_id' => $newTrip->id,
+                ]);
+        }
         $trips = TripDates::query()
-            ->where('start_date', '2024-07-11')
+            ->where('start_date', '2024-07-14')
             ->get();
         foreach ($trips as $trip) {
             for ($i = 0; $i < 22; $i++) {
@@ -78,7 +80,7 @@ class TestTrips extends Command
                         'is_base' => 1,
                         'total_price' => rand(1000, 5000)
                     ]);
-                for ($j = 8; $j < 12; $j++) {
+                for ($j = 8; $j < 21; $j++) {
                     OrderProduct::query()
                         ->create([
                             'order_id' => $order->id,
@@ -89,4 +91,5 @@ class TestTrips extends Command
             }
         }
     }
+
 }
