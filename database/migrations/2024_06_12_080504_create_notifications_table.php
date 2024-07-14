@@ -17,6 +17,7 @@ return new class extends Migration {
             //who do this action
             $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreignId('branch_id')->nullable()->constrained('branches')->nullOnDelete()->cascadeOnUpdate();
+            $table->string('extra_msg')->nullable();
             $table->timestamps();
         });
     }

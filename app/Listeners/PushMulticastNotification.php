@@ -43,6 +43,7 @@ class PushMulticastNotification
                 'actionable_type' => is_object($event->actionModel) ? get_class((object)$event->actionModel) : null,
                 'user_id' => $event->userId,
                 'branch_id' => $event->branchId,
+                'extra_msg' => $event->message
             ];
 
             $notificationService = NotificationService::make($data, $event->firstOrCreate, $event->ownerIds);
@@ -53,8 +54,6 @@ class PushMulticastNotification
                 $body = $notificationService->getContent($event->ownerIds[0]);
             else
                 $body = $notificationService->getContent();
-
-
             $tokensService = new DeviceTokensService();
             $deviceTokens = $tokensService->get($event->ownerIds);
             $fcmNotification = FirebaseNotification::create($title, $body);

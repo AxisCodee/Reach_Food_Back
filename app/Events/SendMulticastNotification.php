@@ -24,7 +24,8 @@ class SendMulticastNotification
         public readonly string $action,
         public readonly ?int   $branchId = null,
         public                 $actionModel = null,
-        public readonly bool   $firstOrCreate = false)
+        public readonly bool   $firstOrCreate = false,
+        public readonly ?string $message = null,)
     {
     }
 }

@@ -114,7 +114,11 @@ class NotificationService
                 ' على طلب' :
                 ' طلب';
             $complete .= $this->user['role'] == 'customer' ? 'ه' : 'ك';
-            return "{$this->translateAction[$this->notification['action_type']]} {$this->user['name']} $complete رقم {$this->notification['actionable_id']}";
+            if($this->user['role'] == 'salesman' && $this->notification['action_type'] == 'cancel')
+                return "{$this->translateAction[$this->notification['action_type']]} {$this->user['name']} $complete رقم {$this->notification['actionable_id']} بسيب{$this->notification['extra_msg']}";
+            else
+                return "{$this->translateAction[$this->notification['action_type']]} {$this->user['name']} $complete رقم {$this->notification['actionable_id']}";
+
         }
 
         $action = $this->translateAction[$this->notification['action_type']];
