@@ -236,7 +236,9 @@ class OrderService
                         $this->getUserForNotification($order),
                         NotificationActions::CANCEL->value,
                         $order->branch_id,
-                        $order
+                        $order,
+                        false,
+                        request('message')
                     ));
                     break;
             }
