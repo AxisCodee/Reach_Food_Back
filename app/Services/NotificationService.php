@@ -89,6 +89,8 @@ class NotificationService
                 return $this->handleLate();
             case 'trace':
                 return $this->handleTrace($id);
+            case 'back':
+                return $this->handleBack();
             default:
                 return $this->handleDefault();
         }
@@ -121,6 +123,13 @@ class NotificationService
         return "لم يخرج المندوب $salesmanName في الرحلة $tripId بعد";
     }
 
+    private function handleBack(): string
+    {
+        return sprintf("قام المندوب %s بالتراجع عن حذف طلبك رقم %d",
+            $this->user['name'],
+            $this->notification['actionable_id']);
+    }
+
     private function handleTrace($id): string
     {
         $delay = $this->actionable['delay'];
@@ -145,7 +154,7 @@ class NotificationService
         $typePrefix = $this->notification['action_type'] === 'update' ? 'على ' : '';
         $complete = $this->getCompleteMessage();
 
-        return sprintf("%s %s %s%s", $action, $this->user['name'], $typePrefix, $type, $complete);
+        return sprintf("%s %s %s %s %s", $action, $this->user['name'], $typePrefix, $type, $complete);
     }
 
     private function handleSalesmanOrCustomer(): string
