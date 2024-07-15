@@ -86,6 +86,15 @@ class Order extends Model
             ->where('status', '=', 'accepted');
     }
 
+    public function scopeArchived(Builder $query):void
+    {
+        $query->whereDate('order_date', '<', Carbon::now()->format('Y-m-d'));
+    }
+    public function scopeActive(Builder $query):void
+    {
+        $query->whereDate('order_date', '>=', Carbon::now()->format('Y-m-d'));
+    }
+
     protected function canUndo(): Attribute
     {
         return Attribute::get(function () {
