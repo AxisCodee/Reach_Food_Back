@@ -159,7 +159,7 @@ class OrderService
         return $order->delete();
     }
 
-    public function getSalesmanOrders($request): array
+    public function getSalesmanOrders($request)
     {
         $orders = Order::query()
             ->thisWeek()
