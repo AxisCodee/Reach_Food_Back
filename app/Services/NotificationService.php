@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Enums\NotificationActions;
 use App\Enums\Roles;
 use App\Helpers\ResponseHelper;
 use App\Models\Branch;
@@ -108,18 +109,20 @@ class NotificationService
                 return ' تم تغيير الوقت الوصول المتوقع للساعة  ' . $time; // todo add hour
         }
 
-
-        if (($this->user['role'] == 'salesman' || $this->user['role'] == 'customer') && $this->notification['actionable_type'] == Order::class) {
-            $complete = $this->notification['action_type'] == 'update' ?
-                ' على طلب' :
-                ' طلب';
-            $complete .= $this->user['role'] == 'customer' ? 'ه' : 'ك';
-            if($this->user['role'] == 'salesman' && $this->notification['action_type'] == 'cancel')
-                return "{$this->translateAction[$this->notification['action_type']]} {$this->user['name']} $complete رقم {$this->notification['actionable_id']} بسيب{$this->notification['extra_msg']}";
-            else
-                return "{$this->translateAction[$this->notification['action_type']]} {$this->user['name']} $complete رقم {$this->notification['actionable_id']}";
-
+        if ($this->notification['action_type'] == NotificationActions::BACK->value){
+            return "قام المندوب {$this->user['name']} بالتراجع عن حذف طلبك رقم {$this->notification['actionable_id']}";
         }
+            if (($this->user['role'] == 'salesman' || $this->user['role'] == 'customer') && $this->notification['actionable_type'] == Order::class) {
+                $complete = $this->notification['action_type'] == 'update' ?
+                    ' على طلب' :
+                    ' طلب';
+                $complete .= $this->user['role'] == 'customer' ? 'ه' : 'ك';
+                if ($this->user['role'] == 'salesman' && $this->notification['action_type'] == 'cancel')
+                    return "{$this->translateAction[$this->notification['action_type']]} {$this->user['name']} $complete رقم {$this->notification['actionable_id']} بسبب {$this->notification['extra_msg']}";
+                else
+                    return "{$this->translateAction[$this->notification['action_type']]} {$this->user['name']} $complete رقم {$this->notification['actionable_id']}";
+
+            }
 
         $action = $this->translateAction[$this->notification['action_type']];
         $type = $this->translate[$this->types[$this->notification['actionable_type']]];
