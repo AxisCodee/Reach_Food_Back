@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\DB;
 class NotificationService
 {
 
+
     private readonly ?User $user;
     private mixed $actionable;
 
@@ -64,76 +65,134 @@ class NotificationService
 
     public function getType(): string
     {
-        if ($this->notification['action_type'] == 'late') {
+        if ($this->notification['action_type'] === 'late') {
             return "عدم خروج مندوب في رحلة بعد مرور ساعة من موعد انطلاقها";
         }
-        return
-            $this->translate[$this->notification['action_type']]
-            . ' ' .
-            $this->translate[$this->types[$this->notification['actionable_type']]];
+
+        return sprintf(
+            '%s %s',
+            $this->translate[$this->notification['action_type']],
+            $this->translate[$this->types[$this->notification['actionable_type']]]
+        );
     }
 
     public function getContent($id = null): string
     {
+        switch ($this->notification['action_type']) {
+            case 'start_trip':
+                return $this->handleStartTrip();
+            case 'change_price':
+                return 'تم تعديل قائمة الأسعار';
+            case 'cancel':
+                return $this->handleCancel();
+            case 'late':
+                return $this->handleLate();
+            case 'trace':
+                return $this->handleTrace($id);
+            default:
+                return $this->handleDefault();
+        }
+    }
 
-        if ($this->notification['action_type'] == 'start_trip') {
-            $address = $this->actionable['trip']['address']['city']['name'];
-            return "حان موعد رحلة $address ";
+    private function handleStartTrip(): string
+    {
+        $address = $this->actionable['trip']['address']['city']['name'];
+        return "حان موعد رحلة $address";
+    }
+
+    private function handleCancel(): string
+    {
+        if (auth()->user()?->role === Roles::SALES_MANAGER->value) {
+            return sprintf(
+                "%s للزبون %s بإلغاء الطلب %s قام",
+                $this->actionable['customer']['name'],
+                $this->actionable['id'],
+                $this->user['name']
+            );
+        } else {
+            return $this->handleSalesmanOrCustomer();
+        }
+    }
+
+    private function handleLate(): string
+    {
+        $salesmanName = $this->actionable['trip']['salesman']['name'];
+        $tripId = $this->actionable['id'];
+        return "لم يخرج المندوب $salesmanName في الرحلة $tripId بعد";
+    }
+
+    private function handleTrace($id): string
+    {
+        $delay = $this->actionable['delay'];
+        $customer = $this->actionable['trip']->customerTimes()->where('customer_id', $id)->first();
+        $time = Carbon::make($customer['arrival_time'])->addMinutes($delay)->format('H:i');
+
+        if ($this->actionable['tripTrace']['status'] === 'start') {
+            return sprintf(" بدأ %s الرحلة وقت الوصول المتوقع %s", $this->user['name'], $time);
         }
 
-        if ($this->notification['action_type'] == 'change_price') {
-            return 'تم تعديل قائمة الأسعار';
-        }
+        return sprintf(' تم تغيير الوقت الوصول المتوقع للساعة %s', $time);
+    }
 
-        if ($this->notification['action_type'] == 'cancel') {
-            if (auth()->user()?->role == Roles::SALES_MANAGER->value)
-                return "{$this->actionable['customer']['name']} للزبون  {$this->actionable['id']}  بإلغاء الطلب  {$this->user['name']} قام ";
-        }
-
-        if ($this->notification['action_type'] == 'late') {
-            $salesmanName = $this->actionable['trip']['salesman']['name'];
-            $tripId = $this->actionable['id'];
-            return "لم يخرج المندوب $salesmanName في الرحلة $tripId بعد ";
-        }
-
-        if ($this->notification['action_type'] == 'trace') {
-            $delay = $this->actionable['delay'];
-            $customer = $this->actionable['trip']->customerTimes()->where('customer_id', $id)->first();
-            $time = Carbon::make($customer['arrival_time']);
-            $time->addMinutes($delay);
-            $time = $time->format('H:i');
-            if ($this->actionable['tripTrace']['status'] == 'start')
-                return " بدأ {$this->user['name']} الرحلة وقت الوصول المتوقع $time"; // todo add hour
-            else
-                return ' تم تغيير الوقت الوصول المتوقع للساعة  ' . $time; // todo add hour
-        }
-
-
-        if (($this->user['role'] == 'salesman' || $this->user['role'] == 'customer') && $this->notification['actionable_type'] == Order::class) {
-            $complete = $this->notification['action_type'] == 'update' ?
-                ' على طلب' :
-                ' طلب';
-            $complete .= $this->user['role'] == 'customer' ? 'ه' : 'ك';
-            if($this->user['role'] == 'salesman' && $this->notification['action_type'] == 'cancel')
-                return "{$this->translateAction[$this->notification['action_type']]} {$this->user['name']} $complete رقم {$this->notification['actionable_id']} بسيب{$this->notification['extra_msg']}";
-            else
-                return "{$this->translateAction[$this->notification['action_type']]} {$this->user['name']} $complete رقم {$this->notification['actionable_id']}";
-
+    private function handleDefault(): string
+    {
+        if ($this->isSalesmanOrCustomer() && $this->notification['actionable_type'] === Order::class) {
+            return $this->handleSalesmanOrCustomer();
         }
 
         $action = $this->translateAction[$this->notification['action_type']];
         $type = $this->translate[$this->types[$this->notification['actionable_type']]];
-        $type = ($this->notification['action_type'] == 'update' ? 'على ' : '') . $type;
-        if ($this->types[$this->notification['actionable_type']] == 'order') {
-            $complete = " الرقم$this->actionable['id']";
-        } else if ($this->types[$this->notification['actionable_type']] == 'trip') {
-            $complete = " الرقم {$this->actionable['id']} اليوم {$this->translate[$this->actionable['day']]}";
-        } else {
-            $complete = $this->actionable['name'];
+        $typePrefix = $this->notification['action_type'] === 'update' ? 'على ' : '';
+        $complete = $this->getCompleteMessage();
+
+        return sprintf("%s %s %s%s", $action, $this->user['name'], $typePrefix, $type, $complete);
+    }
+
+    private function handleSalesmanOrCustomer(): string
+    {
+        $complete = $this->notification['action_type'] === 'update' ? ' على طلب' : ' طلب';
+        $complete .= $this->user['role'] === 'customer' ? 'ه' : 'ك';
+
+        if ($this->notification['action_type'] === 'cancel' && $this->user['role'] === 'salesman') {
+            return sprintf(
+                "%s %s %s رقم %s بسيب%s",
+                $this->translateAction[$this->notification['action_type']],
+                $this->user['name'],
+                $complete,
+                $this->notification['actionable_id'],
+                $this->notification['extra_msg']
+            );
         }
 
-        return "$action {$this->user['name']} $type $complete";
+        return sprintf(
+            "%s %s %s رقم %s",
+            $this->translateAction[$this->notification['action_type']],
+            $this->user['name'],
+            $complete,
+            $this->notification['actionable_id']
+        );
     }
+
+    private function getCompleteMessage(): string
+    {
+        $actionableType = $this->types[$this->notification['actionable_type']];
+
+        if ($actionableType === 'order') {
+            return sprintf(" الرقم %s", $this->actionable['id']);
+        }
+
+        if ($actionableType === 'trip') {
+            return sprintf(" الرقم %s اليوم %s", $this->actionable['id'], $this->translate[$this->actionable['day']]);
+        }
+
+        return $this->actionable['name'];
+    }
+
+    private function isSalesmanOrCustomer(): bool
+    {
+        return in_array($this->user['role'], ['salesman', 'customer']);
+    }
+
 
     public function getTitle(): string
     {
