@@ -128,13 +128,13 @@ class OrderService
             ->when($data['is_archived'] ?? false,
                 function (Builder $query) {
                     $query
-                        ->whereDate('order_date', '<', Carbon::now()->format('Y-m-d'))
+                        ->archived()
                         ->whereIn('status', ['delivered', 'canceled']);
 
                 },
                 function (Builder $query) {
                     $query
-                        ->whereDate('order_date', '>=', Carbon::now()->format('Y-m-d'))
+                        ->active()
                         ->whereIn('status', ['accepted', 'canceled']);
                 })
             ->when($data['status'] ?? false, fn(Builder $query) => $query->where('status', request()->status));

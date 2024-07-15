@@ -94,6 +94,15 @@ class Order extends Model
             ->where('status', '=', 'accepted');
     }
 
+    public function scopeArchived(Builder $query):void
+    {
+        $query->whereDate('delivery_date', '<', Carbon::now()->format('Y-m-d'));
+    }
+    public function scopeActive(Builder $query):void
+    {
+        $query->whereDate('delivery_date', '>=', Carbon::now()->format('Y-m-d'));
+    }
+
     public function scopeLastOrderCanceled(Builder $query, int $branchId, int $customerId): void
     {
         $query
