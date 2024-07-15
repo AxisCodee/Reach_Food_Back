@@ -158,13 +158,14 @@ class NotificationService
     }
 
     private function handleSalesmanOrCustomer(): string
+
     {
         $complete = $this->notification['action_type'] === 'update' ? ' على طلب' : ' طلب';
         $complete .= $this->user['role'] === 'customer' ? 'ه' : 'ك';
 
         if ($this->notification['action_type'] === 'cancel' && $this->user['role'] === 'salesman') {
             return sprintf(
-                "%s %s %s رقم %s بسيب%s",
+                "%s %s %s رقم %s بسبب %s",
                 $this->translateAction[$this->notification['action_type']],
                 $this->user['name'],
                 $complete,
