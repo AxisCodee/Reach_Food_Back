@@ -49,8 +49,6 @@ class TestTrips extends Command
         DB::transaction(function () {
 
             for ($k = 1; $k <= 6; $k++) {
-
-
                 $trips = Trip::query()
                     ->where('day', Carbon::today()->addDays($k)->dayName)
                     ->where('salesman_id', 7)
@@ -60,7 +58,7 @@ class TestTrips extends Command
                     $newTrip = $trip_date->create([
                         'trip_id' => $trip->id,
                         'start_time' => $trip->start_time,
-                        'start_date' => Carbon::now()->next($trip->day)->subDays(7)->format('Y-m-d'),
+                        'start_date' => Carbon::now()->next($trip->day)->format('Y-m-d'),
                         'address_id' => $trip->address_id
                     ]);
                     TripTrace::query()
