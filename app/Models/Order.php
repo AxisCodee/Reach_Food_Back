@@ -76,10 +76,23 @@ class Order extends Model
         ]);
     }
 
+    public function scopeLastOrderAccepted(Builder $query, int $branchId, int $customerId): void
+    {
+        $query
+            ->whereNull('order_id')
+            ->where('branch_id', '=', $branchId)
+            ->where('customer_id', '=', $customerId)
+            ->where('delivery_date', '>=', Carbon::today()->toDateString())
+            ->where('status', '=', 'accepted');
+    }
+
     protected function canUndo(): Attribute
     {
         return Attribute::get(function () {
-            if (Carbon::parse($this['order_date'])->lt(Carbon::today()->toDate()))
+            if (
+                Carbon::parse($this['delivery_date'])->lt(Carbon::today()->toDate()) ||
+                Order::query()->lastOrderAccepted($this['branch_id'], $this['customer_id'])->exists()
+            )
                 return false;
             return true;
         });

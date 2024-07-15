@@ -16,9 +16,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 
-/**
- * Class OrderService.
- */
 class OrderService
 {
 
@@ -85,9 +82,7 @@ class OrderService
 
     private function customerUpdateOrder($request, Order $order): void
     {
-        OrderProduct::query()
-            ->where('order_id', $order->id)
-            ->delete();
+        OrderProduct::query()->where('order_id', $order->id)->delete();
 
         $data = $this->prepareProductsInOrder($request['product'] ?? [], $order->id, auth()->user());
         DB::transaction(function () use ($order, $data) {
@@ -118,13 +113,7 @@ class OrderService
             Order::where('id', $result->id)->update(['is_base' => 0]);
         }
 
-        event(new SendMulticastNotification(
-            auth()->id(),
-            $this->getUserForNotification($order),
-            NotificationActions::UPDATE->value,
-            $order->branch_id,
-            $order
-        ));
+        $this->sendMobileNotification($order, NotificationActions::UPDATE->value);
         return $result;
     }
 
@@ -133,9 +122,7 @@ class OrderService
     {
         return Order::query()
             ->with(['customer.contacts', 'trip_date.address', 'childOrders', 'trip_date.trip.salesman'])
-            ->when($data['products'] ?? false, function (Builder $query) {
-                $query->with('products');
-            })
+            ->when($data['products'] ?? false, fn(Builder $query) => $query->with('products'))
             ->where('branch_id', $data['branch_id'])
             ->whereNull('order_id')
             ->when($data['is_archived'] ?? false,
@@ -150,9 +137,7 @@ class OrderService
                         ->whereDate('order_date', '>=', Carbon::now()->format('Y-m-d'))
                         ->whereIn('status', ['accepted', 'canceled']);
                 })
-            ->when($data['status'] ?? false, function (Builder $query) {
-                $query->where('status', request()->status);
-            });
+            ->when($data['status'] ?? false, fn(Builder $query) => $query->where('status', request()->status));
     }
 
     public function showOrder($order)
@@ -174,25 +159,23 @@ class OrderService
         return $order->delete();
     }
 
-    public function getSalesmanOrders($request)
+    public function getSalesmanOrders($request): array
     {
         $orders = Order::query()
             ->thisWeek()
+            ->whereNull('order_id')
             ->where('branch_id', '=', $request->input('branch_id'))
             ->whereHas('trip_date.trip', function ($query) use ($request) {
                 $query
                     ->where('salesman_id', auth()->id())
-                    ->when($request->input('days'), function ($query) use ($request) {
-                        $query->whereIn('day', GetDaysNamesAction::handle($request->input('days')));
-                    });
+                    ->when($request->input('days'),
+                        fn($query) => $query->whereIn('day', GetDaysNamesAction::handle($request->input('days')))
+                    );
             })
             ->search($request->input('s'))
             ->withForSalesman()
             ->paginate(10);
-        $orders->getCollection()
-            ->each(function ($order) {
-                $order->setAppends(['can_undo', 'is_late']);
-            })
+        $orders->getCollection()->each(fn($order) => $order->setAppends(['can_undo', 'is_late']))
             ->toArray();
         return $orders;
     }
@@ -200,55 +183,91 @@ class OrderService
     /**
      * @throws Exception
      */
-    public function updateStatus($order, $data)
+    public function updateStatus($order, $data): ?Order
     {
-        if (auth()->user()->role == Roles::CUSTOMER->value && $data['action'] != 'canceled')
-            throw new Exception('لا يمكنك القيام بهذه العملية');
+        $this->authorize($data);
+        if ($data['action'] === 'canceled') {
+            if ($this->handleCanceledAction($order))
+                return null;
+        } else if (auth()->user()->role === Roles::SALESMAN->value && $data['action'] === 'accepted') {
+            $this->handleAcceptedAction($order);
+        }
         $order->update([
             'status' => $data['action'],
             'delivery_date' => $data['delivery_date'] ?? $order['delivery_date'],
             'delivery_time' => $data['delivery_time'] ?? $order['delivery_time'],
         ]);
-        if ($data['action'] == 'canceled') {
-            /**
-             * if the role is customer just send notification to salesman
-             * else if the role is salesman send notification to customer and add notification to sales managers
-             */
-            $role = Roles::from(auth()->user()->role);
-            switch ($role) {
-                case Roles::SALESMAN:
-                    $data = [
-                        'action_type' => NotificationActions::CANCEL->value,
-                        'actionable_id' => $order->id,
-                        'actionable_type' => Order::class,
-                        'user_id' => auth()->id(),
-                    ];
-                    $ownerIds = auth()
-                        ->user()
-                        ->salesManager()
-                        ->where('users.branch_id', '=', $order->branch_id)
-                        ->pluck('users.id')
-                        ->toArray();
-                    NotificationService::make($data, 0, $ownerIds);
-                case Roles::CUSTOMER:
-                    event(new SendMulticastNotification(
-                        auth()->id(),
-                        $this->getUserForNotification($order),
-                        NotificationActions::CANCEL->value,
-                        $order->branch_id,
-                        $order,
-                        false,
-                        request('message')
-                    ));
-                    break;
-            }
-        }
         return $order;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function authorize(array $data): void
+    {
+        if (auth()->user()->role === Roles::CUSTOMER->value && $data['action'] !== 'canceled')
+            throw new Exception('لا يمكنك القيام بهذه العملية');
+    }
+
+    private function handleCanceledAction(Order $order): bool
+    {
+        $role = Roles::from(auth()->user()->role);
+        switch ($role) {
+            case Roles::SALESMAN:
+                $this->createNotification($order);
+                $this->sendMobileNotification($order, NotificationActions::CANCEL->value, request('message'));
+                break;
+            case Roles::CUSTOMER:
+                $this->sendMobileNotification($order, NotificationActions::CANCEL->value, request('message'));
+                $order->delete();
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * @throws Exception
+     */
+    private function handleAcceptedAction(Order $order): void
+    {
+        if (!$order['can_undo'])
+            throw new Exception('لا يمكنك القيام بهذه العملية');
+        $this->sendMobileNotification($order, NotificationActions::BACK->value);
+    }
+
+    private function createNotification(Order $order): void
+    {
+        $notificationData = [
+            'action_type' => NotificationActions::CANCEL->value,
+            'actionable_id' => $order->id,
+            'actionable_type' => Order::class,
+            'user_id' => auth()->id(),
+        ];
+        $ownerIds = auth()
+            ->user()
+            ->salesManager()
+            ->where('users.branch_id', '=', $order->branch_id)
+            ->pluck('users.id')
+            ->toArray();
+        NotificationService::make($notificationData, 0, $ownerIds);
+    }
+
+    private function sendMobileNotification(Order $order, string $action, string $message = null): void
+    {
+        event(new SendMulticastNotification(
+            auth()->id(),
+            $this->getUserForNotification($order),
+            $action,
+            $order->branch_id,
+            $order,
+            false,
+            $message
+        ));
     }
 
     private function getUserForNotification(Order $order): array
     {
-        return (auth()->user()->role == Roles::SALESMAN->value) ?
+        return (auth()->user()->role === Roles::SALESMAN->value) ?
             [$order->customer_id] :
             [$order->trip_date->trip->salesman->id];
     }

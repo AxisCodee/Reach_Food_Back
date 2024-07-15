@@ -12,5 +12,11 @@ enum NotificationActions: string
     case CHANGE_DATE = 'change_date';
     case TRACE = 'trace';
     case LATE = 'late';
-    case CANCEL='cancel';
+    case CANCEL = 'cancel';
+    case BACK = 'back';
+
+    public static function values(): array
+    {
+        return array_column(self::cases(), 'value');
+    }
 }

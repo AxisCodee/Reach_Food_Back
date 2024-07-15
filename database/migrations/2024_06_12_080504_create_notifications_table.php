@@ -1,5 +1,6 @@
 <?php
 
+use App\Enums\NotificationActions;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -12,7 +13,7 @@ return new class extends Migration {
     {
         Schema::create('notifications', function (Blueprint $table) {
             $table->id();
-            $table->enum('action_type', ['add', 'delete', 'update', 'trace', 'cancel', 'change_price', 'start_trip', 'late'])->nullable();
+            $table->enum('action_type', NotificationActions::values())->nullable();
             $table->nullableMorphs('actionable');
             //who do this action
             $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
