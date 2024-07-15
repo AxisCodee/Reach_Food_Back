@@ -64,7 +64,7 @@ class TestTrips extends Command
                 ]);
         }
         $trips = TripDates::query()
-            ->where('start_date', '2024-07-14')
+            ->where('start_date', Carbon::today()->toDateString())
             ->get();
         foreach ($trips as $trip) {
             for ($i = 0; $i < 22; $i++) {
