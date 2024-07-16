@@ -13,6 +13,10 @@ class CustomerTime extends Model
     protected $guarded = [];
     use HasFactory;
 
+    protected $appends = [
+        'fix_arrival_time'
+    ];
+
     public function customer(): BelongsTo
     {
         return $this->belongsTo(User::class, 'customer_id');
