@@ -23,7 +23,7 @@ class CustomerTime extends Model
         return $this->belongsTo(Trip::class, 'trip_id');
     }
 
-    public function arrivalTime(): Attribute
+    public function fixArrivalTime(): Attribute
     {
         return Attribute::get(function (){
             return Carbon::make($this['arrival_time'])->format('H:i');
