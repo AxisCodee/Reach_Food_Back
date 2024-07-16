@@ -187,7 +187,7 @@ class OrderService
     {
         $this->authorize($data);
         if ($data['action'] === 'canceled') {
-            if ($this->handleCanceledAction($order))
+            if ($this->handleCanceledAction($order, $data['message']))
                 return null;
         } else if (auth()->user()->role === Roles::SALESMAN->value && $data['action'] === 'accepted') {
             $this->handleAcceptedAction($order);
@@ -209,17 +209,17 @@ class OrderService
             throw new Exception('لا يمكنك القيام بهذه العملية');
     }
 
-    private function handleCanceledAction(Order $order): bool
+    private function handleCanceledAction(Order $order, ?string $message): bool
     {
         $role = Roles::from(auth()->user()->role);
         switch ($role) {
             case Roles::SALESMAN:
                 $this->createNotification($order);
-                $this->sendMobileNotification($order, NotificationActions::CANCEL->value, request('message'));
+                $this->sendMobileNotification($order, NotificationActions::CANCEL->value, $message);
                 break;
             case Roles::CUSTOMER:
                 $order->notifications()->delete();
-                $this->sendMobileNotification($order, NotificationActions::CANCEL->value, request('message'));
+                $this->sendMobileNotification($order, NotificationActions::CANCEL->value);
                 $order->delete();
                 return true;
         }
@@ -244,6 +244,7 @@ class OrderService
             'actionable_id' => $order->id,
             'actionable_type' => Order::class,
             'user_id' => auth()->id(),
+            'branch_id' => $order->branch_id
         ];
         $ownerIds = auth()
             ->user()
