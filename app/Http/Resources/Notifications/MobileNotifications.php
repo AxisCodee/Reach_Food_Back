@@ -22,6 +22,7 @@ class MobileNotifications extends JsonResource
         return [
             'title' => $service->getTitle(),
             'content' => $service->getContent(auth()->id()),
+            'message' => $this['extra_msg'],
             'date' => $this->getDate($date),
             'image' => $this['user']?->image,
             'location' => $this['user']?->location,
