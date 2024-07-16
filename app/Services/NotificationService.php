@@ -50,9 +50,9 @@ class NotificationService
 
     private array $translateAction = [
         'delete' => 'حذف',
-        'update' => 'عدل',
+        'update' => 'تعديل',
         'add' => 'أضاف',
-        'cancel' => 'الغى',
+        'cancel' => 'إلغاء',
     ];
 
     public function __construct(
@@ -82,7 +82,7 @@ class NotificationService
             case 'start_trip':
                 return $this->handleStartTrip();
             case 'change_price':
-                return 'تم تعديل قائمة الأسعار';
+                return 'تم تعديل نشرة الأسعار.';
             case 'cancel':
                 return $this->handleCancel();
             case 'late':
@@ -106,10 +106,10 @@ class NotificationService
     {
         if (auth()->user()?->role === Roles::SALES_MANAGER->value) {
             return sprintf(
-                "%s للزبون %s بإلغاء الطلب %s قام",
-                $this->actionable['customer']['name'],
+                "قام %s بإلغاء الطلب %s للزبون %s",
+                $this->user['name'],
                 $this->actionable['id'],
-                $this->user['name']
+                $this->actionable['customer']['name']
             );
         } else {
             return $this->handleSalesmanOrCustomer();
@@ -125,7 +125,7 @@ class NotificationService
 
     private function handleBack(): string
     {
-        return sprintf("قام المندوب %s بالتراجع عن حذف طلبك رقم %d",
+        return sprintf("قام المندوب %s بالتراجع عن إلغاء طلبك رقم %d",
             $this->user['name'],
             $this->notification['actionable_id']);
     }
@@ -160,24 +160,13 @@ class NotificationService
     private function handleSalesmanOrCustomer(): string
 
     {
-        $complete = $this->notification['action_type'] === 'update' ? ' على طلب' : ' طلب';
+        $complete =  'طلب';
         $complete .= $this->user['role'] === 'customer' ? 'ه' : 'ك';
-
-        if ($this->notification['action_type'] === 'cancel' && $this->user['role'] === 'salesman') {
-            return sprintf(
-                "%s %s %s رقم %s بسبب %s",
-                $this->translateAction[$this->notification['action_type']],
-                $this->user['name'],
-                $complete,
-                $this->notification['actionable_id'],
-                $this->notification['extra_msg']
-            );
-        }
-
         return sprintf(
-            "%s %s %s رقم %s",
-            $this->translateAction[$this->notification['action_type']],
+            "قام %s %s ب%s %s رقم %s",
+            $this->user['role'] === 'salesman' ? 'المندوب' : 'الزبون',
             $this->user['name'],
+            $this->translateAction[$this->notification['action_type']],
             $complete,
             $this->notification['actionable_id']
         );
