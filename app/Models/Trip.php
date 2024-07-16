@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -17,7 +18,7 @@ class Trip extends Model
 
     protected $guarded = [];
 
-    protected $appends = ['day_ar'];
+    protected $appends = ['day_ar', 'fix_start_time', 'fix_end_time'];
 
     public function salesman(): BelongsTo
     {
@@ -67,6 +68,20 @@ class Trip extends Model
             ];
 
             return $translateDays[$this['day']];
+        });
+    }
+
+    public function fixStartTime(): Attribute
+    {
+        return Attribute::get(function () {
+            return Carbon::make($this['start_time'])->format('H:i');
+        });
+    }
+
+    public function fixEndTime(): Attribute
+    {
+        return Attribute::get(function () {
+            return Carbon::make($this['end_time'])->format('H:i');
         });
     }
 
