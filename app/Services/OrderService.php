@@ -187,7 +187,7 @@ class OrderService
     {
         $this->authorize($data);
         if ($data['action'] === 'canceled') {
-            if ($this->handleCanceledAction($order, $data['message']))
+            if ($this->handleCanceledAction($order, $data['message'] ?? null))
                 return null;
         } else if (auth()->user()->role === Roles::SALESMAN->value && $data['action'] === 'accepted') {
             $this->handleAcceptedAction($order);
