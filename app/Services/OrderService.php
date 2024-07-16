@@ -218,6 +218,7 @@ class OrderService
                 $this->sendMobileNotification($order, NotificationActions::CANCEL->value, request('message'));
                 break;
             case Roles::CUSTOMER:
+                $order->notifications()->delete();
                 $this->sendMobileNotification($order, NotificationActions::CANCEL->value, request('message'));
                 $order->delete();
                 return true;
@@ -237,6 +238,7 @@ class OrderService
 
     private function createNotification(Order $order): void
     {
+
         $notificationData = [
             'action_type' => NotificationActions::CANCEL->value,
             'actionable_id' => $order->id,
@@ -246,7 +248,8 @@ class OrderService
         $ownerIds = auth()
             ->user()
             ->salesManager()
-            ->where('users.branch_id', '=', $order->branch_id)
+            ->whereHas('branch',
+                fn(Builder $query) => $query->where('id', '=', $order->branch_id))
             ->pluck('users.id')
             ->toArray();
         NotificationService::make($notificationData, 0, $ownerIds);

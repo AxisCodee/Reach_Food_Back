@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Carbon;
 
 class Order extends Model
@@ -45,6 +46,11 @@ class Order extends Model
     public function products(): BelongsToMany
     {
         return $this->belongsToMany(Product::class, 'order_products', 'order_id', 'product_id');
+    }
+
+    public function notifications(): MorphMany
+    {
+        return $this->morphMany(Notification::class, 'actionable');
     }
 
     public function scopeThisWeek(Builder $query): void
@@ -86,11 +92,12 @@ class Order extends Model
             ->where('status', '=', 'accepted');
     }
 
-    public function scopeArchived(Builder $query):void
+    public function scopeArchived(Builder $query): void
     {
         $query->whereDate('delivery_date', '<', Carbon::now()->format('Y-m-d'));
     }
-    public function scopeActive(Builder $query):void
+
+    public function scopeActive(Builder $query): void
     {
         $query->whereDate('delivery_date', '>=', Carbon::now()->format('Y-m-d'));
     }
