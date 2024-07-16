@@ -82,13 +82,21 @@ class Order extends Model
         ]);
     }
 
-    public function scopeLastOrderAccepted(Builder $query, int $branchId, int $customerId): void
+
+    public function scopeNotArchiveOrder(Builder $query, int $branchId, int $customerId): void
     {
         $query
             ->whereNull('order_id')
             ->where('branch_id', '=', $branchId)
             ->where('customer_id', '=', $customerId)
             ->where('delivery_date', '>=', Carbon::today()->toDateString())
+            ->whereNot('status', '=', 'delivered');
+    }
+
+    public function scopeLastOrderAccepted(Builder $query, int $branchId, int $customerId): void
+    {
+        $query
+            ->notArchiveOrder($branchId, $customerId)
             ->where('status', '=', 'accepted');
     }
 
@@ -100,6 +108,14 @@ class Order extends Model
     public function scopeActive(Builder $query): void
     {
         $query->whereDate('delivery_date', '>=', Carbon::now()->format('Y-m-d'));
+    }
+
+    public function scopeLastOrderCanceled(Builder $query, int $branchId, int $customerId): void
+    {
+        $query
+            ->notArchiveOrder($branchId, $customerId)
+            ->where('status', '=', 'canceled')
+            ->latest('updated_at');
     }
 
     protected function canUndo(): Attribute

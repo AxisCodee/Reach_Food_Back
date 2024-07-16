@@ -98,6 +98,9 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::prefix('salesman')->group(function () {
             Route::get('/myOrders', [OrderController::class, 'salesmanOrders']);
         });
+        Route::prefix('customer')->group(function () {
+            Route::get('/my-order', [OrderController::class, 'myOrder']);
+        });
     });
 
     Route::prefix('product')->group(function () {

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\GetMyOrderRequest;
 use App\Http\Requests\Order\IndexOrderRequest;
 use App\Http\Requests\Order\OrderRequest;
 use App\Http\Requests\Order\SalesmanOrdersRequest;
@@ -89,5 +90,17 @@ class OrderController extends Controller
         } catch (Exception $e) {
             return ResponseHelper::error(null, null, $e->getMessage());
         }
+    }
+
+    public function myOrder(GetMyOrderRequest $request)
+    {
+        $bId = $request->validated('branch_id');
+        $order = Order::query()->lastOrderAccepted($bId, auth('sanctum')->id())->first();
+        if(!$order){
+            $order = Order::query()
+                ->lastOrderCanceled($bId, auth('sanctum')->id())
+                ->first();
+        }
+        return ResponseHelper::success($order);
     }
 }
