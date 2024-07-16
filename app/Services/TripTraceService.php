@@ -136,7 +136,20 @@ class TripTraceService
 
         if($trace['status'] == 'stop')
             return;
-
+        foreach ($tripDate['order'] as $order){
+            if($order['status'] === 'accepted'){
+                $order->update([
+                    'status' => 'canceled'
+                ]);
+                event(new SendMulticastNotification(
+                    null,
+                    [$order->customer_id],
+                    NotificationActions::CANCEL->value,
+                    $order->branch_id,
+                    $order,
+                ));
+            }
+        }
         $trace['status'] = 'stop';
         $trace['duration'] = request()->input('duration');
         $trace->save();

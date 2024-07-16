@@ -111,9 +111,22 @@ class NotificationService
                 $this->actionable['id'],
                 $this->actionable['customer']['name']
             );
-        } else {
-            return $this->handleSalesmanOrCustomer();
         }
+        if($this->user === null){
+            return $this->handleCancelByApp();
+        }
+
+        return $this->handleSalesmanOrCustomer();
+
+    }
+
+    public function handleCancelByApp(): string
+    {
+        logger($this->actionable);
+        return sprintf(
+            'تم إلغاء طلبك رقم %d',
+            $this->notification['actionable_id']
+        );
     }
 
     private function handleLate(): string
@@ -195,7 +208,7 @@ class NotificationService
 
     public function getTitle(): string
     {
-        if ($this->notification['action_type'] == 'change_price' || $this->notification['action_type'] == 'start_trip') {
+        if ($this->user == null ||  $this->notification['action_type'] == 'change_price' || $this->notification['action_type'] == 'start_trip') {
             return 'اسم التطبيق';
         }
         return $this->user['name'];
