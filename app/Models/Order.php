@@ -102,12 +102,12 @@ class Order extends Model
 
     public function scopeArchived(Builder $query): void
     {
-        $query->whereDate('delivery_date', '<', Carbon::now()->format('Y-m-d'));
+        $query->whereDate('delivery_date', '<', Carbon::today()->toDateString());
     }
 
     public function scopeActive(Builder $query): void
     {
-        $query->whereDate('delivery_date', '>=', Carbon::now()->format('Y-m-d'));
+        $query->whereDate('delivery_date', '>=', Carbon::today()->toDateString());
     }
 
     public function scopeLastOrderCanceled(Builder $query, int $branchId, int $customerId): void
