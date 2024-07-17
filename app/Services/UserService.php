@@ -89,12 +89,11 @@ class UserService
             $user->workBranches()->delete();
             if ($branches) {
                 foreach ($branches as $branch) {
-                    if($branch['salesManager_id']) {
+                    if(isset($branch['salesManager_id'])) {
                         $salesManager = User::query()->findOrFail($branch['salesManager_id']);
                         if ($salesManager['role'] != Roles::SALES_MANAGER->value) {
                             throw new Exception('هذا الشخص ليس مدير مبيعات');
                         }
-                        logger($branch['branch_id']);
                         if ($salesManager['branch_id'] != $branch['branch_id']) {
                             throw new Exception('هذا المدير لا يتبع لهذا الفرع');
                         }
