@@ -98,7 +98,7 @@ class UserService
                             throw new Exception('هذا المدير لا يتبع لهذا الفرع');
                         }
                     }
-                    $work['sales_manager_id'] = $branch['salesManager_id'];
+                    $work['sales_manager_id'] = $branch['salesManager_id'] ?? null;
                     $work['salesman_id'] = $user->id;
                     $work['branch_id'] = $branch['branch_id'];
                     $data[] = $work;
