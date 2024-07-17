@@ -30,8 +30,8 @@ class UpdateTripRequest extends FormRequest
             'branch_id' => 'exists:branches,id',
             //
             'customerTimes' => 'array',
-            'customerTimes.*' => 'exists:users,id',
-            'customerTimes.*time' => 'date_format:H:i',
+            'customerTimes.*.id' => 'exists:users,id',
+            'customerTimes.*.time' => ['nullable','date_format:H:i'],
         ];
     }
 }
