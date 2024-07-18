@@ -39,6 +39,11 @@ class ProductService
             $data['image'] = $existingProduct->image;
         }
 
+        if(isset($request['delete_image'])){
+            app(FileService::class)->delete($request['image']);
+            $data['image'] = null;
+        }
+
         $result = Product::findOrFail($product)->update($data);
         return $result;
     }
