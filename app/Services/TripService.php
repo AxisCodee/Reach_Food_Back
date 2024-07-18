@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Actions\GetNotificationUserIdsAction;
 use App\Enums\NotificationActions;
+use App\Exceptions\CustomException;
 use App\Models\CustomerTime;
 use App\Models\Trip;
 use App\Models\TripDates;
@@ -72,7 +73,7 @@ class TripService
             $conflicts = $this->conflicts($trip);
 
             if ($conflicts) {
-                throw new \Exception('الاوقات متضاربة');
+                throw new CustomException('الاوقات متضاربة');
             }
             $trips = Trip::create([
                 'address_id' => $trip['address_id'],
@@ -95,7 +96,7 @@ class TripService
                     if(isset($customerTime['time'])) {
                         if ($customerTime['time'] < $trips['start_time']
                             || $customerTime['time'] > $trips['end_time']) {
-                            throw new \Exception('وقت الزبون خاطئ');
+                            throw new CustomException('وقت الزبون خاطئ');
                         }
                         CustomerTime::create([
                             'customer_id' => $customerTime['id'],
@@ -231,7 +232,7 @@ class TripService
             ->whereDate('start_date', '>', Carbon::now())
             ->first();
         if(!$trip){
-            throw new Exception('لا يمكن استقبال هذا الطلب لعدم وجود رحلة الى هذه المنطقة');
+            throw new CustomException('لا يمكن استقبال هذا الطلب لعدم وجود رحلة الى هذه المنطقة');
         }
 
         return $trip;

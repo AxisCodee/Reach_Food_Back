@@ -6,6 +6,7 @@ use App\Actions\GetDaysNamesAction;
 use App\Enums\NotificationActions;
 use App\Enums\Roles;
 use App\Events\SendMulticastNotification;
+use App\Exceptions\CustomException;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
@@ -44,7 +45,7 @@ class OrderService
             $trip = (new TripService())->nearTrip($customer->address_id, $req['branch_id']);
 
             if (!$trip) {
-                throw new Exception('لا يمكن استقبال هذا الطلب لعدم وجود رحلة الى هذه المنطقة');
+                throw new CustomException('لا يمكن استقبال هذا الطلب لعدم وجود رحلة الى هذه المنطقة');
             }
             $order->update([
                 'total_price' => $data['total_price'],
@@ -207,7 +208,7 @@ class OrderService
     private function authorize(array $data): void
     {
         if (auth()->user()->role === Roles::CUSTOMER->value && $data['action'] !== 'canceled')
-            throw new Exception('لا يمكنك القيام بهذه العملية');
+            throw new CustomException('لا يمكنك القيام بهذه العملية');
     }
 
     private function handleCanceledAction(Order $order, ?string $message): bool
@@ -233,7 +234,7 @@ class OrderService
     private function handleAcceptedAction(Order $order): void
     {
         if (!$order['can_undo'])
-            throw new Exception('لا يمكنك القيام بهذه العملية');
+            throw new CustomException('لا يمكنك القيام بهذه العملية');
         $this->sendMobileNotification($order, NotificationActions::BACK->value);
     }
 
