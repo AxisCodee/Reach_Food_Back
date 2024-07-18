@@ -42,7 +42,7 @@ class OrderService
             $data = $this->prepareProductsInOrder($request['product'], $order->id, $customer);
             OrderProduct::insert($data['order_products']);
 
-            $trip = (new TripService())->nearTrip($customer->address_id, request('branch_id'));
+            $trip = (new TripService())->nearTrip(request('branch_id'), $customer->address_id);
             $order->update([
                 'total_price' => $data['total_price'],
                 'trip_date_id' => $trip->id
