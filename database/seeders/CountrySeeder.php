@@ -13,8 +13,13 @@ class CountrySeeder extends Seeder
      */
     public function run(): void
     {
+//        Country::create([
+//            'name' => 'سوريا',
+//        ]);
         Country::create([
-            'name' => 'سوريا',
+            'name' => 'العراق',
+        ]);Country::create([
+            'name' => 'مصر',
         ]);
     }
 }
