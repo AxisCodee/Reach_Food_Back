@@ -43,10 +43,6 @@ class OrderService
             OrderProduct::insert($data['order_products']);
 
             $trip = (new TripService())->nearTrip($customer->address_id, $req['branch_id']);
-
-            if (!$trip) {
-                throw new CustomException('لا يمكن استقبال هذا الطلب لعدم وجود رحلة الى هذه المنطقة');
-            }
             $order->update([
                 'total_price' => $data['total_price'],
                 'trip_date_id' => $trip->id
