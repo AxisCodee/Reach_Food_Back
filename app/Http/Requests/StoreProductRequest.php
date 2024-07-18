@@ -28,8 +28,14 @@ class StoreProductRequest extends FormRequest
             'stock_quantity' => 'nullable|numeric',
             'amount_unit' => 'required|in:kg,piece',
             'wholesale_price' => 'required|numeric',
-            'retail_price' => 'required|numeric',
+            'retail_price' => 'required|numeric|gt:wholesale_price',
             'image' => 'nullable|file'
+        ];
+    }
+    public function messages(): array
+    {
+        return [
+            'retail_price.gt' => 'يجب أن يكون سعر المفرق أكبر من سعر الجملة'
         ];
     }
 }

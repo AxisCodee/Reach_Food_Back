@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Enums\Roles;
 use App\Helpers\ResponseHelper;
+use App\Http\Requests\CorrectPasswordRequest;
 use App\Http\Requests\CreateUserRequest;
 use App\Http\Requests\LoginRrequest;
 use App\Models\User;
@@ -98,5 +99,13 @@ class AuthController extends Controller
                 break;
         }
         return ResponseHelper::success([$user]);
+    }
+
+    public function correctPassword(CorrectPasswordRequest $request)
+    {
+        if(Hash::check($request->validated()['password'], auth()->user()['password'])){
+            return ResponseHelper::success();
+        }
+        return ResponseHelper::error();
     }
 }

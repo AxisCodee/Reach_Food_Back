@@ -174,6 +174,7 @@ class OrderService
             })
             ->search($request->input('s'))
             ->withForSalesman()
+            ->latest()
             ->paginate(10);
         $orders->getCollection()->each(fn($order) => $order->setAppends(['can_undo', 'is_late']))
             ->toArray();

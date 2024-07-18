@@ -91,17 +91,18 @@ class TripService
             ]);
 
             if (isset($trip['customerTimes'])) {
-                foreach ($trip['customerTimes'] as $id => $customerTime) {
-                    if ($customerTime['time'] < $trips['start_time']
-                        || $customerTime['time'] > $trips['end_time']) {
-                        throw new \Exception('وقت الزبون خاطئ');
-                    }
-                    CustomerTime::create([
-                        'customer_id' => $id,
-                        'trip_id' => $trips->id,
-                        'arrival_time' => $customerTime['time'],
-                    ]);
-                }
+                foreach ($trip['customerTimes'] as $customerTime) {
+                    if(isset($customerTime['time'])) {
+                        if ($customerTime['time'] < $trips['start_time']
+                            || $customerTime['time'] > $trips['end_time']) {
+                            throw new \Exception('وقت الزبون خاطئ');
+                        }
+                        CustomerTime::create([
+                            'customer_id' => $customerTime['id'],
+                            'trip_id' => $trips->id,
+                            'arrival_time' => $customerTime['time'],
+                        ]);
+                    }                }
             }
             return $trips;
         });

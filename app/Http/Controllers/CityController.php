@@ -103,12 +103,8 @@ class CityController extends Controller
         });
     }
 
-    public function delete(DeleteBranchRequest $request, City $city)
+    public function delete(City $city)
     {
-        $password = $request->validated()['password'];
-        if(! Hash::check($password, auth()->user()['password'])){
-            return $this->failed('كلمة المرور غير صحيحة');
-        }
         $this->cityServices->deleteOldAdmin($city['id']);
         $branches = $city['branches'];
         $this->cityServices->deleteBranches($branches);

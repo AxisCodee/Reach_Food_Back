@@ -51,13 +51,27 @@ class BranchService
 
     public function getBranchesForCustomer(): array
     {
-        return Branch::query()
+        $branches = Branch::query()
             ->select('id', 'name', 'city_id')
             ->where('city_id', '=', auth()->user()->address->city_id)
             ->with('city:id,name')
-            ->get()
-            ->toArray();
-
+            ->get();
+        $tripService = new TripService();
+        foreach ($branches as $branch){
+            logger('fas');
+            try {
+                $branch['salesman'] = $tripService
+                    ->nearTrip($branch['id'], auth()->user()->address_id)
+                    ->trip
+                    ->salesman()
+                    ->select('id', 'name')
+                    ->with('contacts:id,user_id,phone_number')
+                    ->first();
+            }catch (\Exception){
+                $branch['salesman'] = null;
+            }
+        }
+        return $branches->toArray();
     }
 
     public function showBranch($id)
