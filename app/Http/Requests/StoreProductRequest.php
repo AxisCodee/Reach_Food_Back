@@ -32,4 +32,10 @@ class StoreProductRequest extends FormRequest
             'image' => 'nullable|file'
         ];
     }
+    public function messages(): array
+    {
+        return [
+            'retail_price.gt' => 'يجب أن يكون سعر المفرق أكبر من سعر الجملة'
+        ];
+    }
 }
