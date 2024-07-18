@@ -46,7 +46,7 @@ class TestTrips extends Command
                         'address_id' => $trip->address_id
                     ]);
                 TripTrace::query()
-                    ->create([
+                    ->firstOrCreate([
                         'trip_date_id' => $newTrip->id,
                     ]);
             }
