@@ -43,7 +43,7 @@ class AuthController extends Controller
     {
         $user = User::where('user_name', $request->user_name)->first();
         if (!$user || !Hash::check($request->password, $user->password)) {
-            return ResponseHelper::error('اسم المستخدم او كلمة المرور خاطئة', 401);
+            return ResponseHelper::error(null, null, 'اسم المستخدم او كلمة المرور خاطئة', 401);
         }
         $token = $user->createToken('auth_token', ['*'], now()->addMinutes(10000));
         if ($request['device_token']) {
@@ -66,7 +66,7 @@ class AuthController extends Controller
             $user->currentAccessToken()->delete();
             return ResponseHelper::success('Logged out successfully.');
         }
-        return ResponseHelper::error('انت غير مخول', 401);
+        return ResponseHelper::error(null, null, 'انت غير مخول', 401);
     }
 
     public function refresh(DeviceTokensService $deviceTokensService) //TODO
@@ -93,7 +93,7 @@ class AuthController extends Controller
                 $user->load('city.country', 'contacts');
                 break;
             case Roles::CUSTOMER:
-                $user->load(['address.city.country', 'contacts','userPassword:user_id,password']);
+                $user->load(['address.city.country', 'contacts', 'userPassword:user_id,password']);
                 break;
             default:
                 break;
@@ -103,7 +103,7 @@ class AuthController extends Controller
 
     public function correctPassword(CorrectPasswordRequest $request)
     {
-        if(Hash::check($request->validated()['password'], auth()->user()['password'])){
+        if (Hash::check($request->validated()['password'], auth()->user()['password'])) {
             return ResponseHelper::success();
         }
         return ResponseHelper::error();
