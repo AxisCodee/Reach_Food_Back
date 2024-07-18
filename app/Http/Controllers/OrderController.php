@@ -101,6 +101,6 @@ class OrderController extends Controller
                 ->lastOrderCanceled($bId, auth('sanctum')->id())
                 ->first();
         }
-        return ResponseHelper::success($order);
+        return ResponseHelper::success($order->load('products'));
     }
 }
