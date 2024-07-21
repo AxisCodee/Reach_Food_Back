@@ -149,7 +149,7 @@ class RegistrationService
         $data = [];
         if ($branches) {
             foreach ($branches as $branch) {
-                if($branch['salesManager_id']) {
+                if(isset($branch['salesManager_id'])) {
                     $salesManager = User::query()->findOrFail($branch['salesManager_id']);
                     if ($salesManager['role'] != Roles::SALES_MANAGER->value) {
                         throw new \Exception('هذا الشخص ليس مدير مبيعات');
@@ -159,7 +159,7 @@ class RegistrationService
                         throw new \Exception('هذا المدير لا يتبع لهذا الفرع');
                     }
                 }
-                $work['sales_manager_id'] = $branch['salesManager_id'];
+                $work['sales_manager_id'] = $branch['salesManager_id'] ?? null;
                 $work['salesman_id'] = $this->user->id;
                 $work['branch_id'] = $branch['branch_id'];
                 $data[] = $work;
