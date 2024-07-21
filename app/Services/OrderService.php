@@ -143,6 +143,22 @@ class OrderService
         return $result;
     }
 
+    public function showForSalesman(int $orderId): Order
+    {
+        return Order::query()
+            ->with([
+                'products',
+                'customer' => [
+                    'contacts:id,user_id,phone_number',
+                    'address:id,city_id,area' => [
+                        'city:id,name'
+                    ]
+                ]
+            ])
+            ->findOrFail($orderId)
+            ->setAppends(['can_undo', 'is_late']);
+    }
+
     public function deleteOrder($order)
     {
         $order = Order::findOrFail($order);
@@ -169,6 +185,9 @@ class OrderService
                         fn($query) => $query->whereIn('day', GetDaysNamesAction::handle($request->input('days')))
                     );
             })
+//            ->when($request->input('days'),
+//                fn($query) => $query->whereIn('delivery_date', GetDaysNamesAction::handle($request->input('days')))
+//            )
             ->search($request->input('s'))
             ->withForSalesman()
             ->latest()

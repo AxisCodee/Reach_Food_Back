@@ -59,6 +59,11 @@ class OrderController extends Controller
         return ResponseHelper::success($result, null, 'order returned successfully', 200);
     }
 
+    public function showForSalesman(int $orderId)
+    {
+        return ResponseHelper::success($this->orderService->showForSalesman($orderId), null, 'order returned successfully');
+    }
+
     public function destroy($order)
     {
         $result = $this->orderService->deleteOrder($order);
@@ -96,7 +101,7 @@ class OrderController extends Controller
     {
         $bId = $request->validated('branch_id');
         $order = Order::query()->lastOrderAccepted($bId, auth('sanctum')->id())->first();
-        if(!$order){
+        if (!$order) {
             $order = Order::query()
                 ->lastOrderCanceled($bId, auth('sanctum')->id())
                 ->first();
