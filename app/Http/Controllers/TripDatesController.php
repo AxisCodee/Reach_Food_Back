@@ -13,6 +13,7 @@ class TripDatesController extends Controller
     {
         $orders = $tripDate
             ->order()
+            ->whereNull('order_id')
             ->search($request->input('s'))
             ->with([
                 'customer' => [
