@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Actions\GetNotificationUserIdsAction;
 use App\Enums\NotificationActions;
 use App\Enums\Roles;
+use App\Exceptions\CustomException;
 use App\Models\Contact;
 use App\Models\User;
 use App\Models\UserPermission;
@@ -92,10 +93,10 @@ class UserService
                     if(isset($branch['salesManager_id'])) {
                         $salesManager = User::query()->findOrFail($branch['salesManager_id']);
                         if ($salesManager['role'] != Roles::SALES_MANAGER->value) {
-                            throw new Exception('هذا الشخص ليس مدير مبيعات');
+                            throw new CustomException('هذا الشخص ليس مدير مبيعات');
                         }
                         if ($salesManager['branch_id'] != $branch['branch_id']) {
-                            throw new Exception('هذا المدير لا يتبع لهذا الفرع');
+                            throw new CustomException('هذا المدير لا يتبع لهذا الفرع');
                         }
                     }
                     $work['sales_manager_id'] = $branch['salesManager_id'] ?? null;
@@ -118,7 +119,7 @@ class UserService
                 foreach ($salesmen as $salesman){
                     $userS = User::query()->findOrFail($salesman);
                     if ($userS['role'] != Roles::SALESMAN->value) {
-                        throw new Exception('هذا الشخص ليس مندوب');
+                        throw new CustomException('هذا الشخص ليس مندوب');
                     }
                     WorkBranch::query()->create([
                         'salesman_id' => $salesman,
@@ -231,7 +232,7 @@ class UserService
     {
         $user = User::findOrFail($userId);
         if (auth()->user()['role'] == Roles::SALESMAN->value && (($user['added_by'] != auth()->id())))
-            throw new Exception("لا يمكنك حذف هذا الزبون");
+            throw new CustomException("لا يمكنك حذف هذا الزبون");
         $data = [
             'action_type' => NotificationActions::DELETE->value,
             'actionable_id' => $user->id,
@@ -255,7 +256,7 @@ class UserService
     public function assignCity($user, $cityId): void
     {
         if(! $this->canAssignCity($cityId)){
-            throw new Exception('هذا الفرع لديه مدير بالفعل');
+            throw new CustomException('هذا الفرع لديه مدير بالفعل');
         }
         $user->update(['city_id' => $cityId]);
     }

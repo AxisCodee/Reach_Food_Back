@@ -1,5 +1,6 @@
 <?php
 
+use App\Exceptions\CustomException;
 use App\Helpers\ResponseHelper;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -58,5 +59,8 @@ return Application::configure(basePath: dirname(__DIR__))
             }
         });
 
+        $exceptions->render(function (CustomException $e, Request $request) {
+            return ResponseHelper::error(null, 400, $e->getMessage());
+        });
         //
     })->create();
