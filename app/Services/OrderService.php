@@ -90,10 +90,15 @@ class OrderService
         });
     }
 
+    /**
+     * @throws CustomException
+     */
     public function updateOrder($request, $order, $customer_id)
     {
         $order = Order::where('id', $order)->first();
-
+        if (!is_null($order->order_id)) {
+            throw new CustomException('لا يمكنك تعديل هذا الطلب لأنه تم تعديله من قبل وأصبح منتهي الصلاحية.', 400);
+        }
         if (auth()->user()->role == Roles::CUSTOMER->value) {
             $this->customerUpdateOrder($request, $order);
             $result = $order;
