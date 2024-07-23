@@ -93,7 +93,7 @@ class TripService
 
             if (isset($trip['customerTimes'])) {
                 foreach ($trip['customerTimes'] as $customerTime) {
-                    if(isset($customerTime['time'])) {
+                    if (isset($customerTime['time'])) {
                         if ($customerTime['time'] < $trips['start_time']
                             || $customerTime['time'] > $trips['end_time']) {
                             throw new CustomException('وقت الزبون خاطئ');
@@ -103,7 +103,8 @@ class TripService
                             'trip_id' => $trips->id,
                             'arrival_time' => $customerTime['time'],
                         ]);
-                    }                }
+                    }
+                }
             }
             return $trips;
         });
@@ -151,7 +152,11 @@ class TripService
         }
         $trips = $salesman->tripsDates($bId, $date)
             ->with(['trip', 'address:id,city_id,area'])
-            ->withCount('order')
+            ->withCount([
+                'order' => function (Builder $query) {
+                    $query->whereNull('order_id');
+                }
+            ])
             ->orderBy('start_time', 'asc')
             ->paginate(10)
             ->toArray();
@@ -216,7 +221,7 @@ class TripService
                 'addresses' => [],
             ]
         ];
-        foreach ($trips as $trip){
+        foreach ($trips as $trip) {
             $days[$trip['day']]['addresses'][] = $trip['address']['area'];
         }
         return $days;
@@ -231,7 +236,7 @@ class TripService
             })
             ->whereDate('start_date', '>', Carbon::now())
             ->first();
-        if(!$trip){
+        if (!$trip) {
             throw new CustomException('لا يمكن استقبال هذا الطلب لعدم وجود رحلة الى هذه المنطقة');
         }
 
