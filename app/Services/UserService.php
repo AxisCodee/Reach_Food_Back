@@ -231,6 +231,17 @@ class UserService
     public function destroy($userId): ?bool
     {
         $user = User::findOrFail($userId);
+
+        if (
+            ($user->role === Roles::SUPER_ADMIN->value) ||
+            ($user->role === Roles::ADMIN->value && auth()->user()->role !== Roles::SUPER_ADMIN->value) ||
+            ($user->role === Roles::SALES_MANAGER->value && !in_array(auth()->user()->role, [
+                    Roles::SUPER_ADMIN->value,
+                    Roles::ADMIN->value,
+                ]))
+        )
+            throw new CustomException('something went wrong');
+
         if (auth()->user()['role'] == Roles::SALESMAN->value && (($user['added_by'] != auth()->id())))
             throw new CustomException("لا يمكنك حذف هذا الزبون");
         $data = [

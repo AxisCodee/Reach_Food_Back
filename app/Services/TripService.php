@@ -8,6 +8,7 @@ use App\Exceptions\CustomException;
 use App\Models\CustomerTime;
 use App\Models\Trip;
 use App\Models\TripDates;
+use App\Models\TripTrace;
 use App\Models\User;
 use Carbon\Carbon;
 use Exception;
@@ -48,6 +49,7 @@ class TripService
 
     public function conflicts($trip): bool
     {
+        if(!isset($trip['salesman_id'])) return false;
         return Trip::query()
             ->where('day', $trip['day'])
             ->where(function (Builder $q) use ($trip) {
@@ -81,16 +83,19 @@ class TripService
                 'branch_id' => $trip['branch_id'],//??
                 'start_time' => $trip['start_time'],
                 'end_time' => $trip['end_time'],
-                'salesman_id' => $trip['salesman_id']
+                'salesman_id' => $trip['salesman_id'] ?? null,
             ]);
             $startDate = Carbon::parse(now())->next($trip['day']);
-            TripDates::create([
+            $tripDate =  TripDates::create([
                 'trip_id' => $trips->id,
                 'address_id' => $trip['address_id'],
                 'start_time' => $trip['start_time'],
                 'start_date' => $startDate->format('Y-m-d'),
             ]);
 
+            TripTrace::create([
+                'trip_date_id' => $tripDate->id
+            ]);
             if (isset($trip['customerTimes'])) {
                 foreach ($trip['customerTimes'] as $customerTime) {
                     if (isset($customerTime['time'])) {
