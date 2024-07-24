@@ -51,7 +51,8 @@ class UserController extends Controller
                         })
                         ->where('branch_id', $branchId)
                         ->with('customers');
-                }
+                },
+                'userPassword'
             ])
             ->where('role', Roles::SALESMAN)
             ->findOrFail($id);
