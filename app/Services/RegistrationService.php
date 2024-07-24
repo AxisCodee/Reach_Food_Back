@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Actions\GetNotificationUserIdsAction;
 use App\Enums\NotificationActions;
 use App\Enums\Roles;
+use App\Exceptions\CustomException;
 use App\Models\City;
 use App\Models\User;
 use App\Models\UserPermission;
@@ -17,6 +18,17 @@ use Illuminate\Support\Facades\Hash;
 class RegistrationService
 {
     private $user;
+
+    private function checkRole($role): bool{
+        $authRole = auth()->user()->role;
+        return match ($role) {
+            Roles::SUPER_ADMIN => false,
+            Roles::ADMIN => $authRole == Roles::SUPER_ADMIN->value,
+            Roles::SALES_MANAGER => in_array($authRole, [Roles::SUPER_ADMIN->value, Roles::ADMIN->value]),
+            Roles::SALESMAN => !in_array($authRole, [Roles::CUSTOMER->value, Roles::SALESMAN->value]),
+            default => $authRole != Roles::CUSTOMER->value,
+        };
+    }
 
     public function createUser(Request $request)
     {
@@ -31,7 +43,13 @@ class RegistrationService
         $baseData['password'] = Hash::make($request['password']);
 
 
+
         $role = Roles::from($request->role);
+
+        if(! $this->checkRole($role)){
+            throw new CustomException('something went wrong');
+        }
+
         //Adding Data
         switch ($role) {
             case Roles::ADMIN :
@@ -41,7 +59,7 @@ class RegistrationService
                         ->where('city_id', $cityId)
                         ->exists())
                 {
-                    throw new \Exception('هذا الفرع لديه مدير بالفعل');
+                    throw new CustomException('هذا الفرع لديه مدير بالفعل');
                 }
                 $baseData['city_id'] = $request->city_id;
                 break;
@@ -93,7 +111,7 @@ class RegistrationService
             foreach ($salesmen as $salesman){
                 $user = User::query()->findOrFail($salesman);
                 if ($user['role'] != Roles::SALESMAN->value) {
-                    throw new \Exception('هذا الشخص ليس مندوب');
+                    throw new CustomException('هذا الشخص ليس مندوب');
                 }
                 WorkBranch::query()->create([
                     'salesman_id' => $salesman,
@@ -130,11 +148,11 @@ class RegistrationService
                     $time4 = Carbon::make($trips[$j]['end_time'])->toDateTime();
                     if ($time1 > $time3
                         && $time1 < $time4) {
-                        throw new \Exception('الاوقات متضاربة');
+                        throw new CustomException('الاوقات متضاربة');
                     }
                     if ($time2 > $time3
                         && $time2 < $time4) {
-                        throw new \Exception('الاوقات متضاربة');
+                        throw new CustomException('الاوقات متضاربة');
                     }
                 }
             }
@@ -152,11 +170,11 @@ class RegistrationService
                 if(isset($branch['salesManager_id'])) {
                     $salesManager = User::query()->findOrFail($branch['salesManager_id']);
                     if ($salesManager['role'] != Roles::SALES_MANAGER->value) {
-                        throw new \Exception('هذا الشخص ليس مدير مبيعات');
+                        throw new CustomException('هذا الشخص ليس مدير مبيعات');
                     }
                     logger($branch['branch_id']);
                     if ($salesManager['branch_id'] != $branch['branch_id']) {
-                        throw new \Exception('هذا المدير لا يتبع لهذا الفرع');
+                        throw new CustomException('هذا المدير لا يتبع لهذا الفرع');
                     }
                 }
                 $work['sales_manager_id'] = $branch['salesManager_id'] ?? null;

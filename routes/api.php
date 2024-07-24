@@ -39,7 +39,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('auth')->group(function () {
         Route::controller(AuthController::class)->group(function () {
-            Route::post('register', 'register');
+            Route::post('register', 'register')
+                ->middleware('roles:super admin,admin,sales manager,salesman');
             Route::get('logout', 'logout');
             Route::get('refresh', 'refresh');
         });
@@ -49,7 +50,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::prefix('user')->group(function () {
         Route::apiResource('users', UserController::class)
-            ->only('index', 'destroy');
+            ->only('index', 'destroy')
+            ->middleware('roles:super admin,admin,sales manager,salesman');
         Route::post('update/{id}', [UserController::class, 'update']);
         Route::get('show/{id}', [UserController::class, 'show']);
         Route::get('show-salesman/{id}', [UserController::class, 'showSalesMan']);
@@ -62,7 +64,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('{role}/branches', [BranchController::class, 'userBranches'])
             ->whereIn('role', [Roles::SALESMAN->value, Roles::CUSTOMER->value]);
         Route::prefix('salesman')->group(function () {
-            Route::get('/customers', [UserController::class, 'getSalesmanCustomers']);
+            Route::get('/customers', [UserController::class, 'getSalesmanCustomers'])
+                ->middleware('roles:salesman');
         });
     });
 
