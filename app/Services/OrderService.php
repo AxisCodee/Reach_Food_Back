@@ -193,6 +193,7 @@ class OrderService
 //            ->when($request->input('days'),
 //                fn($query) => $query->whereIn('delivery_date', GetDaysNamesAction::handle($request->input('days')))
 //            )
+            ->whereHas('customerWithoutTrashed')
             ->search($request->input('s'))
             ->withForSalesman()
             ->latest()

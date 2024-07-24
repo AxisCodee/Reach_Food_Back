@@ -23,6 +23,10 @@ class Order extends Model
         return $this->belongsTo(User::class)->withTrashed();
     }
 
+    public function customerWithoutTrashed(): BelongsTo
+    {
+        return $this->belongsTo(User::class,'customer_id');
+    }
     public function trip(): BelongsTo
     {
         return $this->belongsTo(Trip::class);
