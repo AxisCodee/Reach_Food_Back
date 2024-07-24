@@ -90,10 +90,15 @@ class OrderService
         });
     }
 
+    /**
+     * @throws CustomException
+     */
     public function updateOrder($request, $order, $customer_id)
     {
         $order = Order::where('id', $order)->first();
-
+        if (!is_null($order->order_id)) {
+            throw new CustomException('لا يمكنك تعديل هذا الطلب لأنه تم تعديله من قبل وأصبح منتهي الصلاحية.', 400);
+        }
         if (auth()->user()->role == Roles::CUSTOMER->value) {
             $this->customerUpdateOrder($request, $order);
             $result = $order;
@@ -143,6 +148,22 @@ class OrderService
         return $result;
     }
 
+    public function showForSalesman(int $orderId): Order
+    {
+        return Order::query()
+            ->with([
+                'products',
+                'customer' => [
+                    'contacts:id,user_id,phone_number',
+                    'address:id,city_id,area' => [
+                        'city:id,name'
+                    ]
+                ]
+            ])
+            ->findOrFail($orderId)
+            ->setAppends(['can_undo', 'is_late']);
+    }
+
     public function deleteOrder($order)
     {
         $order = Order::findOrFail($order);
@@ -169,6 +190,9 @@ class OrderService
                         fn($query) => $query->whereIn('day', GetDaysNamesAction::handle($request->input('days')))
                     );
             })
+//            ->when($request->input('days'),
+//                fn($query) => $query->whereIn('delivery_date', GetDaysNamesAction::handle($request->input('days')))
+//            )
             ->search($request->input('s'))
             ->withForSalesman()
             ->latest()
@@ -192,7 +216,7 @@ class OrderService
         }
         $order->update([
             'status' => $data['action'],
-            'delivery_date' => $data['delivery_date'] ?? $order['delivery_date'],
+//            'delivery_date' => $data['delivery_date'] ?? $order['delivery_date'],
             'delivery_time' => $data['delivery_time'] ?? $order['delivery_time'],
         ]);
         return $order;

@@ -133,7 +133,8 @@ class Order extends Model
     protected function isLate(): Attribute
     {
         return Attribute::get(function () {
-            if (Carbon::parse($this['delivery_time'])->lt(Carbon::now()->toDateTime()))
+            if (Carbon::parse($this['delivery_date'])->lte(Carbon::today()->toDate()) &&
+                Carbon::parse($this['delivery_time'])->lt(Carbon::now()->toDateTime()))
                 return true;
             return false;
         });

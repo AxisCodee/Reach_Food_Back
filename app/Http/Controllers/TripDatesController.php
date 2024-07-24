@@ -13,8 +13,16 @@ class TripDatesController extends Controller
     {
         $orders = $tripDate
             ->order()
+            ->whereNull('order_id')
             ->search($request->input('s'))
-            ->withForSalesman()
+            ->with([
+                'customer' => [
+                    'contacts:id,user_id,phone_number',
+                    'address:id,city_id,area' => [
+                        'city:id,name'
+                    ]
+                ]
+            ])
             ->paginate(10);
         return ResponseHelper::success($orders);
     }

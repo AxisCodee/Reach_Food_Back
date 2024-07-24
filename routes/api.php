@@ -101,6 +101,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('countries', [AddressController::class, 'getCountries']);
         Route::prefix('salesman')->group(function () {
             Route::get('/myOrders', [OrderController::class, 'salesmanOrders']);
+            Route::get('/{orderId}',[OrderController::class,'showForSalesman'])->whereNumber('orderId');
         });
         Route::prefix('customer')->group(function () {
             Route::get('/my-order', [OrderController::class, 'myOrder']);
