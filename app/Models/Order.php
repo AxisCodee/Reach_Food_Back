@@ -14,13 +14,13 @@ use Illuminate\Support\Carbon;
 
 class Order extends Model
 {
-    use HasFactory;
+//    use HasFactory;
 
     protected $guarded = [];
 
     public function customer(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withTrashed();
     }
 
     public function trip(): BelongsTo
