@@ -25,7 +25,6 @@ class UpdateArchivedOrderRequest extends FormRequest
         return [
             'action' => ['required', 'string', Rule::in(['canceled', 'delivered', 'accepted'])],
             'message' => ['nullable', 'string'],
-            'delivery_date' => ['date', 'required_if:action,delivered'],
             'delivery_time' => ['date_format:H:i', 'required_if:action,delivered']
         ];
     }

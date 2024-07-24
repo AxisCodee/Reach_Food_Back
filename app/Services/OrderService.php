@@ -216,7 +216,7 @@ class OrderService
         }
         $order->update([
             'status' => $data['action'],
-            'delivery_date' => $data['delivery_date'] ?? $order['delivery_date'],
+//            'delivery_date' => $data['delivery_date'] ?? $order['delivery_date'],
             'delivery_time' => $data['delivery_time'] ?? $order['delivery_time'],
         ]);
         return $order;
