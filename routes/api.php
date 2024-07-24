@@ -78,6 +78,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/delete/{id}', [BranchController::class, 'deleteBranch']);
         Route::post('/restore/{id}', [BranchController::class, 'restore']);
         Route::get('/cities', [BranchController::class, 'branches']);
+        Route::get('list', [BranchController::class, 'list']);
     });
 
     Route::prefix('address')->group(function () {

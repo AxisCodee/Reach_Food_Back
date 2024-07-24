@@ -10,6 +10,7 @@ use App\Http\Requests\CreateBranchRequest;
 use App\Http\Requests\DeleteBranchesRrequest;
 use App\Http\Requests\DeleteBranchRequest;
 use App\Http\Requests\UpdateBranchRequest;
+use App\Http\Resources\ListBranchesWithCityResource;
 use App\Models\Branch;
 use App\Models\City;
 use App\Models\User;
@@ -129,6 +130,13 @@ class BranchController extends Controller
         };
         return ResponseHelper::success(
             $branches
+        );
+    }
+
+    public function list()
+    {
+        return ResponseHelper::success(
+            ListBranchesWithCityResource::collection(Branch::with('city')->get())
         );
     }
 
