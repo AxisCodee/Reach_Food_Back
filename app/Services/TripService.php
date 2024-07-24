@@ -49,6 +49,7 @@ class TripService
 
     public function conflicts($trip): bool
     {
+        if(!isset($trip['salesman_id'])) return false;
         return Trip::query()
             ->where('day', $trip['day'])
             ->where(function (Builder $q) use ($trip) {
@@ -82,7 +83,7 @@ class TripService
                 'branch_id' => $trip['branch_id'],//??
                 'start_time' => $trip['start_time'],
                 'end_time' => $trip['end_time'],
-                'salesman_id' => $trip['salesman_id']
+                'salesman_id' => $trip['salesman_id'] ?? null,
             ]);
             $startDate = Carbon::parse(now())->next($trip['day']);
             $tripDate =  TripDates::create([
