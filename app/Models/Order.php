@@ -53,10 +53,11 @@ class Order extends Model
         return $this->morphMany(Notification::class, 'actionable');
     }
 
-    public function scopeThisWeek(Builder $query): void
+    public function scopeNextWeek(Builder $query): void
     {
-        $startOfWeek = Carbon::now()->startOfWeek(CarbonInterface::SATURDAY);
-        $endOfWeek = Carbon::now()->endOfWeek(CarbonInterface::FRIDAY);
+        $date = Carbon::today();
+        $startOfWeek = $date->toDateString();
+        $endOfWeek = $date->addDays(6)->toDateString();
         $query->whereBetween('delivery_date', [$startOfWeek, $endOfWeek]);
     }
 
