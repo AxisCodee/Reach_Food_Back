@@ -180,7 +180,7 @@ class OrderService
     public function getSalesmanOrders($request)
     {
         $orders = Order::query()
-            ->thisWeek()
+            ->nextWeek()
             ->whereNull('order_id')
             ->where('branch_id', '=', $request->input('branch_id'))
             ->whereHas('trip_date.trip', function ($query) use ($request) {
