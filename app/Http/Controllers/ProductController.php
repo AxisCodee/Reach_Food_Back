@@ -6,6 +6,7 @@ use App\Helpers\ResponseHelper;
 use App\Http\Requests\Product\GetListPriceRequest;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\SupplyProductsRequest;
+use App\Http\Requests\UpdatePricesRequest;
 use App\Models\Product;
 use App\Services\ProductService;
 use Illuminate\Http\Request;
@@ -61,8 +62,9 @@ class ProductController extends Controller
         return ResponseHelper::error(null, 'المنتج غير موجود', 404);
     }
 
-    public function updatePrice(Request $request)
+    public function updatePrice(UpdatePricesRequest $request)
     {
+        $request->validated();
         $this->productService->updatePrice($request);
         return ResponseHelper::success(true, null, 'Prices updated successfully', 200);
     }
