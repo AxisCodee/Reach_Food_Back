@@ -125,6 +125,7 @@ class OrderService
         }
 
         $this->sendMobileNotification($order, NotificationActions::UPDATE->value);
+        $result->refresh()->append(['can_undo', 'is_late']);
         return $result;
     }
 
