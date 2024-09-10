@@ -74,7 +74,7 @@ class TestTrips extends Command
                     ->whereHas('order')
                     ->pluck('id')
                     ->toArray();
-                $trips = TripDates::query()->whereNotIn('id', $tripsIds);
+                $trips = TripDates::query()->whereNotIn('id', $tripsIds)->get();
                 foreach ($trips as $trip) {
                     for ($i = 0; $i < 22; $i++) {
                         $order = Order::query()
