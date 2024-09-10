@@ -42,7 +42,7 @@ class TestTrips extends Command
                 $newTrip = TripDates::query()->firstOrCreate([
                         'trip_id' => $trip->id,
                         'start_time' => $trip->start_time,
-                        'start_date' => Carbon::now()->next($trip->day)->format('Y-m-d'),
+                        'start_date' => Carbon::now()->next($trip->day)->subDays(7)->format('Y-m-d'),
                         'address_id' => $trip->address_id
                     ]);
                 TripTrace::query()
@@ -70,34 +70,35 @@ class TestTrips extends Command
 //                            'trip_date_id' => $newTrip->id,
 //                        ]);
 //                }
-////                $trips = TripDates::query()
-////                    ->where('start_date', Carbon::today()->addDays($k)->toDateString())
-////                    ->get();
-////                foreach ($trips as $trip) {
-////                    for ($i = 0; $i < 22; $i++) {
-////                        $order = Order::query()
-////                            ->create([
-////                                'customer_id' => rand(4, 6),
-////                                'trip_date_id' => $trip->id,
-////                                'status' => 'accepted',
-////                                'branch_id' => 1,
-////                                'order_date' => Carbon::today()->addDays($k)->format('Y-m-d'),
-////                                'delivery_date' => Carbon::today()->addDays($k)->format('Y-m-d'),
-////                                'delivery_time' => Carbon::now()->addDays($k)->format('H:i'),
-////                                'is_base' => 1,
-////                                'total_price' => rand(1000, 5000)
-////                            ]);
-////                        for ($j = 8; $j < 21; $j++) {
-////                            OrderProduct::query()
-////                                ->create([
-////                                    'order_id' => $order->id,
-////                                    'product_id' => $j,
-////                                    'quantity' => rand(2, 7),
-////                                ]);
-////                        }
-////                    }
-////                }
-//            }
+                $tripsIds = TripDates::query()
+                    ->whereHas('order')
+                    ->pluck('id')
+                    ->toArray();
+                $trips = TripDates::query()->whereNotIn('id', $tripsIds);
+                foreach ($trips as $trip) {
+                    for ($i = 0; $i < 22; $i++) {
+                        $order = Order::query()
+                            ->create([
+                                'customer_id' => rand(4, 6),
+                                'trip_date_id' => $trip->id,
+                                'status' => 'accepted',
+                                'branch_id' => 1,
+                                'order_date' => Carbon::today()->format('Y-m-d'),
+                                'delivery_date' => $trip->start_date,
+                                'delivery_time' => Carbon::now()->format('H:i'),
+                                'is_base' => 1,
+                                'total_price' => rand(1000, 5000)
+                            ]);
+                        for ($j = 8; $j < 21; $j++) {
+                            OrderProduct::query()
+                                ->create([
+                                    'order_id' => $order->id,
+                                    'product_id' => $j,
+                                    'quantity' => rand(2, 7),
+                                ]);
+                        }
+                    }
+            }
 
         });
     }
