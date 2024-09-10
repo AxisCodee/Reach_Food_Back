@@ -48,7 +48,16 @@ class OrderService
                 'trip_date_id' => $trip->id
             ]);
 
-            $order->load('trip_date.trip');
+            $order->load([
+                'trip_date.trip',
+                'products',
+                'customer' => [
+                    'contacts:id,user_id,phone_number',
+                    'address:id,city_id,area' => [
+                        'city:id,name'
+                    ]
+                ]
+            ]);
             return $order;
         });
     }
@@ -116,6 +125,7 @@ class OrderService
         }
 
         $this->sendMobileNotification($order, NotificationActions::UPDATE->value);
+        $result->refresh()->append(['can_undo', 'is_late']);
         return $result;
     }
 
