@@ -58,15 +58,12 @@ class BranchService
             ->get();
         $tripService = new TripService();
         foreach ($branches as $branch){
-            logger('fas');
             try {
                 $branch['salesman'] = $tripService
                     ->nearTrip($branch['id'], auth()->user()->address_id)
                     ->trip
-                    ->salesman()
-                    ->select('id', 'name')
-                    ->with('contacts:id,user_id,phone_number')
-                    ->first();
+                    ->salesman
+                    ->load('contacts:id,user_id,phone_number');
             }catch (\Exception){
                 $branch['salesman'] = null;
             }
