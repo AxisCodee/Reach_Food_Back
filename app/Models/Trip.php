@@ -22,7 +22,7 @@ class Trip extends Model
 
     public function salesman(): BelongsTo
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(User::class)->withTrashed();
     }
 
     public function address(): BelongsTo
